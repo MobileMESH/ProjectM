@@ -1,26 +1,65 @@
 package fi.mobilemesh.projectm
 
-import android.content.Context
-import android.content.IntentFilter
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
-import android.net.wifi.p2p.WifiP2pManager.Channel
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import network.BroadcastManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import android.content.IntentFilter
+import android.net.wifi.p2p.WifiP2pManager.Channel
+import fi.mobilemesh.projectm.network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        private const val REQUEST_CODE = 223312
+    }
+
+    val permissions = arrayOf(
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.CHANGE_WIFI_STATE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.NEARBY_WIFI_DEVICES"
+    )
+
     private lateinit var wifiManager: WifiP2pManager
     private lateinit var channel: Channel
     private lateinit var broadcastManager: BroadcastManager
     private val intentFilter = IntentFilter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        wifiManager = getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
+        wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
         channel = wifiManager.initialize(this, mainLooper, null)
         broadcastManager = BroadcastManager(wifiManager, channel)
         addIntentFilters()
+
+    }
+
+    fun hasPermissions(permissions: Array<String>) {
+        for (permission in permissions)
+        {
+            if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED)
+            {
+                ActivityCompat.requestPermissions(this, arrayOf(permission), REQUEST_CODE)
+            }
+        }
+        return
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE) {
+
+        }
     }
 
     override fun onResume() {
