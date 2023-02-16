@@ -10,6 +10,9 @@ import android.os.Bundle
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import android.content.IntentFilter
+import android.net.wifi.p2p.WifiP2pManager.Channel
+import network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,9 +27,20 @@ class MainActivity : AppCompatActivity() {
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.NEARBY_WIFI_DEVICES"
     )
+
+    private lateinit var wifiManager: WifiP2pManager
+    private lateinit var channel: Channel
+    private lateinit var broadcastManager: BroadcastManager
+    private val intentFilter = IntentFilter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        wifiManager = getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
+        channel = wifiManager.initialize(this, mainLooper, null)
+        broadcastManager = BroadcastManager(wifiManager, channel)
+        addIntentFilters()
 
     }
 
@@ -50,5 +64,22 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE) {
 
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(broadcastManager, intentFilter)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(broadcastManager)
+    }
+
+    private fun addIntentFilters() {
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION)
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 }
