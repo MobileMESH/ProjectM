@@ -9,6 +9,7 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.net.wifi.p2p.WifiP2pManager.Channel
 import fi.mobilemesh.projectm.network.BroadcastManager
 
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
         "android.permission.NEARBY_WIFI_DEVICES"
     )
 
+    private var permissionIndex = 0
+
     private lateinit var wifiManager: WifiP2pManager
     private lateinit var channel: Channel
     private lateinit var broadcastManager: BroadcastManager
@@ -35,22 +38,32 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        hasPermissions()
+
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
         channel = wifiManager.initialize(this, mainLooper, null)
         broadcastManager = BroadcastManager(wifiManager, channel)
         addIntentFilters()
 
     }
-
-    fun hasPermissions(permissions: Array<String>) {
-        for (permission in permissions)
-        {
+    private fun requestPermission() {
+        if (permissionIndex < permissions.size) {
+            val permission = permissions[permissionIndex]
             if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED)
             {
-                ActivityCompat.requestPermissions(this, arrayOf(permission), REQUEST_CODE)
+                ActivityCompat.requestPermissions(this, arrayOf(permission) , REQUEST_CODE)
+            }
+            else {
+                permissionIndex++
+                requestPermission()
             }
         }
         return
+    }
+
+    fun hasPermissions() {
+        permissionIndex = 0
+        requestPermission()
     }
 
     override fun onRequestPermissionsResult(
@@ -60,7 +73,18 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE) {
-
+            var allGranted = true
+            for (grantResult in grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false
+                    break
+                }
+            }
+            if (allGranted) {
+                return
+            } else {
+                finish()
+            }
         }
     }
 
