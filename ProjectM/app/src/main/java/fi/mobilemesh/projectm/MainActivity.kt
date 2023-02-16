@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             if (allGranted) {
                 return
             } else {
-                finish()
+                //finish()
             }
         }
     }
