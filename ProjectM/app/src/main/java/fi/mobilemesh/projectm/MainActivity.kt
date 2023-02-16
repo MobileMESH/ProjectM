@@ -1,6 +1,7 @@
 package fi.mobilemesh.projectm
 
-import android.content.Context
+
+
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
 import androidx.appcompat.app.AppCompatActivity
@@ -9,7 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
 import android.net.wifi.p2p.WifiP2pManager.Channel
-import network.BroadcastManager
+import fi.mobilemesh.projectm.network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        wifiManager = getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
+        wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
         channel = wifiManager.initialize(this, mainLooper, null)
         broadcastManager = BroadcastManager(wifiManager, channel)
         addIntentFilters()

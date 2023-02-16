@@ -1,14 +1,10 @@
-package network
+package fi.mobilemesh.projectm.network
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.wifi.p2p.WifiP2pManager
-import android.net.wifi.p2p.WifiP2pManager.Channel
-import android.net.wifi.p2p.WifiP2pManager.PeerListListener
-import android.net.wifi.p2p.WifiP2pManager.WIFI_P2P_STATE_ENABLED
-import android.util.Log
-import androidx.core.os.persistableBundleOf
+import android.net.wifi.p2p.WifiP2pManager.*
 
 class BroadcastManager(wifiManager: WifiP2pManager, channel: Channel): BroadcastReceiver() {
     private val wifiManager = wifiManager
@@ -29,7 +25,7 @@ class BroadcastManager(wifiManager: WifiP2pManager, channel: Channel): Broadcast
             discoverPeers()
             // Continue...
         }
-        else if (action == WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION) {
+        else if (action == WIFI_P2P_PEERS_CHANGED_ACTION) {
             wifiManager.requestPeers(channel, peerListListener)
             println("Bojoing")
         }
