@@ -1,13 +1,10 @@
 package fi.mobilemesh.projectm
 
-import android.Manifest.permission.*
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
