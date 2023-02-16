@@ -8,6 +8,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
 import android.net.wifi.p2p.WifiP2pManager.Channel
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
 import fi.mobilemesh.projectm.network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
@@ -29,13 +32,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var broadcastManager: BroadcastManager
     private val intentFilter = IntentFilter()
 
+    // UI
+    lateinit var deviceList: LinearLayout
+    lateinit var receivingField: TextView
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //UI
+        deviceList = findViewById(R.id.deviceList)
+        receivingField = findViewById(R.id.receivingField)
+
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
         channel = wifiManager.initialize(this, mainLooper, null)
-        broadcastManager = BroadcastManager(wifiManager, channel)
+        broadcastManager = BroadcastManager(wifiManager, channel, this)
         addIntentFilters()
 
     }
