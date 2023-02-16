@@ -24,10 +24,10 @@ class MainActivity : AppCompatActivity() {
         "android.permission.CHANGE_WIFI_STATE",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.NEARBY_WIFI_DEVICES"
+        "android.permission.NEARBY_WIFI_DEVICES",
+        "android.permission.CHANGE_NETWORK_STATE",
+        "android.permission.ACCESS_NETWORK_STATE"
     )
-
-    private var permissionIndex = 0
 
     private lateinit var wifiManager: WifiP2pManager
     private lateinit var channel: Channel
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        hasPermissions()
+        requestPermissions()
 
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
         channel = wifiManager.initialize(this, mainLooper, null)
@@ -46,24 +46,19 @@ class MainActivity : AppCompatActivity() {
         addIntentFilters()
 
     }
-    private fun requestPermission() {
-        if (permissionIndex < permissions.size) {
-            val permission = permissions[permissionIndex]
+    private fun requestPermissions() {
+
+        val permissionsToRequest = mutableListOf<String>()
+        for (permission in permissions) {
             if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED)
             {
-                ActivityCompat.requestPermissions(this, arrayOf(permission) , REQUEST_CODE)
-            }
-            else {
-                permissionIndex++
-                requestPermission()
+                permissionsToRequest.add(permission)
             }
         }
-        return
-    }
+        if (permissionsToRequest.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray() , REQUEST_CODE)
+        }
 
-    fun hasPermissions() {
-        permissionIndex = 0
-        requestPermission()
     }
 
     override fun onRequestPermissionsResult(
