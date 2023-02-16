@@ -7,9 +7,9 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.net.wifi.p2p.WifiP2pManager.Channel
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import fi.mobilemesh.projectm.network.BroadcastManager
 
@@ -24,7 +24,9 @@ class MainActivity : AppCompatActivity() {
         "android.permission.CHANGE_WIFI_STATE",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.NEARBY_WIFI_DEVICES"
+        "android.permission.NEARBY_WIFI_DEVICES",
+        "android.permission.CHANGE_NETWORK_STATE",
+        "android.permission.ACCESS_NETWORK_STATE"
     )
 
     private lateinit var wifiManager: WifiP2pManager
@@ -41,6 +43,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        requestPermissions()
+
         //UI
         deviceList = findViewById(R.id.deviceList)
         receivingField = findViewById(R.id.receivingField)
@@ -51,16 +55,18 @@ class MainActivity : AppCompatActivity() {
         addIntentFilters()
 
     }
+    private fun requestPermissions() {
 
-    fun hasPermissions(permissions: Array<String>) {
-        for (permission in permissions)
-        {
+        val permissionsToRequest = mutableListOf<String>()
+        for (permission in permissions) {
             if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED)
             {
-                ActivityCompat.requestPermissions(this, arrayOf(permission), REQUEST_CODE)
+                permissionsToRequest.add(permission)
             }
         }
-        return
+        if (permissionsToRequest.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray() , REQUEST_CODE)
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -70,7 +76,18 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE) {
-
+            var allGranted = true
+            for (grantResult in grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false
+                    break
+                }
+            }
+            if (allGranted) {
+                return
+            } else {
+                finish()
+            }
         }
     }
 
