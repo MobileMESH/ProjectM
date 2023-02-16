@@ -10,10 +10,11 @@ import android.net.wifi.p2p.WifiP2pManager.*
 import android.widget.Button
 import fi.mobilemesh.projectm.MainActivity
 
-class BroadcastManager(wifiManager: WifiP2pManager, channel: Channel, activity: MainActivity): BroadcastReceiver() {
-    private val wifiManager = wifiManager
-    private val channel = channel
-    private val activity = activity
+class BroadcastManager(
+    private val wifiManager: WifiP2pManager,
+    private val channel: Channel,
+    private val activity: MainActivity
+): BroadcastReceiver() {
 
     private val peerList = mutableListOf<WifiP2pDevice>()
     private val peerListListener = PeerListListener { peers ->
@@ -21,17 +22,17 @@ class BroadcastManager(wifiManager: WifiP2pManager, channel: Channel, activity: 
         if (refreshedPeers != peerList) {
             peerList.clear()
             peerList.addAll(refreshedPeers)
-            refreshedPeers.forEach { createButton(it.deviceAddress) }
+            refreshedPeers.forEach { createButton(it) }
         }
     }
 
     // Temporary placement!!
-    private fun createButton(address: String) {
+    private fun createButton(device: WifiP2pDevice) {
         val btn = Button(activity)
-        btn.text = address
+        btn.text = device.deviceName
 
         btn.setOnClickListener {
-            connectToDevice(address)
+            connectToDevice(device.deviceAddress)
         }
 
         activity.deviceList.addView(btn)
@@ -40,8 +41,8 @@ class BroadcastManager(wifiManager: WifiP2pManager, channel: Channel, activity: 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
 
-        if (action == WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION) {
-            val state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1)
+        if (action == WIFI_P2P_STATE_CHANGED_ACTION) {
+            val state = intent.getIntExtra(EXTRA_WIFI_STATE, -1)
             if (state != WIFI_P2P_STATE_ENABLED) {
                 // Wi-Fi Direct is disabled, can't proceed
                 println("WiFi is disabled!")
