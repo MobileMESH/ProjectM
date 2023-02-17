@@ -3,21 +3,29 @@ package fi.mobilemesh.projectm.network
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.location.Address
-import android.net.NetworkInfo
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
 import android.widget.Button
 import fi.mobilemesh.projectm.MainActivity
+import fi.mobilemesh.projectm.utils.showNeutralAlert
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.ServerSocket
+import java.net.Socket
 
 class BroadcastManager(
     private val wifiManager: WifiP2pManager,
     private val channel: Channel,
     private val activity: MainActivity
 ): BroadcastReceiver() {
-    private var connected = false
+
+    private var socket: Socket? = null
+    private var targetAddress: InetAddress? = null
 
     private val peerList = mutableListOf<WifiP2pDevice>()
     private val peerListListener = PeerListListener { peers ->
@@ -30,11 +38,17 @@ class BroadcastManager(
     }
 
     private val connectionInfoListener = ConnectionInfoListener { conn ->
-        connected = conn.groupFormed
-        if (connected) {
+        if (conn.groupFormed) {
             activity.statusField.text = "Connection successful"
+            receiveText()
+            socket = Socket()
+            socket!!.bind(null)
+            targetAddress = conn.groupOwnerAddress
+
         } else {
             activity.statusField.text = "Connection failed: device declined connection?"
+            socket = null
+            targetAddress = null
         }
     }
 
@@ -102,5 +116,42 @@ class BroadcastManager(
             }
 
         })
+    }
+
+    private fun receiveText() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val serverSocket = ServerSocket()
+            val client = serverSocket.accept()
+            // Client has connected
+            val istream = client.getInputStream()
+
+            val sb = java.lang.StringBuilder()
+            var c = istream.read()
+            while ((c >= 0) && (c != 0x0a)) {
+                if (c != 0x0d) {
+                    sb.append(c.toChar())
+                }
+                c = istream.read()
+            }
+            istream.close()
+            val text = sb.toString()
+            activity.receivingField.text = text
+        }
+    }
+
+    fun sendText(text: String) {
+        if (socket == null) {
+            showNeutralAlert("No connection!", "You are not connected to any device.", activity)
+            return
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            socket!!.connect(InetSocketAddress(targetAddress, 8888), 5000)
+            val ostream = socket!!.getOutputStream()
+            ostream.write(text.toByteArray())
+            ostream.write(0x0a)
+            ostream.close()
+            socket!!.close()
+        }
     }
 }

@@ -9,9 +9,13 @@ import androidx.core.content.ContextCompat
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.wifi.p2p.WifiP2pManager.Channel
+import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import fi.mobilemesh.projectm.network.BroadcastManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
@@ -37,9 +41,10 @@ class MainActivity : AppCompatActivity() {
 
     // UI
     lateinit var deviceList: LinearLayout
-    lateinit var receivingField: TextView
     lateinit var statusField: TextView
-
+    lateinit var receivingField: TextView
+    lateinit var sendingField: EditText
+    lateinit var sendButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +53,10 @@ class MainActivity : AppCompatActivity() {
         requestPermissions()
 
         //UI
-        deviceList = findViewById(R.id.deviceList)
-        receivingField = findViewById(R.id.receivingField)
-        statusField = findViewById(R.id.statusField)
+        findUiElements()
+        mapButtons()
 
+        // Wifi
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
         channel = wifiManager.initialize(this, mainLooper, null)
         broadcastManager = BroadcastManager(wifiManager, channel, this)
@@ -102,6 +107,21 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(broadcastManager)
+    }
+
+    private fun findUiElements() {
+        deviceList = findViewById(R.id.deviceList)
+        statusField = findViewById(R.id.statusField)
+        sendingField = findViewById(R.id.sendingField)
+        receivingField = findViewById(R.id.receivingField)
+        sendButton = findViewById(R.id.sendTextButton)
+    }
+
+    private fun mapButtons() {
+        sendButton.setOnClickListener {
+            val text = sendingField.text.toString()
+            broadcastManager.sendText(text)
+        }
     }
 
     private fun addIntentFilters() {
