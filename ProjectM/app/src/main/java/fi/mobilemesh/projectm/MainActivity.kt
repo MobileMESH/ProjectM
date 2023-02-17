@@ -12,6 +12,7 @@ import android.net.wifi.p2p.WifiP2pManager.Channel
 import android.widget.LinearLayout
 import android.widget.TextView
 import fi.mobilemesh.projectm.network.BroadcastManager
+import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_CODE = 223312
     }
 
-    val permissions = arrayOf(
+    private val permissions = arrayOf(
         "android.permission.ACCESS_WIFI_STATE",
         "android.permission.CHANGE_WIFI_STATE",
         "android.permission.ACCESS_FINE_LOCATION",
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     // UI
     lateinit var deviceList: LinearLayout
     lateinit var receivingField: TextView
+    lateinit var statusField: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         //UI
         deviceList = findViewById(R.id.deviceList)
         receivingField = findViewById(R.id.receivingField)
+        statusField = findViewById(R.id.statusField)
 
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
         channel = wifiManager.initialize(this, mainLooper, null)
@@ -78,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE) {
             var allGranted = true
             for (grantResult in grantResults) {
-                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                if (grantResult != PERMISSION_GRANTED) {
                     allGranted = false
                     break
                 }
