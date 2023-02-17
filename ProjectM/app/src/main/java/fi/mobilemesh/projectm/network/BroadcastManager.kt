@@ -9,11 +9,23 @@ import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
 import android.widget.Button
 import fi.mobilemesh.projectm.MainActivity
+import fi.mobilemesh.projectm.utils.showNeutralAlert
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.ServerSocket
+import java.net.Socket
 
-class BroadcastManager(wifiManager: WifiP2pManager, channel: Channel, activity: MainActivity): BroadcastReceiver() {
-    private val wifiManager = wifiManager
-    private val channel = channel
-    private val activity = activity
+class BroadcastManager(
+    private val wifiManager: WifiP2pManager,
+    private val channel: Channel,
+    private val activity: MainActivity
+): BroadcastReceiver() {
+
+    private var socket: Socket? = null
+    private var targetAddress: InetAddress? = null
 
     private val peerList = mutableListOf<WifiP2pDevice>()
     private val peerListListener = PeerListListener { peers ->
@@ -21,17 +33,32 @@ class BroadcastManager(wifiManager: WifiP2pManager, channel: Channel, activity: 
         if (refreshedPeers != peerList) {
             peerList.clear()
             peerList.addAll(refreshedPeers)
-            refreshedPeers.forEach { createButton(it.deviceAddress) }
+            refreshedPeers.forEach { createButton(it) }
+        }
+    }
+
+    private val connectionInfoListener = ConnectionInfoListener { conn ->
+        if (conn.groupFormed) {
+            activity.statusField.text = "Connection successful"
+            receiveText()
+            socket = Socket()
+            socket!!.bind(null)
+            targetAddress = conn.groupOwnerAddress
+
+        } else {
+            activity.statusField.text = "Connection failed: device declined connection?"
+            socket = null
+            targetAddress = null
         }
     }
 
     // Temporary placement!!
-    private fun createButton(address: String) {
+    private fun createButton(device: WifiP2pDevice) {
         val btn = Button(activity)
-        btn.text = address
+        btn.text = device.deviceName
 
         btn.setOnClickListener {
-            connectToDevice(address)
+            connectToDevice(device.deviceAddress)
         }
 
         activity.deviceList.addView(btn)
@@ -40,19 +67,24 @@ class BroadcastManager(wifiManager: WifiP2pManager, channel: Channel, activity: 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
 
-        if (action == WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION) {
-            val state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1)
+        // Wifi P2P connectivity switched on/off
+        if (action == WIFI_P2P_STATE_CHANGED_ACTION) {
+            val state = intent.getIntExtra(EXTRA_WIFI_STATE, -1)
             if (state != WIFI_P2P_STATE_ENABLED) {
                 // Wi-Fi Direct is disabled, can't proceed
                 println("WiFi is disabled!")
                 return
             }
             discoverPeers()
-            // Continue...
         }
+        // Peer (nearby devices) list changed
         else if (action == WIFI_P2P_PEERS_CHANGED_ACTION) {
             wifiManager.requestPeers(channel, peerListListener)
             println("Requested peers")
+        }
+        // Connection status changed
+        else if (action == WIFI_P2P_CONNECTION_CHANGED_ACTION) {
+            wifiManager.requestConnectionInfo(channel, connectionInfoListener)
         }
     }
 
@@ -74,14 +106,52 @@ class BroadcastManager(wifiManager: WifiP2pManager, channel: Channel, activity: 
 
         wifiManager.connect(channel, config, object : ActionListener {
             override fun onSuccess() {
-                activity.receivingField.text = "Successfully connected to $address"
-                println("Successfully connected")
+                activity.statusField.text = "Started connection to $address"
+                println("Successfully started connection")
             }
 
             override fun onFailure(reason: Int) {
-                activity.receivingField.text = "Failed to connect! - code $reason"
+                activity.statusField.text = "Failed to connect! - code $reason"
                 println("Failed to connect - $reason")
             }
+
         })
+    }
+
+    private fun receiveText() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val serverSocket = ServerSocket()
+            val client = serverSocket.accept()
+            // Client has connected
+            val istream = client.getInputStream()
+
+            val sb = java.lang.StringBuilder()
+            var c = istream.read()
+            while ((c >= 0) && (c != 0x0a)) {
+                if (c != 0x0d) {
+                    sb.append(c.toChar())
+                }
+                c = istream.read()
+            }
+            istream.close()
+            val text = sb.toString()
+            activity.receivingField.text = text
+        }
+    }
+
+    fun sendText(text: String) {
+        if (socket == null) {
+            showNeutralAlert("No connection!", "You are not connected to any device.", activity)
+            return
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            socket!!.connect(InetSocketAddress(targetAddress, 8888), 5000)
+            val ostream = socket!!.getOutputStream()
+            ostream.write(text.toByteArray())
+            ostream.write(0x0a)
+            ostream.close()
+            socket!!.close()
+        }
     }
 }
