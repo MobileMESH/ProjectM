@@ -13,6 +13,7 @@ import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.ServerSocket
@@ -31,6 +32,7 @@ class BroadcastManager(
     private val peerListListener = PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
         if (refreshedPeers != peerList) {
+            activity.deviceList.removeAllViews()
             peerList.clear()
             peerList.addAll(refreshedPeers)
             refreshedPeers.forEach { createButton(it) }
@@ -120,7 +122,7 @@ class BroadcastManager(
 
     private fun receiveText() {
         CoroutineScope(Dispatchers.IO).launch {
-            val serverSocket = ServerSocket()
+            val serverSocket = ServerSocket(8888)
             val client = serverSocket.accept()
             // Client has connected
             val istream = client.getInputStream()
@@ -133,9 +135,13 @@ class BroadcastManager(
                 }
                 c = istream.read()
             }
+
             istream.close()
             val text = sb.toString()
-            activity.receivingField.text = text
+
+            withContext(Dispatchers.Main) {
+                activity.receivingField.text = text
+            }
         }
     }
 
