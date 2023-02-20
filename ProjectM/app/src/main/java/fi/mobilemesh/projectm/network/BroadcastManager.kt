@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.InetAddress
 import java.net.InetSocketAddress
+import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
 
@@ -24,33 +25,31 @@ class BroadcastManager(
     private val channel: Channel,
     private val activity: MainActivity
 ): BroadcastReceiver() {
+    private val PORT = 8888
+    private val TIMEOUT = 5000
 
-    private var socket: Socket? = null
+    private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
 
-    private val peerList = mutableListOf<WifiP2pDevice>()
     private val peerListListener = PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
-        if (refreshedPeers != peerList) {
-            activity.deviceList.removeAllViews()
-            peerList.clear()
-            peerList.addAll(refreshedPeers)
-            refreshedPeers.forEach { createButton(it) }
-        }
+        activity.deviceList.removeAllViews()
+        refreshedPeers.forEach { createButton(it) }
     }
 
     private val connectionInfoListener = ConnectionInfoListener { conn ->
-        if (conn.groupFormed) {
-            activity.statusField.text = "Connection successful"
-            receiveText()
-            socket = Socket()
-            socket!!.bind(null)
-            targetAddress = conn.groupOwnerAddress
-
-        } else {
+        if (!conn.groupFormed) {
             activity.statusField.text = "Connection failed: device declined connection?"
-            socket = null
             targetAddress = null
+            return@ConnectionInfoListener
+        }
+
+        activity.statusField.text = "Connection successful"
+        if (!conn.isGroupOwner) {
+            targetAddress = conn.groupOwnerAddress
+            sendLocalAddress()
+        } else {
+            receiveGuestAddress()
         }
     }
 
@@ -120,14 +119,34 @@ class BroadcastManager(
         })
     }
 
+    private fun receiveGuestAddress() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val client = serverSocket.accept()
+            targetAddress = client.inetAddress
+
+            receiveText()
+        }
+    }
+
+    private fun sendLocalAddress() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val socket = Socket()
+            socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
+            socket.close()
+
+            receiveText()
+        }
+    }
+
     private fun receiveText() {
         CoroutineScope(Dispatchers.IO).launch {
-            val serverSocket = ServerSocket(8888)
             val client = serverSocket.accept()
             // Client has connected
             val istream = client.getInputStream()
 
             val sb = java.lang.StringBuilder()
+
+            // Should be able to be replaced with readAll() in API 33 upwards
             var c = istream.read()
             while ((c >= 0) && (c != 0x0a)) {
                 if (c != 0x0d) {
@@ -137,27 +156,30 @@ class BroadcastManager(
             }
 
             istream.close()
+            client.close()
             val text = sb.toString()
 
             withContext(Dispatchers.Main) {
                 activity.receivingField.text = text
             }
+
+            receiveText()
         }
     }
 
     fun sendText(text: String) {
-        if (socket == null) {
+        if (targetAddress == null) {
             showNeutralAlert("No connection!", "You are not connected to any device.", activity)
             return
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            socket!!.connect(InetSocketAddress(targetAddress, 8888), 5000)
-            val ostream = socket!!.getOutputStream()
+            val socket = Socket()
+            socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
+            val ostream = socket.getOutputStream()
             ostream.write(text.toByteArray())
-            ostream.write(0x0a)
             ostream.close()
-            socket!!.close()
+            socket.close()
         }
     }
 }
