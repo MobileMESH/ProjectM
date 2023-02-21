@@ -16,17 +16,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.InetAddress
 import java.net.InetSocketAddress
-import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
+
+private const val PORT = 8888
+private const val TIMEOUT = 5000
 
 class BroadcastManager(
     private val wifiManager: WifiP2pManager,
     private val channel: Channel,
     private val activity: MainActivity
 ): BroadcastReceiver() {
-    private val PORT = 8888
-    private val TIMEOUT = 5000
+
+    //TODO: Move text field editing to separate class/back to MainActivity.kt
 
     private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
@@ -37,6 +39,7 @@ class BroadcastManager(
         refreshedPeers.forEach { createButton(it) }
     }
 
+    // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
     private val connectionInfoListener = ConnectionInfoListener { conn ->
         if (!conn.groupFormed) {
             activity.statusField.text = "Connection failed: device declined connection?"
@@ -47,13 +50,13 @@ class BroadcastManager(
         activity.statusField.text = "Connection successful"
         if (!conn.isGroupOwner) {
             targetAddress = conn.groupOwnerAddress
-            sendLocalAddress()
+            sendHandshake()
         } else {
-            receiveGuestAddress()
+            receiveHandshake()
         }
     }
 
-    // Temporary placement!!
+    // TODO: Move this somewhere more sensible
     private fun createButton(device: WifiP2pDevice) {
         val btn = Button(activity)
         btn.text = device.deviceName
@@ -66,37 +69,33 @@ class BroadcastManager(
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.action
-
-        // Wifi P2P connectivity switched on/off
-        if (action == WIFI_P2P_STATE_CHANGED_ACTION) {
-            val state = intent.getIntExtra(EXTRA_WIFI_STATE, -1)
-            if (state != WIFI_P2P_STATE_ENABLED) {
-                // Wi-Fi Direct is disabled, can't proceed
-                println("WiFi is disabled!")
-                return
+        when (intent.action) {
+            WIFI_P2P_STATE_CHANGED_ACTION -> {
+                val state = intent.getIntExtra(EXTRA_WIFI_STATE, -1)
+                if (state != WIFI_P2P_STATE_ENABLED) {
+                    return
+                }
+                discoverPeers()
             }
-            discoverPeers()
-        }
-        // Peer (nearby devices) list changed
-        else if (action == WIFI_P2P_PEERS_CHANGED_ACTION) {
-            wifiManager.requestPeers(channel, peerListListener)
-            println("Requested peers")
-        }
-        // Connection status changed
-        else if (action == WIFI_P2P_CONNECTION_CHANGED_ACTION) {
-            wifiManager.requestConnectionInfo(channel, connectionInfoListener)
+
+            WIFI_P2P_PEERS_CHANGED_ACTION -> {
+                wifiManager.requestPeers(channel, peerListListener)
+            }
+
+            WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
+                wifiManager.requestConnectionInfo(channel, connectionInfoListener)
+            }
         }
     }
 
     private fun discoverPeers() {
         wifiManager.discoverPeers(channel, object : ActionListener {
             override fun onSuccess() {
-                println("discoverPeers Success")
+                //TODO: Does not seem to need anything?
             }
 
             override fun onFailure(reason: Int) {
-                println("discoverPeers $reason")
+                //TODO: Display error
             }
         })
     }
@@ -115,20 +114,20 @@ class BroadcastManager(
                 activity.statusField.text = "Failed to connect! - code $reason"
                 println("Failed to connect - $reason")
             }
-
         })
     }
 
-    private fun receiveGuestAddress() {
+    private fun receiveHandshake() {
         CoroutineScope(Dispatchers.IO).launch {
             val client = serverSocket.accept()
             targetAddress = client.inetAddress
+            client.close()
 
             receiveText()
         }
     }
 
-    private fun sendLocalAddress() {
+    private fun sendHandshake() {
         CoroutineScope(Dispatchers.IO).launch {
             val socket = Socket()
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
