@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity() {
         sendButton.setOnClickListener {
             val text = sendingField.text.toString()
             broadcastManager.sendText(text)
+            sendingField.text.clear()
         }
     }
 
