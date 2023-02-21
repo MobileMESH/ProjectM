@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_CODE = 223312
     }
 
+
     private val permissions = arrayOf(
         "android.permission.ACCESS_WIFI_STATE",
         "android.permission.CHANGE_WIFI_STATE",
