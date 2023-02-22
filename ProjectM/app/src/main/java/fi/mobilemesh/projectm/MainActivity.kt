@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun mapButtons() {
         sendButton.setOnClickListener {
-            val text = sendingField.text.toString()
+            val text = sendingField.text.toString().trim()
             broadcastManager.sendText(text)
             sendingField.text.clear()
         }
