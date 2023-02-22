@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     // UI
     lateinit var deviceList: LinearLayout
     lateinit var statusField: TextView
-    lateinit var receivingField: TextView
+    lateinit var messageHistory: LinearLayout
     lateinit var sendingField: EditText
     lateinit var sendButton: Button
 
@@ -113,8 +113,8 @@ class MainActivity : AppCompatActivity() {
     private fun findUiElements() {
         deviceList = findViewById(R.id.deviceList)
         statusField = findViewById(R.id.statusField)
+        messageHistory = findViewById(R.id.messageHistory)
         sendingField = findViewById(R.id.sendingField)
-        receivingField = findViewById(R.id.receivingField)
         sendButton = findViewById(R.id.sendTextButton)
     }
 
