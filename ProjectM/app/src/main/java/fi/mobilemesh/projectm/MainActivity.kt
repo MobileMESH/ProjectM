@@ -7,16 +7,12 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.net.wifi.p2p.WifiP2pManager.Channel
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import fi.mobilemesh.projectm.network.BroadcastManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.chat_view)
 
         requestPermissions()
 
