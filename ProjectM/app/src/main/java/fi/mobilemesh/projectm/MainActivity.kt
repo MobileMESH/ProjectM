@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.mobilemesh.projectm.network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
@@ -37,11 +38,15 @@ class MainActivity : AppCompatActivity() {
     private val intentFilter = IntentFilter()
 
     // UI
+    // deviceList will be found on network view but I'm not sure if we need statusField?
+    // The message of having no connection could be shown in the receivingField, no need
+    // to show the connection in chat
     lateinit var deviceList: LinearLayout
     lateinit var statusField: TextView
-    lateinit var receivingField: TextView
+    lateinit var receivingField: LinearLayout
     lateinit var sendingField: EditText
     lateinit var sendButton: Button
+    lateinit var navigationBar: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,11 +112,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun findUiElements() {
-        deviceList = findViewById(R.id.deviceList)
-        statusField = findViewById(R.id.statusField)
+        // deviceList = findViewById(R.id.deviceList)
+        // statusField = findViewById(R.id.statusField)
         sendingField = findViewById(R.id.sendingField)
         receivingField = findViewById(R.id.receivingField)
         sendButton = findViewById(R.id.sendTextButton)
+        navigationBar = findViewById(R.id.navigationBar)
     }
 
     private fun mapButtons() {
@@ -119,6 +125,28 @@ class MainActivity : AppCompatActivity() {
             val text = sendingField.text.toString()
             broadcastManager.sendText(text)
             sendingField.text.clear()
+        }
+    }
+
+    // Not sure if this is how it's done but something like this was shown in the
+    // material design guide for the nav bar
+    private fun listenNavigation() {
+        navigationBar.setOnItemSelectedListener{ item ->
+            when(item.itemId) {
+                R.id.item_1 -> {
+                    // Change screen to settings
+                    true
+                }
+                R.id.item_2 -> {
+                    // Change screen to chat
+                    true
+                }
+                R.id.item_3 -> {
+                    // Change screen to networks
+                    true
+                }
+                else -> false
+            }
         }
     }
 
