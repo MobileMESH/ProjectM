@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="2dp"
+        tools:layout_editor_absoluteY="2dp">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!--The navigation will come here-->
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottom_navigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!-- Can probably be left out if no time-->
+            <TextView
+                android:id="@+id/previousView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Previously used"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:textSize="16sp"
+                android:visibility="visible" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/availableView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Available"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <!--<com.google.android.material.card.MaterialCardView
+
+            android:clickable="true"
+            android:focusable="true"
+            android:textSize="16sp"
+            android:text="Network x">
+
+
+            </com.google.android.material.card.MaterialCardView
+            -->
+        </TableRow>
+
+        <TableRow>
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="Create a network" />
+        </TableRow>
+
+
+    </TableLayout>
+</LinearLayout>
