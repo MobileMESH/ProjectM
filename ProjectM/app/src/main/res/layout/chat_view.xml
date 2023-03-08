@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#242325"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigationBar"
+        android:layout_width="409dp"
+        android:layout_height="71dp"
+        android:layout_marginBottom="747dp"
+        android:background="#36323F"
+        android:clickable="true"
+        android:focusable="true"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/sendingField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:menu="@menu/bottom_navigation_menu"
+        tools:ignore="MissingConstraints">
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+    <EditText
+        android:id="@+id/sendingField"
+        android:layout_width="413dp"
+        android:layout_height="84dp"
+        android:layout_weight="1"
+        android:background="#36323F"
+        android:ems="10"
+        android:hint="    Enter your message..."
+        android:inputType="textPersonName"
+        android:paddingStart="8sp"
+        android:paddingEnd="8sp"
+        android:textColorHint="#938F99"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/sendButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:foregroundTint="#917D7D"
+        android:tint="#EADDDD"
+        app:backgroundTint="#756B80"
+        app:backgroundTintMode="src_over"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:srcCompat="@drawable/arrow_forward_icon"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="339dp" />
+
+    <TextView
+        android:id="@+id/networkName"
+        android:layout_width="410dp"
+        android:layout_height="68dp"
+        android:layout_marginTop="71dp"
+        android:background="#49454F"
+        android:clickable="true"
+        android:gravity="center"
+        android:text="Network name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="409dp"
+        android:layout_height="621dp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="140dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
