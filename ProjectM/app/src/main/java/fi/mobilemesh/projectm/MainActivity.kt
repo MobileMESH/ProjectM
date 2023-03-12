@@ -115,8 +115,8 @@ class MainActivity : AppCompatActivity() {
     private fun findUiElements() {
         // deviceList = findViewById(R.id.deviceList)
         // statusField = findViewById(R.id.statusField)
-        sendingField = findViewById(R.id.sendingField)
         receivingField = findViewById(R.id.receivingField)
+        sendingField = findViewById(R.id.sendingField)
         sendButton = findViewById(R.id.sendTextButton)
         navigationBar = findViewById(R.id.navigationBar)
         networkDetails= findViewById(R.id.networkDetails)
@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun mapButtons() {
         sendButton.setOnClickListener {
-            val text = sendingField.text.toString()
+            val text = sendingField.text.toString().trim()
             broadcastManager.sendText(text)
             sendingField.text.clear()
         }
