@@ -38,14 +38,15 @@ class MainActivity : AppCompatActivity() {
     private val intentFilter = IntentFilter()
 
     // UI
-    // deviceList will be found on network view but I'm not sure if we need statusField?
-    // The message of having no connection could be shown in the receivingField, no need
-    // to show the connection in chat
+    //
+    // The deviceList will be found on network view but I'm not sure if we need statusField?
+    // The message of having no connection could be shown in the receivingField instead!
     lateinit var deviceList: LinearLayout
     lateinit var statusField: TextView
     lateinit var receivingField: LinearLayout
     lateinit var sendingField: EditText
     lateinit var sendButton: Button
+    lateinit var networkDetails: TextView
     lateinit var navigationBar: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,6 +119,7 @@ class MainActivity : AppCompatActivity() {
         receivingField = findViewById(R.id.receivingField)
         sendButton = findViewById(R.id.sendTextButton)
         navigationBar = findViewById(R.id.navigationBar)
+        networkDetails= findViewById(R.id.networkDetails)
     }
 
     private fun mapButtons() {
