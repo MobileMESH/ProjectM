@@ -1,29 +1,31 @@
 package fi.mobilemesh.projectm.network
 
-import android.app.ActionBar.LayoutParams
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
-import android.text.Layout
 import android.view.Gravity
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import fi.mobilemesh.projectm.MainActivity
+import fi.mobilemesh.projectm.objects.Message
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.ServerSocket
 import java.net.Socket
+import java.util.*
 
 private const val PORT = 8888
 private const val TIMEOUT = 5000
@@ -34,7 +36,7 @@ class BroadcastManager(
     private val activity: MainActivity
 ): BroadcastReceiver() {
 
-    //TODO: Move text field editing to separate class/back to MainActivity.kt
+    // TODO: (General) Move text field editing to separate class/back to MainActivity.kt
 
     private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
@@ -135,25 +137,16 @@ class BroadcastManager(
         CoroutineScope(Dispatchers.IO).launch {
             val client = serverSocket.accept()
             // Client has connected
-            val istream = client.getInputStream()
+            // (Buffered) input stream from client
+            val istream = ObjectInputStream(BufferedInputStream(client.getInputStream()))
 
-            val sb = java.lang.StringBuilder()
-
-            // Should be able to be replaced with readAll() in API 33 upwards
-            var c = istream.read()
-            while ((c >= 0) && (c != 0x0a)) {
-                if (c != 0x0d) {
-                    sb.append(c.toChar())
-                }
-                c = istream.read()
-            }
+            val message: Message = istream.readObject() as Message
 
             istream.close()
             client.close()
-            val text = sb.toString()
 
             withContext(Dispatchers.Main) {
-                createMessage(text, Gravity.START)
+                createMessage(message, Gravity.START)
             }
 
             receiveText()
@@ -174,24 +167,29 @@ class BroadcastManager(
             return
         }
 
+        val time = Date(System.currentTimeMillis())
+        val message = Message("SENDER", time, text)
+
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
-                createMessage(text, Gravity.END)
+                createMessage(message, Gravity.END)
             }
 
             val socket = Socket()
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
-            val ostream = socket.getOutputStream()
-            ostream.write(text.toByteArray())
+            val ostream = ObjectOutputStream(BufferedOutputStream(socket.getOutputStream()))
+
+            ostream.writeObject(message)
+
             ostream.close()
             socket.close()
         }
     }
 
-    private fun createMessage(text: String, alignment: Int) {
+    private fun createMessage(message: Message, alignment: Int) {
         val btn = Button(activity)
         btn.isClickable = false
-        btn.text = text
+        btn.text = "[${message.timestamp}] [${message.sender}] ${message.body}"
 
         btn.maxWidth = (activity.messageHistory.width * 0.67).toInt()
 
