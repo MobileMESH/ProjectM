@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var statusField: TextView
     lateinit var receivingField: LinearLayout
     lateinit var sendingField: EditText
-    lateinit var sendButton: Button
+    lateinit var sendButton: FloatingActionButton
     lateinit var networkDetails: TextView
     lateinit var navigationBar: BottomNavigationView
 
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         //UI
         findUiElements()
-        mapButtons()
+        //mapButtons()
 
         // Wifi
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
@@ -119,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         sendingField = findViewById(R.id.sendingField)
         sendButton = findViewById(R.id.sendTextButton)
         navigationBar = findViewById(R.id.navigationBar)
-        networkDetails= findViewById(R.id.networkDetails)
+        networkDetails = findViewById(R.id.networkDetails)
     }
 
     private fun mapButtons() {
