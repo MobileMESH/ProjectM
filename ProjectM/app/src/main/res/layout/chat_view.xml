@@ -73,6 +73,7 @@
             android:inputType="textPersonName"
             android:paddingStart="8sp"
             android:paddingEnd="8sp"
+            android:textColor="#FFFFFF"
             android:textColorHint="#948da5"
             android:textSize="16sp"
             app:layout_constrainedWidth="true" />
