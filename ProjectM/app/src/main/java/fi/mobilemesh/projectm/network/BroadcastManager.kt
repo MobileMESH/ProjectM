@@ -11,7 +11,6 @@ import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
 import fi.mobilemesh.projectm.MainActivity
-import fi.mobilemesh.projectm.database.ChatGroupMessages
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.CoroutineScope
@@ -155,10 +154,10 @@ class BroadcastManager(
     }
 
     fun sendText(text: String) {
-        /*if (targetAddress == null) {
+        if (targetAddress == null) {
             showNeutralAlert("No connection!", "You are not connected to any device.", activity)
             return
-        }*/
+        }
 
         // TODO: Should not be able to send empty message
         if (text == "") {
