@@ -11,7 +11,8 @@ import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
 import fi.mobilemesh.projectm.MainActivity
-import fi.mobilemesh.projectm.objects.Message
+import fi.mobilemesh.projectm.database.ChatGroupMessages
+import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -154,10 +155,10 @@ class BroadcastManager(
     }
 
     fun sendText(text: String) {
-        if (targetAddress == null) {
+        /*if (targetAddress == null) {
             showNeutralAlert("No connection!", "You are not connected to any device.", activity)
             return
-        }
+        }*/
 
         // TODO: Should not be able to send empty message
         if (text == "") {
@@ -168,7 +169,10 @@ class BroadcastManager(
         }
 
         val time = Date(System.currentTimeMillis())
-        val message = Message("SENDER", time, text)
+        // TODO: Get sender name from Device object (probably?)
+        // TODO: Get chat group id
+        // TODO: Get unique message id within chat group (should be in rising order)
+        val message = Message(0, 0, "SENDER", time, text)
 
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
