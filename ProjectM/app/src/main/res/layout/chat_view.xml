@@ -25,41 +25,6 @@
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 
-    <EditText
-        android:id="@+id/sendingField"
-        android:layout_width="match_parent"
-        android:layout_height="85dp"
-        android:layout_weight="1"
-        android:autoText="false"
-        android:background="#36323F"
-        android:ems="10"
-        android:hint="    Enter your message..."
-        android:inputType="textPersonName"
-        android:paddingStart="8sp"
-        android:paddingEnd="8sp"
-        android:textColorHint="#C5C1CA"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/sendTextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:tint="#EADDDD"
-        app:backgroundTint="#756B80"
-        app:backgroundTintMode="src_over"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/arrow_forward_icon"
-        app:tint="@null"
-        tools:ignore="MissingConstraints,SpeakableTextPresentCheck" />
-
     <TextView
         android:id="@+id/networkDetails"
         android:layout_width="match_parent"
@@ -83,12 +48,58 @@
         app:tint="@null" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="91dp"
+        android:background="#36323F"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/sendingField"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+
+            android:layout_gravity="center"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:autofillHints="message"
+            android:background="@drawable/rounded_corners"
+            android:ems="10"
+            android:hint="Enter message..."
+            android:inputType="textPersonName"
+            android:paddingStart="8sp"
+            android:paddingEnd="8sp"
+            android:textColorHint="#948da5"
+            android:textSize="16sp"
+            app:layout_constrainedWidth="true" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/sendTextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="15dp"
+            android:clickable="true"
+            android:tint="#EADDDD"
+            app:backgroundTint="#756B80"
+            app:backgroundTintMode="src_over"
+            app:srcCompat="@drawable/arrow_forward_icon"
+            app:tint="@null"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/receivingField"
         android:layout_width="match_parent"
-        android:layout_height="621dp"
+        android:layout_height="0dp"
         android:layout_marginTop="1dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/networkDetails" />
