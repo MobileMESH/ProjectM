@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#242325"
+    android:background="@color/background"
+    android:backgroundTint="@color/background"
     tools:context=".MainActivity">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -12,11 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="71dp"
         android:layout_marginEnd="2dp"
-        android:background="#36323F"
+        android:background="@color/main_bars_green"
         android:clickable="true"
         android:focusable="true"
         app:itemIconTint="@color/white"
-        app:itemTextColor="#FFFFFF"
+        app:itemTextColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -31,9 +32,8 @@
         android:layout_height="68dp"
         android:layout_marginTop="71dp"
         android:layout_marginEnd="1dp"
-        android:background="#49454F"
+        android:background="@color/secondary_bars_green"
         android:clickable="true"
-        app:drawableEndCompat="@drawable/arrow_forward_icon"
         android:enabled="false"
         android:gravity="center"
         android:text="Network name"
@@ -41,7 +41,8 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:drawableTint="#FFFFFF"
+        app:drawableEndCompat="@drawable/arrow_forward_icon"
+        app:drawableTint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -51,7 +52,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="91dp"
-        android:background="#36323F"
+        android:background="@color/tertiary_bars"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -73,8 +74,8 @@
             android:inputType="textPersonName"
             android:paddingStart="8sp"
             android:paddingEnd="8sp"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#948da5"
+            android:textColor="@color/white"
+            android:textColorHint="#808080"
             android:textSize="16sp"
             app:layout_constrainedWidth="true" />
 
@@ -87,8 +88,9 @@
             android:layout_marginEnd="15dp"
             android:clickable="true"
             android:tint="#EADDDD"
-            app:backgroundTint="#756B80"
+            app:backgroundTint="@color/pop_ups"
             app:backgroundTintMode="src_over"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
             app:srcCompat="@drawable/arrow_forward_icon"
             app:tint="@null"
             tools:ignore="SpeakableTextPresentCheck" />
@@ -98,12 +100,11 @@
         android:id="@+id/receivingField"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="1dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/networkDetails" />
+        app:layout_constraintTop_toBottomOf="@+id/networkDetails"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

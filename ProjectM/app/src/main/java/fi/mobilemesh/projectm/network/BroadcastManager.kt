@@ -153,7 +153,7 @@ class BroadcastManager(
             val text = sb.toString()
 
             withContext(Dispatchers.Main) {
-                createMessage(text, Gravity.START)
+                createMessage(text, Gravity.START, Color.parseColor("#262626"), Color.WHITE)
             }
 
             receiveText()
@@ -176,7 +176,7 @@ class BroadcastManager(
 
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
-                createMessage(text, Gravity.END)
+                createMessage(text, Gravity.END, Color.parseColor("#017f61"), Color.BLACK)
             }
 
             val socket = Socket()
@@ -188,7 +188,7 @@ class BroadcastManager(
         }
     }
 
-    private fun createMessage(text: String, alignment: Int) {
+    private fun createMessage(text: String, alignment: Int, messageColor: Int, textColor: Int) {
         val btn = Button(activity)
         btn.isClickable = false
         btn.text = text
@@ -205,6 +205,8 @@ class BroadcastManager(
         // Text alignment
         btn.gravity = Gravity.START
         btn.isAllCaps = false
+        btn.setBackgroundColor(messageColor)
+        btn.setTextColor(textColor)
 
         activity.receivingField.addView(btn)
     }

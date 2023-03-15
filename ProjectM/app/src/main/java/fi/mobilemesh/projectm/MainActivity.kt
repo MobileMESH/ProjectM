@@ -42,8 +42,8 @@ class MainActivity : AppCompatActivity() {
     //
     // The deviceList will be found on network view but I'm not sure if we need statusField?
     // The message of having no connection could be shown in the receivingField instead!
-    lateinit var deviceList: LinearLayout
-    lateinit var statusField: TextView
+    //lateinit var deviceList: LinearLayout
+    //lateinit var statusField: TextView
     lateinit var receivingField: LinearLayout
     lateinit var sendingField: EditText
     lateinit var sendButton: FloatingActionButton
