@@ -9,7 +9,9 @@ import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.database.entities.DateConverter
 import fi.mobilemesh.projectm.database.entities.Message
 
-// Credit to Phillip Lackner
+/**
+ * Database object for messages and chat groups. Credit to Phillip Lackner
+ */
 @Database(
     entities = [
         Message::class,
@@ -31,7 +33,7 @@ abstract class MessageDatabase : RoomDatabase() {
                 return INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     MessageDatabase::class.java,
-                    "message_db"
+                    "MessageDatabase"
                 ).build().also {
                     INSTANCE = it
                 }
