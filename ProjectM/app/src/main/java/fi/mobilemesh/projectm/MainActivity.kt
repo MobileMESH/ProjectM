@@ -13,8 +13,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import fi.mobilemesh.projectm.database.MessageDatabase
+import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.network.BroadcastManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.w3c.dom.Text
 
@@ -62,6 +66,14 @@ class MainActivity : AppCompatActivity() {
         channel = wifiManager.initialize(this, mainLooper, null)
         broadcastManager = BroadcastManager(wifiManager, channel, this)
         addIntentFilters()
+
+        // Message database (Data Access Object)
+        val dao = MessageDatabase.getInstance(this).dao
+        CoroutineScope(Dispatchers.Main).launch {
+            // TODO: Placeholder chat group for tests. Should be replaced when chat groups are
+            //  implemented
+            dao.insertChatGroup(ChatGroup(0))
+        }
 
     }
     private fun requestPermissions() {

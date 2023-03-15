@@ -11,6 +11,7 @@ import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
 import fi.mobilemesh.projectm.MainActivity
+import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.CoroutineScope
@@ -34,9 +35,13 @@ class BroadcastManager(
     private val wifiManager: WifiP2pManager,
     private val channel: Channel,
     private val activity: MainActivity
+
 ): BroadcastReceiver() {
 
+
     // TODO: (General) Move text field editing to separate class/back to MainActivity.kt
+
+    private val dao = MessageDatabase.getInstance(activity).dao
 
     private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
@@ -61,6 +66,13 @@ class BroadcastManager(
             sendHandshake()
         } else {
             receiveHandshake()
+        }
+    }
+
+    init {
+        CoroutineScope(Dispatchers.Main).launch {
+            val messages = dao.getChatGroupMessages(0)
+            messages.forEach { createMessage(it) }
         }
     }
 
@@ -146,8 +158,10 @@ class BroadcastManager(
             client.close()
 
             withContext(Dispatchers.Main) {
-                createMessage(message, Gravity.START)
+                createMessage(message)
             }
+
+            dao.insertMessage(message)
 
             receiveText()
         }
@@ -167,16 +181,15 @@ class BroadcastManager(
             return
         }
 
-        val time = Date(System.currentTimeMillis())
-        // TODO: Get sender name from Device object (probably?)
-        // TODO: Get chat group id
-        // TODO: Get unique message id within chat group (should be in rising order)
-        val message = Message(0, 0, "SENDER", time, text)
-
         CoroutineScope(Dispatchers.IO).launch {
-            withContext(Dispatchers.Main) {
-                createMessage(message, Gravity.END)
-            }
+
+            val time = Date(System.currentTimeMillis())
+            // TODO: Set chat group id properly. Current is a placeholder
+            val id = dao.getNextMessageId(0)
+            // TODO: Get sender name from Device object (probably?)
+            // TODO: Get chat group id
+            // TODO: Get unique message id within chat group (should be in rising order)
+            val message = Message(id, 0, "SENDER", time, text)
 
             val socket = Socket()
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
@@ -186,11 +199,21 @@ class BroadcastManager(
 
             ostream.close()
             socket.close()
+
+            message.isOwnMessage = true
+
+            withContext(Dispatchers.Main) {
+                createMessage(message)
+            }
+
+            dao.insertMessage(message)
         }
     }
 
-    private fun createMessage(message: Message, alignment: Int) {
+    private fun createMessage(message: Message) {
         val btn = Button(activity)
+        val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
+
         btn.isClickable = false
         btn.text = "[${message.timestamp}] [${message.sender}] ${message.body}"
 
