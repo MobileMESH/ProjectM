@@ -8,7 +8,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
 import android.net.wifi.p2p.WifiP2pManager.Channel
-import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -18,6 +17,46 @@ import fi.mobilemesh.projectm.network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
 
+    // IF A NEW PROJECT IS CREATED WITH THE BOTTOM NAVIGATION VIEW ALREADY IN IT, THIS IS WHAT
+    // THE MAINACTIVITY FILE HAS. I BET THIS COULD BE USED AS IT IS AFTER EVERYTHING CURRENTLY
+    // IN THE FILE IS TRANSFERRED TO THEIR OWN FILES!
+    //
+    // -------------------------------
+    //
+    //
+    //import android.os.Bundle
+    //import com.google.android.material.bottomnavigation.BottomNavigationView
+    //import androidx.appcompat.app.AppCompatActivity
+    //import androidx.navigation.findNavController
+    //import androidx.navigation.ui.AppBarConfiguration
+    //import androidx.navigation.ui.setupActionBarWithNavController
+    //import androidx.navigation.ui.setupWithNavController
+    //import com.example.testproject.databinding.ActivityMainBinding
+    //
+    //class MainActivity : AppCompatActivity() {
+    //
+    //    private lateinit var binding: ActivityMainBinding
+    //
+    //    override fun onCreate(savedInstanceState: Bundle?) {
+    //        super.onCreate(savedInstanceState)
+    //
+    //        binding = ActivityMainBinding.inflate(layoutInflater)
+    //        setContentView(binding.root)
+    //
+    //        val navView: BottomNavigationView = binding.navView
+    //
+    //        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+    //        // Passing each menu ID as a set of Ids because each
+    //        // menu should be considered as top level destinations.
+    //        val appBarConfiguration = AppBarConfiguration(
+    //            setOf(
+    //                R.id.settings R.id.chat, R.id.networks
+    //            )
+    //        )
+    //        setupActionBarWithNavController(navController, appBarConfiguration)
+    //        navView.setupWithNavController(navController)
+    //    }
+    //}
     companion object {
         private const val REQUEST_CODE = 223312
     }
@@ -52,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.chat_view)
+        setContentView(R.layout.activity_main)
 
         requestPermissions()
 
@@ -136,17 +175,16 @@ class MainActivity : AppCompatActivity() {
     private fun listenNavigation() {
         navigationBar.setOnItemSelectedListener{ item ->
             when(item.itemId) {
-                R.id.item_1 -> {
+                R.id.settings -> {
                     // Change screen to settings
                     true
                 }
-                R.id.item_2 -> {
+                R.id.chat -> {
                     // Change screen to chat
                     true
                 }
-                R.id.item_3 -> {
+                R.id.networks-> {
                     // Change screen to networks
-                    setContentView(R.layout.networks)
                     true
                 }
                 else -> false

@@ -6,28 +6,13 @@
     android:layout_height="match_parent"
     android:gravity="right"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".Networks">
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="2dp"
         tools:layout_editor_absoluteY="2dp">
-
-        <!--This component is top navigation in our app. Connections to other tabs go here.-->
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/navigationBar"
-            android:layout_width="wrap_content"
-            android:layout_height="71dp"
-            android:background="#36323F"
-            android:clickable="true"
-            android:focusable="true"
-            app:itemIconTint="@color/white"
-            app:itemTextColor="#FFFFFF"
-            app:menu="@menu/bottom_navigation_menu"
-            tools:ignore="MissingConstraints"></com.google.android.material.bottomnavigation.BottomNavigationView>
-
 
         <TableRow
             android:layout_width="match_parent"
