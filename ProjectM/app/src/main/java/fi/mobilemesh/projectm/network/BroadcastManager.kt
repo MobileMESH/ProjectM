@@ -1,13 +1,19 @@
 package fi.mobilemesh.projectm.network
 
+import android.app.ActionBar.LayoutParams
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
+import android.text.Layout
+import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import fi.mobilemesh.projectm.MainActivity
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.CoroutineScope
@@ -35,37 +41,25 @@ class BroadcastManager(
 
     private val peerListListener = PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
-        activity.deviceList.removeAllViews()
-        refreshedPeers.forEach { createButton(it) }
-    }
+    //    activity.deviceList.removeAllViews()
+        refreshedPeers.forEach { createDeviceButton(it) }
+     }
 
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
     private val connectionInfoListener = ConnectionInfoListener { conn ->
         if (!conn.groupFormed) {
-            activity.statusField.text = "Connection failed: device declined connection?"
+            //activity.statusField.text = "Connection failed: device declined connection?"
             targetAddress = null
             return@ConnectionInfoListener
         }
 
-        activity.statusField.text = "Connection successful"
+     //   activity.statusField.text = "Connection successful"
         if (!conn.isGroupOwner) {
             targetAddress = conn.groupOwnerAddress
             sendHandshake()
         } else {
-            receiveHandshake()
+           receiveHandshake()
         }
-    }
-
-    // TODO: Move this somewhere more sensible
-    private fun createButton(device: WifiP2pDevice) {
-        val btn = Button(activity)
-        btn.text = device.deviceName
-
-        btn.setOnClickListener {
-            connectToDevice(device.deviceAddress)
-        }
-
-        activity.deviceList.addView(btn)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -78,7 +72,7 @@ class BroadcastManager(
                 discoverPeers()
             }
 
-            WIFI_P2P_PEERS_CHANGED_ACTION -> {
+              WIFI_P2P_PEERS_CHANGED_ACTION -> {
                 wifiManager.requestPeers(channel, peerListListener)
             }
 
@@ -106,12 +100,12 @@ class BroadcastManager(
 
         wifiManager.connect(channel, config, object : ActionListener {
             override fun onSuccess() {
-                activity.statusField.text = "Started connection to $address"
+            // activity.statusField.text = "Started connection to $address"
                 println("Successfully started connection")
             }
 
             override fun onFailure(reason: Int) {
-                activity.statusField.text = "Failed to connect! - code $reason"
+                //activity.statusField.text = "Failed to connect! - code $reason"
                 println("Failed to connect - $reason")
             }
         })
@@ -159,7 +153,7 @@ class BroadcastManager(
             val text = sb.toString()
 
             withContext(Dispatchers.Main) {
-                activity.receivingField.text = text
+                createMessage(text, Gravity.START, Color.parseColor("#262626"), Color.WHITE)
             }
 
             receiveText()
@@ -172,7 +166,19 @@ class BroadcastManager(
             return
         }
 
+        // TODO: Should not be able to send empty message
+        if (text == "") {
+            showNeutralAlert("Empty message",
+                "Can not send empty message (this is a placeholder)",
+                activity)
+            return
+        }
+
         CoroutineScope(Dispatchers.IO).launch {
+            withContext(Dispatchers.Main) {
+                createMessage(text, Gravity.END, Color.parseColor("#017f61"), Color.BLACK)
+            }
+
             val socket = Socket()
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
             val ostream = socket.getOutputStream()
@@ -180,5 +186,40 @@ class BroadcastManager(
             ostream.close()
             socket.close()
         }
+    }
+
+    private fun createMessage(text: String, alignment: Int, messageColor: Int, textColor: Int) {
+        val btn = Button(activity)
+        btn.isClickable = false
+        btn.text = text
+
+        btn.maxWidth = (activity.receivingField.width * 0.67).toInt()
+
+        btn.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, // Width
+            LinearLayout.LayoutParams.WRAP_CONTENT  // Height
+        ).apply {
+            gravity = alignment
+        }
+
+        // Text alignment
+        btn.gravity = Gravity.START
+        btn.isAllCaps = false
+        btn.setBackgroundColor(messageColor)
+        btn.setTextColor(textColor)
+
+        activity.receivingField.addView(btn)
+    }
+
+    // TODO: Move this somewhere more sensible
+    private fun createDeviceButton(device: WifiP2pDevice) {
+        val btn = Button(activity)
+        btn.text = device.deviceName
+
+        btn.setOnClickListener {
+            connectToDevice(device.deviceAddress)
+        }
+
+       //activity.deviceList.addView(btn)
     }
 }
