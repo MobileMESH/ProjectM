@@ -146,6 +146,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.item_3 -> {
                     // Change screen to networks
+                    setContentView(R.layout.networks)
                     true
                 }
                 else -> false

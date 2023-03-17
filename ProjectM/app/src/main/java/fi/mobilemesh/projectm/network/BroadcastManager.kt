@@ -39,28 +39,28 @@ class BroadcastManager(
     private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
 
-   // private val peerListListener = PeerListListener { peers ->
-    //    val refreshedPeers = peers.deviceList
+    private val peerListListener = PeerListListener { peers ->
+        val refreshedPeers = peers.deviceList
     //    activity.deviceList.removeAllViews()
-    //    refreshedPeers.forEach { createDeviceButton(it) }
-  //  }
+        refreshedPeers.forEach { createDeviceButton(it) }
+     }
 
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
-    //private val connectionInfoListener = ConnectionInfoListener { conn ->
-    //    if (!conn.groupFormed) {
-     //       activity.statusField.text = "Connection failed: device declined connection?"
-     //       targetAddress = null
-     //       return@ConnectionInfoListener
-     //   }
+    private val connectionInfoListener = ConnectionInfoListener { conn ->
+        if (!conn.groupFormed) {
+            //activity.statusField.text = "Connection failed: device declined connection?"
+            targetAddress = null
+            return@ConnectionInfoListener
+        }
 
      //   activity.statusField.text = "Connection successful"
-    //    if (!conn.isGroupOwner) {
-    //        targetAddress = conn.groupOwnerAddress
-     //       sendHandshake()
-     //   } else {
-     //       receiveHandshake()
-     //   }
-    //}
+        if (!conn.isGroupOwner) {
+            targetAddress = conn.groupOwnerAddress
+            sendHandshake()
+        } else {
+           receiveHandshake()
+        }
+    }
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
@@ -72,13 +72,13 @@ class BroadcastManager(
                 discoverPeers()
             }
 
-         //   WIFI_P2P_PEERS_CHANGED_ACTION -> {
-         //       wifiManager.requestPeers(channel, peerListListener)
-          //  }
+              WIFI_P2P_PEERS_CHANGED_ACTION -> {
+                wifiManager.requestPeers(channel, peerListListener)
+            }
 
-       //     WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
-        //        wifiManager.requestConnectionInfo(channel, connectionInfoListener)
-       //     }
+            WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
+                wifiManager.requestConnectionInfo(channel, connectionInfoListener)
+            }
         }
     }
 
@@ -94,22 +94,22 @@ class BroadcastManager(
         })
     }
 
-    //private fun connectToDevice(address: String) {
-    //    val config = WifiP2pConfig()
-   //     config.deviceAddress = address
+    private fun connectToDevice(address: String) {
+        val config = WifiP2pConfig()
+        config.deviceAddress = address
 
-    ///    wifiManager.connect(channel, config, object : ActionListener {
-     //       override fun onSuccess() {
-      //          activity.statusField.text = "Started connection to $address"
-      //          println("Successfully started connection")
-      //      }
+        wifiManager.connect(channel, config, object : ActionListener {
+            override fun onSuccess() {
+            // activity.statusField.text = "Started connection to $address"
+                println("Successfully started connection")
+            }
 
-      //      override fun onFailure(reason: Int) {
-      //          activity.statusField.text = "Failed to connect! - code $reason"
-       //         println("Failed to connect - $reason")
-        //    }
-      //  })
-   // }
+            override fun onFailure(reason: Int) {
+                //activity.statusField.text = "Failed to connect! - code $reason"
+                println("Failed to connect - $reason")
+            }
+        })
+    }
 
     private fun receiveHandshake() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -212,14 +212,14 @@ class BroadcastManager(
     }
 
     // TODO: Move this somewhere more sensible
-   // private fun createDeviceButton(device: WifiP2pDevice) {
-    //    val btn = Button(activity)
-     //   btn.text = device.deviceName
+    private fun createDeviceButton(device: WifiP2pDevice) {
+        val btn = Button(activity)
+        btn.text = device.deviceName
 
-     //   btn.setOnClickListener {
-      //      connectToDevice(device.deviceAddress)
-      //  }
+        btn.setOnClickListener {
+            connectToDevice(device.deviceAddress)
+        }
 
-    //    activity.deviceList.addView(btn)
-  //  }
+       //activity.deviceList.addView(btn)
+    }
 }
