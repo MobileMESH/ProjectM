@@ -232,6 +232,6 @@ class BroadcastManager(
             connectToDevice(device.deviceAddress)
         }
 
-       //activity.deviceList.addView(btn)
+       activity.deviceList.addView(btn)
     }
 }

@@ -11,6 +11,7 @@ import android.net.wifi.p2p.WifiP2pManager.Channel
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
@@ -41,9 +42,13 @@ class MainActivity : AppCompatActivity() {
     private val intentFilter = IntentFilter()
 
     // UI
-    lateinit var deviceList: LinearLayout
+
+    // Networks
     lateinit var deviceCard: CardView
-    lateinit var statusField: TextView
+    lateinit var deviceList: TableRow
+    //lateinit var statusField: TextView
+
+    // Chat
     lateinit var receivingField: TextView
     lateinit var sendingField: EditText
     lateinit var sendButton: FloatingActionButton
@@ -120,14 +125,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun findUiElements() {
         //statusField = findViewById(R.id.statusField)
-        //receivingField = findViewById(R.id.receivingField)
-        //sendButton = findViewById(R.id.sendTextButton)
-        //deviceCard = findViewById(R.id.nodecard)
+        deviceList = findViewById(R.id.deviceList)
 
         sendingField = findViewById(R.id.sendingField)
-        deviceList = findViewById(R.id.deviceList)
-        // deviceList = findViewById(R.id.deviceList)
-        // statusField = findViewById(R.id.statusField)
         receivingField = findViewById(R.id.receivingField)
         sendingField = findViewById(R.id.sendingField)
         sendButton = findViewById(R.id.sendTextButton)
@@ -164,15 +164,15 @@ class MainActivity : AppCompatActivity() {
     private fun listenNavigation() {
         navigationBar.setOnItemSelectedListener{ item ->
             when(item.itemId) {
-                R.id.item_1 -> {
+                R.id.settingsMenu -> {
                     // Change screen to settings
                     true
                 }
-                R.id.item_2 -> {
+                R.id.chatMenu -> {
                     // Change screen to chat
                     true
                 }
-                R.id.item_3 -> {
+                R.id.networksMenu -> {
                     // Change screen to networks
                     setContentView(R.layout.networks)
                     true
