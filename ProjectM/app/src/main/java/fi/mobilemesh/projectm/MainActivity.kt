@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
 import androidx.appcompat.app.AppCompatActivity
@@ -9,11 +10,15 @@ import androidx.core.content.ContextCompat
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.wifi.p2p.WifiP2pManager.Channel
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.network.Device
+import fi.mobilemesh.projectm.network.MyPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.w3c.dom.Text
@@ -47,6 +52,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var sendingField: EditText
     lateinit var sendButton: Button
 
+    private lateinit var myPrefs: MyPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -63,7 +70,16 @@ class MainActivity : AppCompatActivity() {
         broadcastManager = BroadcastManager(wifiManager, channel, this)
         addIntentFilters()
 
+        myPrefs = MyPreferences(this)
+
+        saveMyValue("Jahid Sagor")
+
+
+        getMyValue()?.let { Log.d(" Data: ", it) }
+
     }
+
+
     private fun requestPermissions() {
 
         val permissionsToRequest = mutableListOf<String>()
@@ -77,6 +93,8 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray() , REQUEST_CODE)
         }
     }
+
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -132,4 +150,14 @@ class MainActivity : AppCompatActivity() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
+
+
+    fun saveMyValue(value: String) {
+        myPrefs.setMyValue(value)
+    }
+
+    fun getMyValue(): String? {
+        return myPrefs.getMyValue()
+    }
+
 }

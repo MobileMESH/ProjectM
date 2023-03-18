@@ -26,10 +26,15 @@ class BroadcastManager(
     private val wifiManager: WifiP2pManager,
     private val channel: Channel,
     private val activity: MainActivity
+
+
 ): BroadcastReceiver() {
 
     //TODO: Move text field editing to separate class/back to MainActivity.kt
 
+
+    private val name = null
+    private val add = ""
     private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
 
@@ -56,10 +61,12 @@ class BroadcastManager(
         }
     }
 
+
     // TODO: Move this somewhere more sensible
     private fun createButton(device: WifiP2pDevice) {
         val btn = Button(activity)
         btn.text = device.deviceName
+
 
         btn.setOnClickListener {
             connectToDevice(device.deviceAddress)
