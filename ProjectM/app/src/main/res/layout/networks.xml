@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="right"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -72,6 +71,7 @@
                 android:gravity="center"
                 android:text="Available"
                 android:textAlignment="center"
+                android:padding="10dp"
                 android:textSize="20sp" />
 
         </TableRow>
@@ -79,28 +79,26 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clickable="false"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:id="@+id/deviceList">
             <!--
             Clickable cards for each available node
 
             Could be upgraded to:
             <com.google.android.material.card.MaterialCardView>
 
-           android:clickable="true"
-           android:focusable="true"
-           android:textSize="16sp"
            -->
 
-
+            <!-- Model for the card view, trying to move to createDeviceCard in Broadcast Manager
             <androidx.cardview.widget.CardView
                 android:id="@+id/nodecard"
-                android:layout_width="380dp"
+                android:layout_width="360dp"
                 android:layout_height="60dp"
                 android:clickable="true"
                 app:cardBackgroundColor="#434343"
                 app:cardCornerRadius="10dp"
-                app:contentPadding="16dp">
+                app:contentPadding="16dp"
+                >
 
                 <TextView
                     android:layout_width="match_parent"
@@ -110,6 +108,7 @@
                     android:textColor="@color/design_default_color_on_primary"
                     android:textSize="16sp" />
             </androidx.cardview.widget.CardView>
+            -->
         </TableRow>
 
         <TableRow>
@@ -119,7 +118,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:text="Create a network" />
+                android:text="Create a network"
+                android:textSize="16sp"/>
         </TableRow>
 
 

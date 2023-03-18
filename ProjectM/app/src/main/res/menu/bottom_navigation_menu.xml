@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/item_1"
+        android:id="@+id/settingsMenu"
         android:enabled="true"
         android:icon="@drawable/settings_icon"
         android:title="@string/text_label_1"/>
     <item
-        android:id="@+id/item_2"
+        android:id="@+id/chatMenu"
         android:enabled="true"
         android:icon="@drawable/message_icon"
         android:title="@string/text_label_2"/>
     <item
-        android:id="@+id/item_3"
+        android:id="@+id/networksMenu"
         android:enabled="true"
         android:icon="@drawable/networks_icon"
         android:title="@string/text_label_3"/>

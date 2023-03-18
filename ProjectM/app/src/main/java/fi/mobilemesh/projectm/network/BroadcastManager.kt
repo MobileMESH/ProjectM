@@ -36,7 +36,7 @@ class BroadcastManager(
     private val peerListListener = PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
         activity.deviceList.removeAllViews()
-        refreshedPeers.forEach { createButton(it) }
+        refreshedPeers.forEach { createDeviceCard(it) }
     }
 
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
@@ -57,15 +57,15 @@ class BroadcastManager(
     }
 
     // TODO: Move this somewhere more sensible
-    private fun createButton(device: WifiP2pDevice) {
-        val btn = Button(activity)
-        btn.text = device.deviceName
+    private fun createDeviceCard(device: WifiP2pDevice) {
+        val card = Button(activity)
+        card.text = device.deviceName
 
-        btn.setOnClickListener {
+        card.setOnClickListener {
             connectToDevice(device.deviceAddress)
         }
 
-        activity.deviceList.addView(btn)
+        activity.deviceList.addView(card)
     }
 
     override fun onReceive(context: Context, intent: Intent) {

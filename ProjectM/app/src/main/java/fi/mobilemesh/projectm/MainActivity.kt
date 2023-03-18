@@ -12,6 +12,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.cardview.widget.CardView
 import fi.mobilemesh.projectm.network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     // UI
     lateinit var deviceList: LinearLayout
+    lateinit var deviceCard: CardView
     lateinit var statusField: TextView
     lateinit var receivingField: TextView
     lateinit var sendingField: EditText
@@ -45,13 +48,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.chat_view)
+        setContentView(R.layout.networks)
 
         requestPermissions()
 
         //UI
         findUiElements()
         mapButtons()
+
 
         // Wifi
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
@@ -60,17 +64,21 @@ class MainActivity : AppCompatActivity() {
         addIntentFilters()
 
     }
+
     private fun requestPermissions() {
 
         val permissionsToRequest = mutableListOf<String>()
         for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED)
-            {
+            if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
                 permissionsToRequest.add(permission)
             }
         }
         if (permissionsToRequest.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray() , REQUEST_CODE)
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsToRequest.toTypedArray(),
+                REQUEST_CODE
+            )
         }
     }
 
@@ -107,11 +115,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun findUiElements() {
-        deviceList = findViewById(R.id.deviceList)
-        statusField = findViewById(R.id.statusField)
+        //statusField = findViewById(R.id.statusField)
+        //receivingField = findViewById(R.id.receivingField)
+        //sendButton = findViewById(R.id.sendTextButton)
+        //deviceCard = findViewById(R.id.nodecard)
+
         sendingField = findViewById(R.id.sendingField)
-        receivingField = findViewById(R.id.receivingField)
-        sendButton = findViewById(R.id.sendTextButton)
+        deviceList = findViewById(R.id.deviceList)
     }
 
     private fun mapButtons() {
@@ -120,6 +130,22 @@ class MainActivity : AppCompatActivity() {
             broadcastManager.sendText(text)
             sendingField.text.clear()
         }
+
+        // Builds network join alert when you click the card
+        val builder = AlertDialog.Builder(this)
+        deviceCard.setOnClickListener {
+            builder.setMessage("Joining network")
+            //builder.setNegativeButton("Cancel") { dialogInterface, it ->
+                // stop connection
+            //}
+                .show()
+        }
+
+        //Top bar menu listeners
+        //chatMenu.setOnClickListener {
+        //    val goToChat = Intent(this, Chat::class.java)
+        //    startActivity(goToChat)
+        //}
     }
 
     private fun addIntentFilters() {
@@ -129,3 +155,6 @@ class MainActivity : AppCompatActivity() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 }
+
+
+
