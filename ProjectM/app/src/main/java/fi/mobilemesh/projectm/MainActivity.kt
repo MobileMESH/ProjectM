@@ -14,6 +14,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
@@ -44,7 +46,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var statusField: TextView
     lateinit var receivingField: TextView
     lateinit var sendingField: EditText
-    lateinit var sendButton: Button
+    lateinit var sendButton: FloatingActionButton
+    lateinit var networkDetails: TextView
+    lateinit var navigationBar: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         //UI
         findUiElements()
-        mapButtons()
+        //mapButtons()
 
 
         // Wifi
@@ -122,11 +126,18 @@ class MainActivity : AppCompatActivity() {
 
         sendingField = findViewById(R.id.sendingField)
         deviceList = findViewById(R.id.deviceList)
+        // deviceList = findViewById(R.id.deviceList)
+        // statusField = findViewById(R.id.statusField)
+        receivingField = findViewById(R.id.receivingField)
+        sendingField = findViewById(R.id.sendingField)
+        sendButton = findViewById(R.id.sendTextButton)
+        navigationBar = findViewById(R.id.navigationBar)
+        networkDetails = findViewById(R.id.networkDetails)
     }
 
     private fun mapButtons() {
         sendButton.setOnClickListener {
-            val text = sendingField.text.toString()
+            val text = sendingField.text.toString().trim()
             broadcastManager.sendText(text)
             sendingField.text.clear()
         }
@@ -148,6 +159,29 @@ class MainActivity : AppCompatActivity() {
         //}
     }
 
+    // Not sure if this is how it's done but something like this was shown in the
+    // material design guide for the nav bar
+    private fun listenNavigation() {
+        navigationBar.setOnItemSelectedListener{ item ->
+            when(item.itemId) {
+                R.id.item_1 -> {
+                    // Change screen to settings
+                    true
+                }
+                R.id.item_2 -> {
+                    // Change screen to chat
+                    true
+                }
+                R.id.item_3 -> {
+                    // Change screen to networks
+                    setContentView(R.layout.networks)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
     private fun addIntentFilters() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION)
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
@@ -155,6 +189,3 @@ class MainActivity : AppCompatActivity() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 }
-
-
-
