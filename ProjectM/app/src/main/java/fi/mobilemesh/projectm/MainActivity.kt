@@ -7,19 +7,56 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.net.wifi.p2p.WifiP2pManager.Channel
-import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.network.BroadcastManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
 
+    // IF A NEW PROJECT IS CREATED WITH THE BOTTOM NAVIGATION VIEW ALREADY IN IT, THIS IS WHAT
+    // THE MAINACTIVITY FILE HAS. I BET THIS COULD BE USED AS IT IS AFTER EVERYTHING CURRENTLY
+    // IN THE FILE IS TRANSFERRED TO THEIR OWN FILES!
+    //
+    // -------------------------------
+    //
+    //
+    //import android.os.Bundle
+    //import com.google.android.material.bottomnavigation.BottomNavigationView
+    //import androidx.appcompat.app.AppCompatActivity
+    //import androidx.navigation.findNavController
+    //import androidx.navigation.ui.AppBarConfiguration
+    //import androidx.navigation.ui.setupActionBarWithNavController
+    //import androidx.navigation.ui.setupWithNavController
+    //import com.example.testproject.databinding.ActivityMainBinding
+    //
+    //class MainActivity : AppCompatActivity() {
+    //
+    //    private lateinit var binding: ActivityMainBinding
+    //
+    //    override fun onCreate(savedInstanceState: Bundle?) {
+    //        super.onCreate(savedInstanceState)
+    //
+    //        binding = ActivityMainBinding.inflate(layoutInflater)
+    //        setContentView(binding.root)
+    //
+    //        val navView: BottomNavigationView = binding.navView
+    //
+    //        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+    //        // Passing each menu ID as a set of Ids because each
+    //        // menu should be considered as top level destinations.
+    //        val appBarConfiguration = AppBarConfiguration(
+    //            setOf(
+    //                R.id.settings R.id.chat, R.id.networks
+    //            )
+    //        )
+    //        setupActionBarWithNavController(navController, appBarConfiguration)
+    //        navView.setupWithNavController(navController)
+    //    }
+    //}
     companion object {
         private const val REQUEST_CODE = 223312
     }
@@ -41,11 +78,16 @@ class MainActivity : AppCompatActivity() {
     private val intentFilter = IntentFilter()
 
     // UI
-    lateinit var deviceList: LinearLayout
-    lateinit var statusField: TextView
-    lateinit var receivingField: TextView
+    //
+    // The deviceList will be found on network view but I'm not sure if we need statusField?
+    // The message of having no connection could be shown in the receivingField instead!
+    //lateinit var deviceList: LinearLayout
+    //lateinit var statusField: TextView
+    lateinit var receivingField: LinearLayout
     lateinit var sendingField: EditText
-    lateinit var sendButton: Button
+    lateinit var sendButton: FloatingActionButton
+    lateinit var networkDetails: TextView
+    lateinit var navigationBar: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
         //UI
         findUiElements()
-        mapButtons()
+        //mapButtons()
 
         // Wifi
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
@@ -111,18 +153,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun findUiElements() {
-        deviceList = findViewById(R.id.deviceList)
-        statusField = findViewById(R.id.statusField)
-        sendingField = findViewById(R.id.sendingField)
+        // deviceList = findViewById(R.id.deviceList)
+        // statusField = findViewById(R.id.statusField)
         receivingField = findViewById(R.id.receivingField)
+        sendingField = findViewById(R.id.sendingField)
         sendButton = findViewById(R.id.sendTextButton)
+        navigationBar = findViewById(R.id.navigationBar)
+        networkDetails = findViewById(R.id.networkDetails)
     }
 
     private fun mapButtons() {
         sendButton.setOnClickListener {
-            val text = sendingField.text.toString()
+            val text = sendingField.text.toString().trim()
             broadcastManager.sendText(text)
             sendingField.text.clear()
+        }
+    }
+
+    // Not sure if this is how it's done but something like this was shown in the
+    // material design guide for the nav bar
+    private fun listenNavigation() {
+        navigationBar.setOnItemSelectedListener{ item ->
+            when(item.itemId) {
+                R.id.settings -> {
+                    // Change screen to settings
+                    true
+                }
+                R.id.chat -> {
+                    // Change screen to chat
+                    true
+                }
+                R.id.networks-> {
+                    // Change screen to networks
+                    true
+                }
+                else -> false
+            }
         }
     }
 
