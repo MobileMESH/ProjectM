@@ -3,9 +3,8 @@
     <string name="text_label_1">Settings</string>
     <string name="text_label_2">Chat</string>
     <string name="text_label_3">Networks</string>
-    <string name="network_description">Network description</string>
     <string name="leave_network">Leave network</string>
     <string name="connected_devices">Connected devices</string>
-    <string name="icon">profile picture</string>
+    <string name="icon">Profile picture</string>
     <string name="device_name">Device name</string>
 </resources>
