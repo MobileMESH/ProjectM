@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:backgroundTint="@color/background"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="71dp"
+        android:layout_marginEnd="2dp"
+        android:background="@color/main_bars_green"
+        android:clickable="true"
+        android:focusable="true"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/bottom_navigation_menu"
+        tools:ignore="MissingConstraints">
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+    <TextView
+        android:id="@+id/networkDetails"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:layout_marginTop="71dp"
+        android:layout_marginEnd="1dp"
+        android:background="@color/secondary_bars_green"
+        android:clickable="true"
+        android:enabled="false"
+        android:gravity="center"
+        android:text="Network name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:drawableEndCompat="@drawable/arrow_forward_icon"
+        app:drawableTint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@null" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="91dp"
+        android:background="@color/tertiary_bars"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/sendingField"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+
+            android:layout_gravity="center"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:autofillHints="message"
+            android:background="@drawable/rounded_corners"
+            android:ems="10"
+            android:hint="Enter message..."
+            android:inputType="textPersonName"
+            android:paddingStart="8sp"
+            android:paddingEnd="8sp"
+            android:textColor="@color/white"
+            android:textColorHint="#808080"
+            android:textSize="16sp"
+            app:layout_constrainedWidth="true" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/sendTextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="15dp"
+            android:clickable="true"
+            android:tint="#EADDDD"
+            app:backgroundTint="@color/pop_ups"
+            app:backgroundTintMode="src_over"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+            app:srcCompat="@drawable/arrow_forward_icon"
+            app:tint="@null"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/receivingField"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/networkDetails"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

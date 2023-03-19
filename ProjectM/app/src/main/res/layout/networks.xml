@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="right"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="2dp"
+        tools:layout_editor_absoluteY="2dp">
+
+        <!--This component is top navigation in our app. Connections to other tabs go here.-->
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/navigationBar"
+            android:layout_width="wrap_content"
+            android:layout_height="71dp"
+            android:background="#36323F"
+            android:clickable="true"
+            android:focusable="true"
+            app:itemIconTint="@color/white"
+            app:itemTextColor="#FFFFFF"
+            app:menu="@menu/bottom_navigation_menu"
+            tools:ignore="MissingConstraints"></com.google.android.material.bottomnavigation.BottomNavigationView>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!-- Category for networks that have been connected previously.
+            Can probably be left out if no time so I commented it out-->
+            <!--<TextView
+                android:id="@+id/previousView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Previously used"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                app:cardBackgroundColor="#434343"
+                app:contentPadding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Available device here"
+                    android:textColor="@color/design_default_color_on_primary"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    />
+            </androidx.cardview.widget.CardView>
+                -->
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/availableView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Available"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="false"
+            android:padding="16dp">
+            <!--
+            Clickable cards for each available node
+
+            Could be upgraded to:
+            <com.google.android.material.card.MaterialCardView>
+
+           android:clickable="true"
+           android:focusable="true"
+           android:textSize="16sp"
+           -->
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/nodecard"
+                android:layout_width="380dp"
+                android:layout_height="60dp"
+                android:clickable="true"
+                app:cardBackgroundColor="#434343"
+                app:cardCornerRadius="10dp"
+                app:contentPadding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Available device here"
+                    android:textAlignment="center"
+                    android:textColor="@color/design_default_color_on_primary"
+                    android:textSize="16sp" />
+            </androidx.cardview.widget.CardView>
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="Create a network" />
+        </TableRow>
+
+
+    </TableLayout>
+</LinearLayout>
