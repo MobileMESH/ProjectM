@@ -1,10 +1,19 @@
 package fi.mobilemesh.projectm
 
+import android.content.Context
+import android.graphics.Color
+import android.net.wifi.p2p.WifiP2pDevice
+import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TableRow
+import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import fi.mobilemesh.projectm.network.BroadcastManager
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,6 +30,9 @@ class Networks : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var broadcastManager: BroadcastManager
+    private lateinit var nodeList: CardView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -29,12 +41,68 @@ class Networks : Fragment() {
         }
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_networks, container, false)
+        val view = inflater.inflate(R.layout.fragment_networks, container, false)
+        broadcastManager = BroadcastManager.getInstance(view.context)
+        nodeList = view.findViewById(R.id.nodecard)
+
+        return view
+    }
+
+    fun createCardViewLayout(device: WifiP2pDevice) {
+        // Creating CardView
+        val cardView = view?.let {
+            CardView(it.context).apply {
+                id = R.id.nodecard
+                layoutParams = TableRow.LayoutParams(dpToPx(context, 380), dpToPx(context, 60))
+                setCardBackgroundColor(Color.parseColor("#434343"))
+                radius = dpToPx(context, 10f)
+                setContentPadding(dpToPx(context, 16), dpToPx(context, 16), dpToPx(context, 16), dpToPx(context, 16))
+                isClickable = true
+
+                setOnClickListener{
+                    broadcastManager.connectToDevice(device.deviceAddress)
+                }
+            }
+        }
+
+        // Creating TextView
+        val textView = TextView(context).apply {
+            layoutParams = TableRow.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            text = device.deviceName
+            setTextAlignment(View.TEXT_ALIGNMENT_CENTER)
+            setTextColor(ContextCompat.getColor(context, R.color.white))
+            textSize = 16f
+        }
+
+        // Adding TextView to CardView
+        cardView?.addView(textView)
+
+        // Creating TableRow for CardView
+        val tableRow = TableRow(context)
+        tableRow.addView(cardView)
+
+        // Adding TableRow to your TableLayout or any other ViewGroup
+        nodeList.addView(tableRow)
+    }
+
+    // Helper function to convert dp to px
+    private fun dpToPx(context: Context, dp: Int): Int {
+        val scale = context.resources.displayMetrics.density
+        return (dp * scale + 0.5f).toInt()
+    }
+
+    private fun dpToPx(context: Context, dp: Float): Float {
+        val scale = context.resources.displayMetrics.density
+        return dp * scale + 0.5f
     }
 
     companion object {
@@ -55,5 +123,10 @@ class Networks : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+        @Volatile
+        private var instance: Networks?=null
+        fun getInstance(): Networks{
+            synchronized(this){ return instance ?: Networks().also { instance = it } }
+        }
     }
 }
