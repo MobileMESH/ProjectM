@@ -85,6 +85,7 @@ class Chat : Fragment() {
     /**
      * Updates the chat every time a new message is added to the database. WIP
      */
+    // TODO: Don't reload all messages...
     private fun observeLiveMessages() {
         dao.getLiveChatGroupMessages(0).observe(viewLifecycleOwner) {
             //createMessage(it.last(), Color.parseColor("#262626"), Color.WHITE)

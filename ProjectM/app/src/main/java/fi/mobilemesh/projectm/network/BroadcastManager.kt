@@ -4,26 +4,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.WIFI_P2P_SERVICE
 import android.content.Intent
-import android.graphics.Color
-import android.net.Network
 import android.net.wifi.p2p.WifiP2pConfig
-import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
-import android.view.View.TEXT_ALIGNMENT_CENTER
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.TableRow
-import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
-import fi.mobilemesh.projectm.MainActivity
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.ObjectInputStream
@@ -32,9 +18,8 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.ServerSocket
 import java.net.Socket
-import java.util.*
 import fi.mobilemesh.projectm.Networks
-import fi.mobilemesh.projectm.R
+import kotlinx.coroutines.*
 
 private const val PORT = 8888
 private const val TIMEOUT = 5000
@@ -67,12 +52,22 @@ class BroadcastManager(
 
     private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
+    // TODO: Find a workaround for this, it ain't gonna work for long
+    //  (might crash when switching back and forth between network fragment)
+    private lateinit var networks: Networks
 
-    private var networks = Networks.getInstance()
+    /**
+     * Temporary function for setting networks fragment to create buttons for connecting
+     * devices
+     * @param networks Networks.kt fragment to set as current network screen
+     */
+    fun setNetworks(networks: Networks) {
+        this.networks = networks
+    }
 
     val peerListListener = WifiP2pManager.PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
-        //    activity.deviceList.removeAllViews()
+        networks.clearDevices()
         refreshedPeers.forEach { networks.createCardViewLayout(it) }
     }
 
@@ -170,13 +165,10 @@ class BroadcastManager(
             val istream = ObjectInputStream(BufferedInputStream(client.getInputStream()))
 
             val message: Message = istream.readObject() as Message
+            println(message.isOwnMessage)
 
             istream.close()
             client.close()
-
-            withContext(Dispatchers.Main) {
-                //createMessage(message, Color.parseColor("#262626"), Color.WHITE)
-            }
 
             dao.insertMessage(message)
 
@@ -184,7 +176,7 @@ class BroadcastManager(
         }
     }
 
-    fun transferText(message: Message) {
+    suspend fun transferText(message: Message) {
         // Should be checked externally but left for redundancy
         if (!isConnected()) {
             return
@@ -194,8 +186,7 @@ class BroadcastManager(
         if (message.body == "") {
             return
         }
-
-        CoroutineScope(Dispatchers.IO).launch {
+        val job = CoroutineScope(Dispatchers.IO).async {
             val socket = Socket()
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
             val ostream = ObjectOutputStream(BufferedOutputStream(socket.getOutputStream()))
@@ -205,9 +196,12 @@ class BroadcastManager(
             ostream.close()
             socket.close()
         }
+        job.await()
     }
 
-
+    /**
+     * Checks if this device is connected to another device, so messages can be sent
+     */
     fun isConnected(): Boolean {
         return targetAddress != null
     }

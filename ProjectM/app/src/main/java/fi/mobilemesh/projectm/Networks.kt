@@ -1,9 +1,7 @@
 package fi.mobilemesh.projectm
 
-import android.content.Context
 import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pDevice
-import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -49,13 +47,19 @@ class Networks : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_networks, container, false)
         broadcastManager = BroadcastManager.getInstance(view.context)
+            .also { it.setNetworks(this) }
         nodeList = view.findViewById(R.id.nodecard)
 
         return view
     }
 
+    fun clearDevices() {
+        nodeList.removeAllViews()
+    }
+
     fun createCardViewLayout(device: WifiP2pDevice) {
         // Creating CardView
+        println(view)
         val cardView = view?.let {
             CardView(it.context).apply {
                 id = R.id.nodecard
