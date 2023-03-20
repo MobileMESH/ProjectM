@@ -1,20 +1,17 @@
 package fi.mobilemesh.projectm.network
 
-import android.app.ActionBar.LayoutParams
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Context.WIFI_P2P_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
-import android.text.Layout
 import android.view.Gravity
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
-import fi.mobilemesh.projectm.MainActivity
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,8 +28,23 @@ private const val TIMEOUT = 5000
 class BroadcastManager(
     private val wifiManager: WifiP2pManager,
     private val channel: Channel,
-    private val activity: MainActivity
 ): BroadcastReceiver() {
+    /**
+     * Used to get the BroadcastManager from any fragment/class
+     */
+    companion object {
+        @Volatile
+        private var INSTANCE: BroadcastManager? = null
+        fun getInstance(context: Context): BroadcastManager {
+            synchronized(this) {
+                val wifiManager = context.getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
+                val channel = wifiManager.initialize(context, context.mainLooper, null)
+
+                return INSTANCE ?: BroadcastManager(wifiManager, channel)
+                    .also { INSTANCE = it }
+            }
+        }
+    }
 
     //TODO: Move text field editing to separate class/back to MainActivity.kt
 
@@ -42,7 +54,7 @@ class BroadcastManager(
     private val peerListListener = PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
     //    activity.deviceList.removeAllViews()
-        refreshedPeers.forEach { createDeviceButton(it) }
+        //refreshedPeers.forEach { createDeviceButton(it) }
      }
 
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
@@ -153,7 +165,7 @@ class BroadcastManager(
             val text = sb.toString()
 
             withContext(Dispatchers.Main) {
-                createMessage(text, Gravity.START, Color.parseColor("#262626"), Color.WHITE)
+                //createMessage(text, Gravity.START, Color.parseColor("#262626"), Color.WHITE)
             }
 
             receiveText()
@@ -162,21 +174,21 @@ class BroadcastManager(
 
     fun sendText(text: String) {
         if (targetAddress == null) {
-            showNeutralAlert("No connection!", "You are not connected to any device.", activity)
+            //showNeutralAlert("No connection!", "You are not connected to any device.", activity)
             return
         }
 
         // TODO: Should not be able to send empty message
         if (text == "") {
-            showNeutralAlert("Empty message",
+            /*showNeutralAlert("Empty message",
                 "Can not send empty message (this is a placeholder)",
-                activity)
+                activity)*/
             return
         }
 
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
-                createMessage(text, Gravity.END, Color.parseColor("#017f61"), Color.BLACK)
+                //createMessage(text, Gravity.END, Color.parseColor("#017f61"), Color.BLACK)
             }
 
             val socket = Socket()
@@ -188,7 +200,7 @@ class BroadcastManager(
         }
     }
 
-    private fun createMessage(text: String, alignment: Int, messageColor: Int, textColor: Int) {
+    /*private fun createMessage(text: String, alignment: Int, messageColor: Int, textColor: Int) {
         val btn = Button(activity)
         btn.isClickable = false
         btn.text = text
@@ -221,5 +233,5 @@ class BroadcastManager(
         }
 
        //activity.deviceList.addView(btn)
-    }
+    }*/
 }
