@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.core.view.marginBottom
 import androidx.core.view.setMargins
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
@@ -76,9 +77,20 @@ class Chat : Fragment() {
 
         mapButtons()
 
-        loadAllMessages()
+        lifecycleScope.launch { observeLiveMessages() }
 
         return view
+    }
+
+    /**
+     * Updates the chat every time a new message is added to the database. WIP
+     */
+    private fun observeLiveMessages() {
+        dao.getLiveChatGroupMessages(0).observe(viewLifecycleOwner) {
+            //createMessage(it.last(), Color.parseColor("#262626"), Color.WHITE)
+            receivingField.removeAllViews()
+            loadAllMessages()
+        }
     }
 
     /**

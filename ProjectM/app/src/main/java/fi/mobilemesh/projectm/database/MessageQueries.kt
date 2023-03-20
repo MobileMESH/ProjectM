@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.util.query
 import fi.mobilemesh.projectm.database.entities.ChatGroup
@@ -35,6 +36,11 @@ interface MessageQueries {
         FROM chatgroup AS c JOIN message AS m ON c.chatGroupId = m.chatGroupId 
         WHERE m.chatGroupId = :chatGroupId""")
     suspend fun getChatGroupMessages(chatGroupId: Int): List<Message>
+
+    @Query("""SELECT messageId, m.chatGroupId, sender, timestamp, body, isOwnMessage 
+        FROM chatgroup AS c JOIN message AS m ON c.chatGroupId = m.chatGroupId 
+        WHERE m.chatGroupId = :chatGroupId""")
+    fun getLiveChatGroupMessages(chatGroupId: Int): LiveData<List<Message>>
 
     /**
      * Gets the 'amount' of messages within a chat group, thereby giving the id of the
