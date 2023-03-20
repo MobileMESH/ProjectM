@@ -4,9 +4,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.WIFI_P2P_SERVICE
 import android.content.Intent
+import android.graphics.Color
+import android.net.Network
 import android.net.wifi.p2p.WifiP2pConfig
+import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
+import android.view.View.TEXT_ALIGNMENT_CENTER
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.TableRow
+import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import fi.mobilemesh.projectm.MainActivity
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
@@ -23,6 +33,8 @@ import java.net.InetSocketAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
+import fi.mobilemesh.projectm.Networks
+import fi.mobilemesh.projectm.R
 
 private const val PORT = 8888
 private const val TIMEOUT = 5000
@@ -53,15 +65,16 @@ class BroadcastManager(
         }
     }
 
-    // TODO: (General) Move text field editing to separate class/back to MainActivity.kt
     private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
 
-    private val peerListListener = PeerListListener { peers ->
+    private var networks = Networks.getInstance()
+
+    val peerListListener = WifiP2pManager.PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
-    //    activity.deviceList.removeAllViews()
-        //refreshedPeers.forEach { createDeviceButton(it) }
-     }
+        //    activity.deviceList.removeAllViews()
+        refreshedPeers.forEach { networks.createCardViewLayout(it) }
+    }
 
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
     private val connectionInfoListener = ConnectionInfoListener { conn ->
@@ -112,7 +125,7 @@ class BroadcastManager(
         })
     }
 
-    private fun connectToDevice(address: String) {
+    fun connectToDevice(address: String) {
         val config = WifiP2pConfig()
         config.deviceAddress = address
 
@@ -194,19 +207,8 @@ class BroadcastManager(
         }
     }
 
+
     fun isConnected(): Boolean {
         return targetAddress != null
     }
-
-    // TODO: Move this somewhere more sensible
-    /*private fun createDeviceButton(device: WifiP2pDevice) {
-        val btn = Button(activity)
-        btn.text = device.deviceName
-
-        btn.setOnClickListener {
-            connectToDevice(device.deviceAddress)
-        }
-
-       //activity.deviceList.addView(btn)
-    }*/
 }
