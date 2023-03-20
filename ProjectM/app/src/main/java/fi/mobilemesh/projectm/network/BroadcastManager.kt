@@ -12,22 +12,31 @@ import android.net.wifi.p2p.WifiP2pManager.*
 import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
+import fi.mobilemesh.projectm.MainActivity
+import fi.mobilemesh.projectm.database.MessageDatabase
+import fi.mobilemesh.projectm.database.MessageQueries
+import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.ServerSocket
 import java.net.Socket
+import java.util.*
 
 private const val PORT = 8888
 private const val TIMEOUT = 5000
 
 class BroadcastManager(
     private val wifiManager: WifiP2pManager,
-    private val channel: Channel,
+    private val channel: Channel
 ): BroadcastReceiver() {
     /**
      * Used to get the BroadcastManager from any fragment/class
@@ -35,19 +44,24 @@ class BroadcastManager(
     companion object {
         @Volatile
         private var INSTANCE: BroadcastManager? = null
+        private lateinit var dao: MessageQueries
+
         fun getInstance(context: Context): BroadcastManager {
             synchronized(this) {
                 val wifiManager = context.getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
                 val channel = wifiManager.initialize(context, context.mainLooper, null)
 
                 return INSTANCE ?: BroadcastManager(wifiManager, channel)
-                    .also { INSTANCE = it }
+                    .also {
+                        INSTANCE = it
+                        dao = MessageDatabase.getInstance(context).dao
+                    }
             }
         }
     }
 
-    //TODO: Move text field editing to separate class/back to MainActivity.kt
 
+    // TODO: (General) Move text field editing to separate class/back to MainActivity.kt
     private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
 
@@ -73,6 +87,19 @@ class BroadcastManager(
            receiveHandshake()
         }
     }
+
+    /*init {
+        CoroutineScope(Dispatchers.Main).launch {
+            val messages = dao.getChatGroupMessages(0)
+            messages.forEach {
+                val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
+                    else Color.parseColor("#262626")
+                val textColor = if (it.isOwnMessage) Color.BLACK
+                    else Color.WHITE
+                createMessage(it, messageColor, textColor)
+            }
+        }
+    }*/
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
@@ -147,26 +174,19 @@ class BroadcastManager(
         CoroutineScope(Dispatchers.IO).launch {
             val client = serverSocket.accept()
             // Client has connected
-            val istream = client.getInputStream()
+            // (Buffered) input stream from client
+            val istream = ObjectInputStream(BufferedInputStream(client.getInputStream()))
 
-            val sb = java.lang.StringBuilder()
-
-            // Should be able to be replaced with readAll() in API 33 upwards
-            var c = istream.read()
-            while ((c >= 0) && (c != 0x0a)) {
-                if (c != 0x0d) {
-                    sb.append(c.toChar())
-                }
-                c = istream.read()
-            }
+            val message: Message = istream.readObject() as Message
 
             istream.close()
             client.close()
-            val text = sb.toString()
 
             withContext(Dispatchers.Main) {
-                //createMessage(text, Gravity.START, Color.parseColor("#262626"), Color.WHITE)
+                //createMessage(message, Color.parseColor("#262626"), Color.WHITE)
             }
+
+            dao.insertMessage(message)
 
             receiveText()
         }
@@ -190,20 +210,43 @@ class BroadcastManager(
             withContext(Dispatchers.Main) {
                 //createMessage(text, Gravity.END, Color.parseColor("#017f61"), Color.BLACK)
             }
+            val time = Date(System.currentTimeMillis())
+            // TODO: Set chat group id properly. Current is a placeholder
+            val id = dao.getNextMessageId(0)
+            // TODO: Get sender name from Device object (probably?)
+            // TODO: Get chat group id
+            // TODO: Get unique message id within chat group (should be in rising order)
+            val message = Message(id, 0, "SENDER", time, text)
 
             val socket = Socket()
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
-            val ostream = socket.getOutputStream()
-            ostream.write(text.toByteArray())
+            val ostream = ObjectOutputStream(BufferedOutputStream(socket.getOutputStream()))
+
+            ostream.writeObject(message)
+
             ostream.close()
             socket.close()
+
+            message.isOwnMessage = true
+
+            withContext(Dispatchers.Main) {
+                //createMessage(message, Color.parseColor("#017f61"), Color.BLACK)
+            }
+
+            dao.insertMessage(message)
         }
     }
-
+    
     /*private fun createMessage(text: String, alignment: Int, messageColor: Int, textColor: Int) {
+=======
+
+    private fun createMessage(message: Message, messageColor: Int, textColor: Int) {
+>>>>>>> 10854289d5c48f3749a9ba345692a8afaf78488b
         val btn = Button(activity)
+        val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
+
         btn.isClickable = false
-        btn.text = text
+        btn.text = "[${message.timestamp}] [${message.sender}] ${message.body}"
 
         //btn.maxWidth = (activity.receivingField.width * 0.67).toInt()
 
