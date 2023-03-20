@@ -7,8 +7,6 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
-import android.net.wifi.p2p.WifiP2pManager.Channel
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.mobilemesh.projectm.network.BroadcastManager
@@ -70,8 +68,6 @@ class MainActivity : AppCompatActivity() {
         "android.permission.ACCESS_NETWORK_STATE"
     )
 
-    private lateinit var wifiManager: WifiP2pManager
-    private lateinit var channel: Channel
     private lateinit var broadcastManager: BroadcastManager
     private val intentFilter = IntentFilter()
 
@@ -96,9 +92,7 @@ class MainActivity : AppCompatActivity() {
         listenNavigation()
 
         // Wifi
-        wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
-        channel = wifiManager.initialize(this, mainLooper, null)
-        broadcastManager = BroadcastManager(wifiManager, channel, this)
+        broadcastManager = BroadcastManager.getInstance(this)
         addIntentFilters()
 
     }
