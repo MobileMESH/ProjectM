@@ -28,6 +28,8 @@ class NetworkDetailsActivity : AppCompatActivity() {
 
         setBackToChatButton()
 
+        // This needs to be updated when Device object is ready.
+        setupConnectedDevicesList()
     }
 
     private fun setBackToChatButton() {
@@ -36,6 +38,26 @@ class NetworkDetailsActivity : AppCompatActivity() {
         button.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    private fun setupConnectedDevicesList() {
+        // like this for now just so I can see what the device list the looks like while running
+
+        // Set up the RecyclerView for showing connected devices
+        val devices = mutableListOf<DeviceList>()
+
+        // Note: first device should be the one the app is currently running on so that
+        // they appear on top of the device list
+        devices.add(DeviceList("Own device", "Own address" ))
+
+        for (i in 0..20) {
+            devices.add(DeviceList("Test device", "Test address"))
+        }
+
+        connectedDevicesList.apply {
+            layoutManager = LinearLayoutManager(this@NetworkDetailsActivity)
+            adapter = DevicesAdapter(devices)
         }
     }
 
