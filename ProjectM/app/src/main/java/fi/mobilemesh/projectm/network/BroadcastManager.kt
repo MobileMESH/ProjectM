@@ -193,7 +193,7 @@ class BroadcastManager(
         btn.isClickable = false
         btn.text = text
 
-        btn.maxWidth = (activity.receivingField.width * 0.67).toInt()
+        //btn.maxWidth = (activity.receivingField.width * 0.67).toInt()
 
         btn.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, // Width
@@ -208,7 +208,7 @@ class BroadcastManager(
         btn.setBackgroundColor(messageColor)
         btn.setTextColor(textColor)
 
-        activity.receivingField.addView(btn)
+        //activity.receivingField.addView(btn)
     }
 
     // TODO: Move this somewhere more sensible

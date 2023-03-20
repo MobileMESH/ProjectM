@@ -1,6 +1,5 @@
 package fi.mobilemesh.projectm
 
-import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
 import androidx.appcompat.app.AppCompatActivity
@@ -9,13 +8,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
 import android.net.wifi.p2p.WifiP2pManager.Channel
-import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
@@ -86,9 +81,6 @@ class MainActivity : AppCompatActivity() {
     // The message of having no connection could be shown in the receivingField instead!
     //lateinit var deviceList: LinearLayout
     //lateinit var statusField: TextView
-    lateinit var receivingField: LinearLayout
-    //lateinit var sendingField: EditText
-    //lateinit var sendButton: FloatingActionButton
     //lateinit var networkDetails: TextView
     lateinit var navigationBar: BottomNavigationView
 
