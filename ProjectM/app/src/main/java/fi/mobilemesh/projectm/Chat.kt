@@ -18,10 +18,7 @@ import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.utils.showNeutralAlert
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -57,7 +54,7 @@ class Chat : Fragment() {
 
     private fun mapButtons() {
         sendButton.setOnClickListener {
-            val text = sendingField.text.toString().trim()
+            val text = sendingField.text.toString()
             sendingField.text.clear()
             CoroutineScope(Dispatchers.IO).launch { sendMessage(text) }
         }
@@ -89,26 +86,7 @@ class Chat : Fragment() {
      * Uses BroadcastManager.transferText() for actual transfer
      */
     private suspend fun sendMessage(text: String) {
-        // Can't send message if there is no connection
-        if (!broadcastManager.isConnected()) {
-            view?.let {
-                showNeutralAlert(
-                    "No connection!",
-                    "You are not connected to any device.",
-                    it.context)
-            }
-            return
-        }
-        // Can't send empty message
-        if (text == "") {
-            view?.let {
-                showNeutralAlert(
-                    "Empty message",
-                    "Can not send empty message (this is a placeholder)",
-                    it.context)
-            }
-            return
-        }
+        if (!canSendMessage(text)) return
 
         val time = Date(System.currentTimeMillis())
         // TODO: Set chat group id properly. Current is a placeholder
@@ -163,7 +141,7 @@ class Chat : Fragment() {
 
     /**
      * Loads all messages (within the default chat group 0) from the database.
-     * Used when loading chat fragment
+     * Used when loading Chat fragment
      */
     // TODO: Implement loading messages of particular chat group (pretty much
     //  only one extra parameter needed)
@@ -178,6 +156,38 @@ class Chat : Fragment() {
                 createMessage(it, messageColor, textColor)
             }
         }
+    }
+
+    /**
+     * Checks if a given message can be sent. Checks both connection status through
+     * BroadcastManager and that the message isn't empty/all whitespace
+     */
+    private suspend fun canSendMessage(text: String): Boolean {
+        return CoroutineScope(Dispatchers.Main).async {
+            // Can't send message if there is no connection
+            if (!broadcastManager.isConnected()) {
+                view?.let {
+                    showNeutralAlert(
+                        "No connection!",
+                        "You are not connected to any device.",
+                        it.context
+                    )
+                }
+                return@async false
+            }
+            // Can't send empty message
+            if (text.trim() == "") {
+                view?.let {
+                    showNeutralAlert(
+                        "Empty message",
+                        "Can not send empty message (this is a placeholder)",
+                        it.context
+                    )
+                }
+                return@async false
+            }
+            return@async true
+        }.await()
     }
 
     companion object {
