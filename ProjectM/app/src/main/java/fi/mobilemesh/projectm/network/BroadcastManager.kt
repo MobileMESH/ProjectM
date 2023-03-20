@@ -36,6 +36,12 @@ class BroadcastManager(
         private var INSTANCE: BroadcastManager? = null
         private lateinit var dao: MessageQueries
 
+        /**
+         * Gets the common/static BroadcastManager from any fragment/activity
+         * @param context [Context] of the fragment/activity from where this is being requested
+         * @return existing [BroadcastManager] if one already exists. Creates a new one, returns
+         * that and sets that as the static BroadcastManager if none exist
+         */
         fun getInstance(context: Context): BroadcastManager {
             synchronized(this) {
                 val wifiManager = context.getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
@@ -65,21 +71,26 @@ class BroadcastManager(
         this.networks = networks
     }
 
-    val peerListListener = WifiP2pManager.PeerListListener { peers ->
+    /**
+     * Listener object for when nearby devices get updated
+     */
+    val peerListListener = PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
         networks.clearDevices()
         refreshedPeers.forEach { networks.createCardViewLayout(it) }
     }
 
+    /**
+     * Listener for when connection status to another device changes
+     */
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
+    // TODO: Show the user information about status
     private val connectionInfoListener = ConnectionInfoListener { conn ->
         if (!conn.groupFormed) {
-            //activity.statusField.text = "Connection failed: device declined connection?"
             targetAddress = null
             return@ConnectionInfoListener
         }
 
-     //   activity.statusField.text = "Connection successful"
         if (!conn.isGroupOwner) {
             targetAddress = conn.groupOwnerAddress
             sendHandshake()
@@ -88,6 +99,12 @@ class BroadcastManager(
         }
     }
 
+    /**
+     * Used to detect status changes related to Wi-Fi Direct, such as nearby devices changing
+     * and connection changing
+     * @param context context of fragment/activity where the event could fire
+     * @param intent intent of the fragment/activity, maybe??
+     */
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             WIFI_P2P_STATE_CHANGED_ACTION -> {
@@ -108,6 +125,10 @@ class BroadcastManager(
         }
     }
 
+    /**
+     * Used to refresh list of nearby devices. Has triggers for success and failure, currently
+     * not used
+     */
     private fun discoverPeers() {
         wifiManager.discoverPeers(channel, object : ActionListener {
             override fun onSuccess() {
@@ -120,6 +141,10 @@ class BroadcastManager(
         })
     }
 
+    /**
+     * Connects this device to given address through Wi-Fi Direct framework
+     * @param address address of the target device
+     */
     fun connectToDevice(address: String) {
         val config = WifiP2pConfig()
         config.deviceAddress = address
@@ -137,6 +162,10 @@ class BroadcastManager(
         })
     }
 
+    /**
+     * Used by the "server" when first connecting through [connectToDevice]. Used to get
+     * the clients IP address
+     */
     private fun receiveHandshake() {
         CoroutineScope(Dispatchers.IO).launch {
             val client = serverSocket.accept()
@@ -147,6 +176,10 @@ class BroadcastManager(
         }
     }
 
+    /**
+     * Used by the client to initiate connection to the "server" device when first
+     * connecting through [connectToDevice]. Used to send this devices IP address to "server"
+     */
     private fun sendHandshake() {
         CoroutineScope(Dispatchers.IO).launch {
             val socket = Socket()
@@ -157,6 +190,10 @@ class BroadcastManager(
         }
     }
 
+    /**
+     * Continually run by both client and "server" to listen for incoming traffic. Reads incoming
+     * data and fires itself again to set up listening
+     */
     private fun receiveText() {
         CoroutineScope(Dispatchers.IO).launch {
             val client = serverSocket.accept()
@@ -170,12 +207,17 @@ class BroadcastManager(
             istream.close()
             client.close()
 
+            // Insert message to database via Data Access Object
             dao.insertMessage(message)
 
             receiveText()
         }
     }
 
+    /**
+     * Transfers text to the other device with a [Message].
+     * @param message [Message] to transfer to the other device
+     */
     suspend fun transferText(message: Message) {
         // Should be checked externally but left for redundancy
         if (!isConnected()) {
@@ -186,21 +228,20 @@ class BroadcastManager(
         if (message.body == "") {
             return
         }
-        val job = CoroutineScope(Dispatchers.IO).async {
-            val socket = Socket()
-            socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
-            val ostream = ObjectOutputStream(BufferedOutputStream(socket.getOutputStream()))
 
-            ostream.writeObject(message)
+        val socket = Socket()
+        socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
+        val ostream = ObjectOutputStream(BufferedOutputStream(socket.getOutputStream()))
 
-            ostream.close()
-            socket.close()
-        }
-        job.await()
+        ostream.writeObject(message)
+
+        ostream.close()
+        socket.close()
     }
 
     /**
      * Checks if this device is connected to another device, so messages can be sent
+     * @return true if [targetAddress] is set, false otherwise
      */
     fun isConnected(): Boolean {
         return targetAddress != null
