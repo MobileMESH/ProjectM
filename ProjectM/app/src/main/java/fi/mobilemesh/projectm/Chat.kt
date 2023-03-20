@@ -1,13 +1,25 @@
 package fi.mobilemesh.projectm
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.core.view.marginBottom
+import androidx.core.view.setMargins
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import fi.mobilemesh.projectm.database.MessageDatabase
+import fi.mobilemesh.projectm.database.MessageQueries
+import fi.mobilemesh.projectm.database.entities.Message
+import fi.mobilemesh.projectm.network.BroadcastManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,6 +35,8 @@ class Chat : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    private lateinit var dao: MessageQueries
 
     lateinit var sendButton: FloatingActionButton
     lateinit var sendingField: EditText
@@ -57,9 +71,62 @@ class Chat : Fragment() {
         sendingField = view.findViewById(R.id.sendingField)
         sendButton = view.findViewById(R.id.sendTextButton)
 
+        dao = MessageDatabase.getInstance(view.context).dao
+
         mapButtons()
 
+        loadAllMessages()
+
         return view
+    }
+
+    /**
+     * Creates a message on the chat are from given message parameters
+     */
+    private fun createMessage(message: Message, messageColor: Int, textColor: Int) {
+        val btn = Button(activity)
+        val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
+
+        btn.isClickable = false
+        btn.text = "[${message.timestamp}] [${message.sender}] ${message.body}"
+
+        btn.maxWidth = (receivingField.width * 0.67).toInt()
+
+        btn.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, // Width
+            LinearLayout.LayoutParams.WRAP_CONTENT  // Height
+        ).apply {
+            gravity = alignment
+        }.also {
+            it.setMargins(0, 0, 0, 16)
+        }
+
+        // Text alignment
+        btn.gravity = Gravity.START
+        btn.isAllCaps = false
+        btn.setBackgroundColor(messageColor)
+        btn.setTextColor(textColor)
+
+        receivingField.addView(btn)
+    }
+
+    /**
+     * Loads all messages (within the default chat group 0) from the database.
+     * Used when loading chat fragment
+     */
+    // TODO: Implement loading messages of particular chat group (pretty much
+    //  only one extra parameter needed)
+    private fun loadAllMessages() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val messages = dao.getChatGroupMessages(0)
+            messages.forEach {
+                val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
+                else Color.parseColor("#262626")
+                val textColor = if (it.isOwnMessage) Color.BLACK
+                else Color.WHITE
+                createMessage(it, messageColor, textColor)
+            }
+        }
     }
 
     companion object {

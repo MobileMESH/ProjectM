@@ -4,19 +4,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.WIFI_P2P_SERVICE
 import android.content.Intent
-import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pConfig
-import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
-import android.view.Gravity
-import android.widget.Button
-import android.widget.LinearLayout
-import fi.mobilemesh.projectm.MainActivity
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
-import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,19 +80,6 @@ class BroadcastManager(
            receiveHandshake()
         }
     }
-
-    /*init {
-        CoroutineScope(Dispatchers.Main).launch {
-            val messages = dao.getChatGroupMessages(0)
-            messages.forEach {
-                val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
-                    else Color.parseColor("#262626")
-                val textColor = if (it.isOwnMessage) Color.BLACK
-                    else Color.WHITE
-                createMessage(it, messageColor, textColor)
-            }
-        }
-    }*/
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
@@ -236,38 +216,9 @@ class BroadcastManager(
             dao.insertMessage(message)
         }
     }
-    
-    /*private fun createMessage(text: String, alignment: Int, messageColor: Int, textColor: Int) {
-=======
-
-    private fun createMessage(message: Message, messageColor: Int, textColor: Int) {
->>>>>>> 10854289d5c48f3749a9ba345692a8afaf78488b
-        val btn = Button(activity)
-        val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
-
-        btn.isClickable = false
-        btn.text = "[${message.timestamp}] [${message.sender}] ${message.body}"
-
-        //btn.maxWidth = (activity.receivingField.width * 0.67).toInt()
-
-        btn.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, // Width
-            LinearLayout.LayoutParams.WRAP_CONTENT  // Height
-        ).apply {
-            gravity = alignment
-        }
-
-        // Text alignment
-        btn.gravity = Gravity.START
-        btn.isAllCaps = false
-        btn.setBackgroundColor(messageColor)
-        btn.setTextColor(textColor)
-
-        //activity.receivingField.addView(btn)
-    }
 
     // TODO: Move this somewhere more sensible
-    private fun createDeviceButton(device: WifiP2pDevice) {
+    /*private fun createDeviceButton(device: WifiP2pDevice) {
         val btn = Button(activity)
         btn.text = device.deviceName
 
