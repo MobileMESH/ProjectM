@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
 import androidx.appcompat.app.AppCompatActivity
@@ -59,6 +60,9 @@ class MainActivity : AppCompatActivity() {
         //UI
         findUiElements()
         //mapButtons()
+
+        // Set up the button to go to NetworkDetailsActivity
+        setOpenNetworkDetailsButton()
 
         // Wifi
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
@@ -123,6 +127,14 @@ class MainActivity : AppCompatActivity() {
         networkDetails = findViewById(R.id.networkDetails)
     }
 
+    private fun setOpenNetworkDetailsButton() {
+        val button:Button = findViewById(R.id.openNetworkDetailsButton)
+        button.setOnClickListener {
+            val intent = Intent(this@MainActivity, NetworkDetailsActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
     private fun mapButtons() {
         sendButton.setOnClickListener {
             val text = sendingField.text.toString().trim()
@@ -136,15 +148,15 @@ class MainActivity : AppCompatActivity() {
     private fun listenNavigation() {
         navigationBar.setOnItemSelectedListener{ item ->
             when(item.itemId) {
-                R.id.item_1 -> {
+                R.id.settings -> {
                     // Change screen to settings
                     true
                 }
-                R.id.item_2 -> {
+                R.id.chat -> {
                     // Change screen to chat
                     true
                 }
-                R.id.item_3 -> {
+                R.id.networks -> {
                     // Change screen to networks
                     setContentView(R.layout.networks)
                     true
