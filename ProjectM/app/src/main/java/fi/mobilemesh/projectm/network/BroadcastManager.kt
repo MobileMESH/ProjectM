@@ -3,6 +3,7 @@ package fi.mobilemesh.projectm.network
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
@@ -48,31 +49,37 @@ class BroadcastManager(
 
     private val peerListListener = PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
-        activity.deviceList.removeAllViews()
+    //    activity.deviceList.removeAllViews()
         refreshedPeers.forEach { createDeviceButton(it) }
-    }
+     }
 
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
     private val connectionInfoListener = ConnectionInfoListener { conn ->
         if (!conn.groupFormed) {
-            activity.statusField.text = "Connection failed: device declined connection?"
+            //activity.statusField.text = "Connection failed: device declined connection?"
             targetAddress = null
             return@ConnectionInfoListener
         }
 
-        activity.statusField.text = "Connection successful"
+     //   activity.statusField.text = "Connection successful"
         if (!conn.isGroupOwner) {
             targetAddress = conn.groupOwnerAddress
             sendHandshake()
         } else {
-            receiveHandshake()
+           receiveHandshake()
         }
     }
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
             val messages = dao.getChatGroupMessages(0)
-            messages.forEach { createMessage(it) }
+            messages.forEach {
+                val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
+                    else Color.parseColor("#262626")
+                val textColor = if (it.isOwnMessage) Color.BLACK
+                    else Color.WHITE
+                createMessage(it, messageColor, textColor)
+            }
         }
     }
 
@@ -86,7 +93,7 @@ class BroadcastManager(
                 discoverPeers()
             }
 
-            WIFI_P2P_PEERS_CHANGED_ACTION -> {
+              WIFI_P2P_PEERS_CHANGED_ACTION -> {
                 wifiManager.requestPeers(channel, peerListListener)
             }
 
@@ -114,12 +121,12 @@ class BroadcastManager(
 
         wifiManager.connect(channel, config, object : ActionListener {
             override fun onSuccess() {
-                activity.statusField.text = "Started connection to $address"
+            // activity.statusField.text = "Started connection to $address"
                 println("Successfully started connection")
             }
 
             override fun onFailure(reason: Int) {
-                activity.statusField.text = "Failed to connect! - code $reason"
+                //activity.statusField.text = "Failed to connect! - code $reason"
                 println("Failed to connect - $reason")
             }
         })
@@ -158,7 +165,7 @@ class BroadcastManager(
             client.close()
 
             withContext(Dispatchers.Main) {
-                createMessage(message)
+                createMessage(message, Color.parseColor("#262626"), Color.WHITE)
             }
 
             dao.insertMessage(message)
@@ -182,7 +189,6 @@ class BroadcastManager(
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-
             val time = Date(System.currentTimeMillis())
             // TODO: Set chat group id properly. Current is a placeholder
             val id = dao.getNextMessageId(0)
@@ -203,21 +209,22 @@ class BroadcastManager(
             message.isOwnMessage = true
 
             withContext(Dispatchers.Main) {
-                createMessage(message)
+                createMessage(message, Color.parseColor("#017f61"), Color.BLACK)
             }
 
             dao.insertMessage(message)
         }
     }
 
-    private fun createMessage(message: Message) {
+
+    private fun createMessage(message: Message, messageColor: Int, textColor: Int) {
         val btn = Button(activity)
         val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
 
         btn.isClickable = false
         btn.text = "[${message.timestamp}] [${message.sender}] ${message.body}"
 
-        btn.maxWidth = (activity.messageHistory.width * 0.67).toInt()
+        btn.maxWidth = (activity.receivingField.width * 0.67).toInt()
 
         btn.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, // Width
@@ -229,8 +236,10 @@ class BroadcastManager(
         // Text alignment
         btn.gravity = Gravity.START
         btn.isAllCaps = false
+        btn.setBackgroundColor(messageColor)
+        btn.setTextColor(textColor)
 
-        activity.messageHistory.addView(btn)
+        activity.receivingField.addView(btn)
     }
 
     // TODO: Move this somewhere more sensible
@@ -242,6 +251,6 @@ class BroadcastManager(
             connectToDevice(device.deviceAddress)
         }
 
-        activity.deviceList.addView(btn)
+       //activity.deviceList.addView(btn)
     }
 }
