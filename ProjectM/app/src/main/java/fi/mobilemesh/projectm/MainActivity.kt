@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,8 @@ import android.net.wifi.p2p.WifiP2pManager.Channel
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.network.BroadcastManager
@@ -84,9 +87,9 @@ class MainActivity : AppCompatActivity() {
     //lateinit var deviceList: LinearLayout
     //lateinit var statusField: TextView
     lateinit var receivingField: LinearLayout
-    lateinit var sendingField: EditText
-    lateinit var sendButton: FloatingActionButton
-    lateinit var networkDetails: TextView
+    //lateinit var sendingField: EditText
+    //lateinit var sendButton: FloatingActionButton
+    //lateinit var networkDetails: TextView
     lateinit var navigationBar: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         //UI
         findUiElements()
         //mapButtons()
+        listenNavigation()
 
         // Wifi
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
@@ -155,41 +159,51 @@ class MainActivity : AppCompatActivity() {
     private fun findUiElements() {
         // deviceList = findViewById(R.id.deviceList)
         // statusField = findViewById(R.id.statusField)
-        receivingField = findViewById(R.id.receivingField)
-        sendingField = findViewById(R.id.sendingField)
-        sendButton = findViewById(R.id.sendTextButton)
+        //receivingField = findViewById(R.id.receivingField)
+        //sendingField = findViewById(R.id.sendingField)
+        //sendButton = findViewById(R.id.sendTextButton)
         navigationBar = findViewById(R.id.navigationBar)
-        networkDetails = findViewById(R.id.networkDetails)
+        //networkDetails = findViewById(R.id.networkDetails)
     }
 
-    private fun mapButtons() {
+    /*private fun mapButtons() {
         sendButton.setOnClickListener {
             val text = sendingField.text.toString().trim()
             broadcastManager.sendText(text)
             sendingField.text.clear()
         }
     }
+    */
 
     // Not sure if this is how it's done but something like this was shown in the
     // material design guide for the nav bar
     private fun listenNavigation() {
+
         navigationBar.setOnItemSelectedListener{ item ->
             when(item.itemId) {
                 R.id.settings -> {
-                    // Change screen to settings
+                    switchFragment(Settings::class.java)
                     true
                 }
                 R.id.chat -> {
-                    // Change screen to chat
+                    switchFragment(Chat::class.java)
                     true
                 }
                 R.id.networks-> {
-                    // Change screen to networks
+                    switchFragment(Networks::class.java)
                     true
                 }
                 else -> false
             }
         }
+    }
+
+    private fun switchFragment(target: Class<*>) {
+        val f: Fragment = target.newInstance() as Fragment
+        val fm = supportFragmentManager
+        val transaction = fm.beginTransaction()
+        transaction.replace(R.id.fragmentContainerView, f)
+        transaction.commit()
     }
 
     private fun addIntentFilters() {
