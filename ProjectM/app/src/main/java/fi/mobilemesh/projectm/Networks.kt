@@ -59,10 +59,10 @@ class Networks : Fragment() {
         val cardView = view?.let {
             CardView(it.context).apply {
                 id = R.id.nodecard
-                layoutParams = TableRow.LayoutParams(dpToPx(context, 380), dpToPx(context, 60))
+                layoutParams = TableRow.LayoutParams(dpToPx(380), dpToPx(60))
                 setCardBackgroundColor(Color.parseColor("#434343"))
-                radius = dpToPx(context, 10f)
-                setContentPadding(dpToPx(context, 16), dpToPx(context, 16), dpToPx(context, 16), dpToPx(context, 16))
+                radius = dpToPx(10f)
+                setContentPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16))
                 isClickable = true
 
                 setOnClickListener{
@@ -95,14 +95,14 @@ class Networks : Fragment() {
     }
 
     // Helper function to convert dp to px
-    private fun dpToPx(context: Context, dp: Int): Int {
-        val scale = context.resources.displayMetrics.density
-        return (dp * scale + 0.5f).toInt()
+    private fun dpToPx(dp: Int): Int {
+        val scale = view?.context?.resources?.displayMetrics?.density
+        return (dp * scale!! + 0.5f).toInt()
     }
 
-    private fun dpToPx(context: Context, dp: Float): Float {
-        val scale = context.resources.displayMetrics.density
-        return dp * scale + 0.5f
+    private fun dpToPx(dp: Float): Float {
+        val scale = view?.context?.resources?.displayMetrics?.density
+        return dp * scale!! + 0.5f
     }
 
     companion object {
