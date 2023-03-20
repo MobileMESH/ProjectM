@@ -17,9 +17,12 @@ import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,6 +40,7 @@ class Chat : Fragment() {
     private var param2: String? = null
 
     private lateinit var dao: MessageQueries
+    private lateinit var broadcastManager: BroadcastManager
 
     lateinit var sendButton: FloatingActionButton
     lateinit var sendingField: EditText
@@ -54,9 +58,8 @@ class Chat : Fragment() {
     private fun mapButtons() {
         sendButton.setOnClickListener {
             val text = sendingField.text.toString().trim()
-            println("Button was pressed")
-            //broadcastManager.sendText(text)
             sendingField.text.clear()
+            CoroutineScope(Dispatchers.IO).launch { sendMessage(text) }
         }
     }
 
@@ -72,6 +75,7 @@ class Chat : Fragment() {
         sendButton = view.findViewById(R.id.sendTextButton)
 
         dao = MessageDatabase.getInstance(view.context).dao
+        broadcastManager = BroadcastManager.getInstance(view.context)
 
         mapButtons()
 
@@ -81,7 +85,54 @@ class Chat : Fragment() {
     }
 
     /**
-     * Creates a message on the chat are from given message parameters
+     * Used to initiate sending a message and checking it is valid.
+     * Uses BroadcastManager.transferText() for actual transfer
+     */
+    private suspend fun sendMessage(text: String) {
+        // Can't send message if there is no connection
+        if (!broadcastManager.isConnected()) {
+            view?.let {
+                showNeutralAlert(
+                    "No connection!",
+                    "You are not connected to any device.",
+                    it.context)
+            }
+            return
+        }
+        // Can't send empty message
+        if (text == "") {
+            view?.let {
+                showNeutralAlert(
+                    "Empty message",
+                    "Can not send empty message (this is a placeholder)",
+                    it.context)
+            }
+            return
+        }
+
+        val time = Date(System.currentTimeMillis())
+        // TODO: Set chat group id properly. Current is a placeholder
+        val id = dao.getNextMessageId(0)
+        // TODO: Get sender name from Device object (probably?)
+        // TODO: Get chat group id
+        // TODO: Get unique message id within chat group (should be in rising order)
+        val message = Message(id, 0, "SENDER", time, text)
+
+        broadcastManager.transferText(message)
+
+        message.isOwnMessage = true
+        dao.insertMessage(message)
+
+        // TODO: Set color properly (UI team?)
+        val messageColor = Color.parseColor("#017f61")
+        val textColor = Color.BLACK
+
+        withContext(Dispatchers.Main) { createMessage(message, messageColor, textColor) }
+    }
+
+    /**
+     * Creates a message on the chat are from given message parameters.
+     * Make sure to call this in the main thread
      */
     private fun createMessage(message: Message, messageColor: Int, textColor: Int) {
         val btn = Button(activity)
@@ -121,9 +172,9 @@ class Chat : Fragment() {
             val messages = dao.getChatGroupMessages(0)
             messages.forEach {
                 val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
-                else Color.parseColor("#262626")
+                    else Color.parseColor("#262626")
                 val textColor = if (it.isOwnMessage) Color.BLACK
-                else Color.WHITE
+                    else Color.WHITE
                 createMessage(it, messageColor, textColor)
             }
         }

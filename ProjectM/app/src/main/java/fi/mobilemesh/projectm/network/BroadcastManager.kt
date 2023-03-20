@@ -53,7 +53,6 @@ class BroadcastManager(
         }
     }
 
-
     // TODO: (General) Move text field editing to separate class/back to MainActivity.kt
     private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
@@ -172,32 +171,18 @@ class BroadcastManager(
         }
     }
 
-    fun sendText(text: String) {
-        if (targetAddress == null) {
-            //showNeutralAlert("No connection!", "You are not connected to any device.", activity)
+    fun transferText(message: Message) {
+        // Should be checked externally but left for redundancy
+        if (!isConnected()) {
             return
         }
 
-        // TODO: Should not be able to send empty message
-        if (text == "") {
-            /*showNeutralAlert("Empty message",
-                "Can not send empty message (this is a placeholder)",
-                activity)*/
+        // Empty message should be checked externally but left for redundancy
+        if (message.body == "") {
             return
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            withContext(Dispatchers.Main) {
-                //createMessage(text, Gravity.END, Color.parseColor("#017f61"), Color.BLACK)
-            }
-            val time = Date(System.currentTimeMillis())
-            // TODO: Set chat group id properly. Current is a placeholder
-            val id = dao.getNextMessageId(0)
-            // TODO: Get sender name from Device object (probably?)
-            // TODO: Get chat group id
-            // TODO: Get unique message id within chat group (should be in rising order)
-            val message = Message(id, 0, "SENDER", time, text)
-
             val socket = Socket()
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
             val ostream = ObjectOutputStream(BufferedOutputStream(socket.getOutputStream()))
@@ -206,15 +191,11 @@ class BroadcastManager(
 
             ostream.close()
             socket.close()
-
-            message.isOwnMessage = true
-
-            withContext(Dispatchers.Main) {
-                //createMessage(message, Color.parseColor("#017f61"), Color.BLACK)
-            }
-
-            dao.insertMessage(message)
         }
+    }
+
+    fun isConnected(): Boolean {
+        return targetAddress != null
     }
 
     // TODO: Move this somewhere more sensible
