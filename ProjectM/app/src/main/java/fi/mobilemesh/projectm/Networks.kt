@@ -101,7 +101,7 @@ class Networks : Fragment() {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
             text = device.deviceName
-            setTextAlignment(View.TEXT_ALIGNMENT_CENTER)
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
             setTextColor(ContextCompat.getColor(context, R.color.white))
             textSize = 16f
         }
