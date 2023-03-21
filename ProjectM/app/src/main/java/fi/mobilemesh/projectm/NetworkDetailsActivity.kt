@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.app.AlertDialog
 
 class NetworkDetailsActivity : AppCompatActivity() {
 
@@ -26,18 +27,39 @@ class NetworkDetailsActivity : AppCompatActivity() {
         // UI
         findUiElements()
 
-        setBackToChatButton()
+        // Back to chat
+        setupOpenChatBtn()
+
+        // Alert to disconnect from network
+        confirmLeaveNetwork()
 
         // This needs to be updated when Device object is ready.
         setupConnectedDevicesList()
     }
 
-    private fun setBackToChatButton() {
+    private fun setupOpenChatBtn() {
         // Set up the "Back to Chat" button to return to MainActivity (as it is the chat for now)
         val button = findViewById<Button>(R.id.openChatButton)
         button.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    private fun confirmLeaveNetwork() {
+        leaveNetworkButton.setOnClickListener {
+            val builder = AlertDialog.Builder(this@NetworkDetailsActivity)
+            builder.setMessage("Are you sure you want to leave the network?")
+                .setCancelable(false)
+                .setPositiveButton("Yes") { dialog, id ->
+                    // TODO: Disconnect device from network
+                }
+                .setNegativeButton("No") { dialog, id ->
+                    // Dismiss the dialog
+                    dialog.dismiss()
+                }
+            val alert = builder.create()
+            alert.show()
         }
     }
 
