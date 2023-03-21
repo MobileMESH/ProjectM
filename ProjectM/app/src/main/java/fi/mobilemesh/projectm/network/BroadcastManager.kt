@@ -58,26 +58,12 @@ class BroadcastManager(
 
     private val serverSocket = ServerSocket(PORT)
     private var targetAddress: InetAddress? = null
-    // TODO: Find a workaround for this, it ain't gonna work for long
-    //  (might crash when switching back and forth between network fragment)
-    private lateinit var networks: Networks
-
-    /**
-     * Temporary function for setting networks fragment to create buttons for connecting
-     * devices
-     * @param networks Networks.kt fragment to set as current network screen
-     */
-    fun setNetworks(networks: Networks) {
-        this.networks = networks
-    }
 
     /**
      * Listener object for when nearby devices get updated
      */
-    val peerListListener = PeerListListener { peers ->
-        val refreshedPeers = peers.deviceList
-        networks.clearDevices()
-        refreshedPeers.forEach { networks.createCardViewLayout(it) }
+    private val peerListListener = PeerListListener { peers ->
+        Networks.refreshDeviceList(peers.deviceList)
     }
 
     /**
@@ -218,7 +204,7 @@ class BroadcastManager(
      * Transfers text to the other device with a [Message].
      * @param message [Message] to transfer to the other device
      */
-    suspend fun transferText(message: Message) {
+    fun transferText(message: Message) {
         // Should be checked externally but left for redundancy
         if (!isConnected()) {
             return

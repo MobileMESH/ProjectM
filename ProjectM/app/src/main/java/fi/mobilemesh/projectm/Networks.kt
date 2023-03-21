@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 import fi.mobilemesh.projectm.network.BroadcastManager
 
 // TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+//  the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
@@ -47,17 +47,29 @@ class Networks : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_networks, container, false)
         broadcastManager = BroadcastManager.getInstance(view.context)
-            .also { it.setNetworks(this) }
         nodeList = view.findViewById(R.id.nodecard)
+
+        INSTANCE = this
 
         return view
     }
 
     /**
-     * Clears all nearby devices from the nodeCard displaying them
+     * Called after onCreateView() has finished, so view is not null
      */
-    fun clearDevices() {
-        nodeList.removeAllViews()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (deviceList.isNotEmpty()) refreshDeviceCards()
+    }
+
+    /**
+     * Reloads the device list onto view
+     */
+    private fun refreshDeviceCards() {
+        if (view?.context != null) {
+            nodeList.removeAllViews()
+            deviceList.forEach { createCardViewLayout(it) }
+        }
     }
 
     /**
@@ -67,14 +79,13 @@ class Networks : Fragment() {
      */
     fun createCardViewLayout(device: WifiP2pDevice) {
         // Creating CardView
-        println(view)
         val cardView = view?.let {
             CardView(it.context).apply {
                 id = R.id.nodecard
-                layoutParams = TableRow.LayoutParams(dpToPx(380), dpToPx(60))
+                layoutParams = TableRow.LayoutParams(380, 60)
                 setCardBackgroundColor(Color.parseColor("#434343"))
-                radius = dpToPx(10f)
-                setContentPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16))
+                radius = 10F
+                setContentPadding(16, 16, 16, 16)
                 isClickable = true
 
                 setOnClickListener{
@@ -84,7 +95,7 @@ class Networks : Fragment() {
         }
 
         // Creating TextView
-        val textView = TextView(context).apply {
+        val textView = TextView(view?.context).apply {
             layoutParams = TableRow.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -107,7 +118,7 @@ class Networks : Fragment() {
     }
 
     // Helper function to convert dp to px
-    private fun dpToPx(dp: Int): Int {
+    /*private fun dpToPx(dp: Int): Int {
         val scale = view?.context?.resources?.displayMetrics?.density
         return (dp * scale!! + 0.5f).toInt()
     }
@@ -115,7 +126,7 @@ class Networks : Fragment() {
     private fun dpToPx(dp: Float): Float {
         val scale = view?.context?.resources?.displayMetrics?.density
         return dp * scale!! + 0.5f
-    }
+    }*/
 
     companion object {
         /**
@@ -135,5 +146,15 @@ class Networks : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+
+        @Volatile
+        private var INSTANCE: Networks? = null
+        private val deviceList: MutableCollection<WifiP2pDevice> = mutableListOf()
+
+        fun refreshDeviceList(devices: Collection<WifiP2pDevice>) {
+            deviceList.clear()
+            deviceList.addAll(devices)
+            INSTANCE?.refreshDeviceCards()
+        }
     }
 }
