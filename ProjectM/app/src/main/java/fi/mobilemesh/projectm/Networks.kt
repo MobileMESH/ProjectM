@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import fi.mobilemesh.projectm.network.BroadcastManager
+import java.net.InetAddress
 
 // TODO: Rename parameter arguments, choose names that match
 //  the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -90,9 +91,14 @@ class Networks : Fragment() {
         btn.text = device.deviceName
         btn.setOnClickListener {
             broadcastManager.connectToDevice(device.deviceAddress)
+            connectedDevice = device.deviceName
         }
 
         nodeList.addView(btn)
+    }
+
+    private fun refreshConnectionStatus(connectedDevice: InetAddress?) {
+        availableView.text = connectedDevice?.toString() ?: "Available"
     }
 
     companion object {
@@ -117,11 +123,16 @@ class Networks : Fragment() {
         @Volatile
         private var INSTANCE: Networks? = null
         private val deviceList: MutableCollection<WifiP2pDevice> = mutableListOf()
+        private var connectedDevice: String? = null
 
         fun refreshDeviceList(devices: Collection<WifiP2pDevice>) {
             deviceList.clear()
             deviceList.addAll(devices)
             INSTANCE?.refreshDeviceCards()
+        }
+
+        fun changeTargetAddress(target: InetAddress?) {
+            INSTANCE?.refreshConnectionStatus(target)
         }
     }
 }

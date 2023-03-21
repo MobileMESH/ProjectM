@@ -72,6 +72,9 @@ class BroadcastManager(
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
     // TODO: Show the user information about status
     private val connectionInfoListener = ConnectionInfoListener { conn ->
+        // TODO: Get device name instead
+        Networks.changeTargetAddress(conn.groupOwnerAddress)
+
         if (!conn.groupFormed) {
             targetAddress = null
             return@ConnectionInfoListener
