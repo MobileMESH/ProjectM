@@ -53,6 +53,10 @@ class Chat : Fragment() {
         println("Chat")
     }
 
+    /**
+     * All buttons within this fragment can have their click listeners set here. Should be
+     * called only after assigning all UI elements
+     */
     private fun mapButtons() {
         sendButton.setOnClickListener {
             val text = sendingField.text.toString()
@@ -83,7 +87,8 @@ class Chat : Fragment() {
     }
 
     /**
-     * Updates the chat every time a new message is added to the database. WIP
+     * Updates the chat every time a new message is added to the database (a message is receive).
+     * WIP
      */
     // TODO: Don't reload all messages...
     private fun observeLiveMessages() {
@@ -97,6 +102,7 @@ class Chat : Fragment() {
     /**
      * Used to initiate sending a message and checking it is valid.
      * Uses BroadcastManager.transferText() for actual transfer
+     * @param text text as [String] to send
      */
     private suspend fun sendMessage(text: String) {
         if (!canSendMessage(text)) return
@@ -124,9 +130,15 @@ class Chat : Fragment() {
     /**
      * Creates a message on the chat are from given message parameters.
      * Make sure to call this in the main thread
+     * @param message a [Message] instance from which to create the visual message in the chat
+     * area
+     * @param messageColor background color for the message
+     * @param textColor color of the messages text
      */
+    // TODO: Make the message using proper tools (UI team?)
     private fun createMessage(message: Message, messageColor: Int, textColor: Int) {
         val btn = Button(activity)
+        // Left/right side of screen depending on whose message this is
         val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
 
         btn.isClickable = false
@@ -174,6 +186,9 @@ class Chat : Fragment() {
     /**
      * Checks if a given message can be sent. Checks both connection status through
      * BroadcastManager and that the message isn't empty/all whitespace
+     * @param text text content of the message to check
+     * @return true if the device is connected to the network and the message is not empty,
+     * false if either condition fails
      */
     private suspend fun canSendMessage(text: String): Boolean {
         return CoroutineScope(Dispatchers.Main).async {
