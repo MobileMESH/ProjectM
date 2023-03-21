@@ -42,7 +42,5 @@
                 app:defaultNavHost="true"
                 app:navGraph="@navigation/app_navigation" />
         </TableRow>
-
     </TableLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
