@@ -7,16 +7,15 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
-import android.content.pm.PackageManager
+import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager.Channel
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import fi.mobilemesh.projectm.network.BroadcastManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.w3c.dom.Text
+import fi.mobilemesh.projectm.network.MyPreferences
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,6 +46,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var sendingField: EditText
     lateinit var sendButton: Button
 
+    private lateinit var myPrefs: MyPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -62,6 +63,12 @@ class MainActivity : AppCompatActivity() {
         channel = wifiManager.initialize(this, mainLooper, null)
         broadcastManager = BroadcastManager(wifiManager, channel, this)
         addIntentFilters()
+
+        myPrefs = MyPreferences(this, device = WifiP2pDevice())
+        //saveMyValue("Jahid Sagor")
+        myPrefs.getDeviceAddress()?.let { Log.d("Device Address: ", it) }
+        myPrefs.getDeviceName()?.let { Log.d("Device Name: ", it) }
+
 
     }
     private fun requestPermissions() {
@@ -131,5 +138,14 @@ class MainActivity : AppCompatActivity() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
+    }
+
+
+    fun saveMyValue(value: String) {
+       // myPrefs.setMyValue(value)
+    }
+
+    fun getMyValue(): String? {
+        return myPrefs.getDeviceAddress()
     }
 }

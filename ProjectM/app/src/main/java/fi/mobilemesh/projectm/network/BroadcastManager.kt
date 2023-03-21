@@ -59,6 +59,7 @@ class BroadcastManager(
     // TODO: Move this somewhere more sensible
     private fun createButton(device: WifiP2pDevice) {
         val btn = Button(activity)
+        var devicename = device.deviceName
         btn.text = device.deviceName
 
         btn.setOnClickListener {

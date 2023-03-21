@@ -1,9 +1,46 @@
 package fi.mobilemesh.projectm.network
 
+import android.content.Context
 import android.net.wifi.p2p.WifiP2pDevice
 
-class Device (device: WifiP2pDevice) : WifiP2pDevice() {
-    val macAdd = device.deviceAddress
-    val name = device.deviceName
+open class Device (device: WifiP2pDevice) : WifiP2pDevice() {
+    private val macAdd = device.deviceAddress
+    private val name = device.deviceName
     val availableDevices = listOf<Device>()
+
+    fun returnName(): String{
+        return name
+    }
+    fun returnAddress(): String{
+        return macAdd
+    }
 }
+
+
+class MyPreferences(context: Context, device: WifiP2pDevice): Device(device) {
+
+    private val sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+
+    init {
+        setDeviceAddress(returnAddress())
+        setDeviceName(returnName())
+    }
+
+
+
+    fun getDeviceName(): String? {
+        return sharedPreferences.getString("deviceName", returnName())
+    }
+    fun getDeviceAddress(): String? {
+        return sharedPreferences.getString("deviceAddress", returnAddress())
+    }
+
+    private fun setDeviceName(value: String) {
+        sharedPreferences.edit().putString("deviceName", getDeviceName()).apply()
+    }
+
+    private fun setDeviceAddress(value: String) {
+        sharedPreferences.edit().putString("deviceName", getDeviceName()).apply()
+    }
+}
+
