@@ -8,16 +8,20 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
 import android.net.wifi.p2p.WifiP2pManager.Channel
-import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
+import fi.mobilemesh.projectm.database.MessageDatabase
+import fi.mobilemesh.projectm.database.entities.ChatGroup
+import fi.mobilemesh.projectm.network.BroadcastManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import fi.mobilemesh.projectm.network.BroadcastManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -71,6 +75,14 @@ class MainActivity : AppCompatActivity() {
         channel = wifiManager.initialize(this, mainLooper, null)
         broadcastManager = BroadcastManager(wifiManager, channel, this)
         addIntentFilters()
+
+        // Message database (Data Access Object)
+        val dao = MessageDatabase.getInstance(this).dao
+        CoroutineScope(Dispatchers.Main).launch {
+            // TODO: Placeholder chat group for tests. Should be replaced when chat groups are
+            //  implemented
+            dao.insertChatGroup(ChatGroup(0))
+        }
 
     }
 
