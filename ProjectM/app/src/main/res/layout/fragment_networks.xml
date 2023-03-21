@@ -1,112 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="right"
+    android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".Networks">
+    tools:context=".MainActivity">
 
-    <TableLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="2dp"
-        tools:layout_editor_absoluteY="2dp">
+        android:orientation="vertical">
+    <TextView
+        android:id="@+id/availableView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Available"
+        android:textColor="#FFFFFF"
+        android:textAlignment="center"
+        android:padding="10dp"
+        android:textSize="20sp" />
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <!-- Category for networks that have been connected previously.
-            Can probably be left out if no time so I commented it out-->
-            <!--<TextView
-                android:id="@+id/previousView"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Previously used"
-                android:textAlignment="center"
-                android:textSize="20sp" />
+    <LinearLayout
+        android:id="@+id/deviceList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:padding="16sp">
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                app:cardBackgroundColor="#434343"
-                app:contentPadding="16dp">
+        <!--
+                Clickable cards for each available node
+                TODO: find a way to bring these settings to the deviceCard
+               -->
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Available device here"
-                    android:textColor="@color/design_default_color_on_primary"
-                    android:textAlignment="center"
-                    android:textSize="16sp"
-                    />
-            </androidx.cardview.widget.CardView>
-                -->
-
-        </TableRow>
-
-        <TableRow>
-
+        <!-- Model for the card view, trying to move to createDeviceCard in Broadcast Manager
+        <androidx.cardview.widget.CardView
+            android:id="@+id/nodecard"
+            android:layout_width="360dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:clickable="true"
+            app:cardBackgroundColor="@color/network_inactive"
+            app:cardCornerRadius="10dp"
+            app:contentPadding="16dp">
             <TextView
-                android:id="@+id/availableView"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Available"
+                android:text="Available device here"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textColor="@color/design_default_color_on_primary"
+                android:textSize="16sp" />
+        </androidx.cardview.widget.CardView>
+        -->
 
-        </TableRow>
+    </LinearLayout>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="false"
-            android:padding="16dp">
-            <!--
-            Clickable cards for each available node
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end">
+        <Button
+            android:id="@+id/button"
 
-            Could be upgraded to:
-            <com.google.android.material.card.MaterialCardView>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:backgroundTint="@color/buttons"
+            android:text="Create a network"
+            android:textSize="16sp" />
 
-           android:clickable="true"
-           android:focusable="true"
-           android:textSize="16sp"
-           -->
+    </LinearLayout>
+    </LinearLayout>
 
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/nodecard"
-                android:layout_width="380dp"
-                android:layout_height="60dp"
-                android:clickable="true"
-                app:cardBackgroundColor="#434343"
-                app:cardCornerRadius="10dp"
-                app:contentPadding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Available device here"
-                    android:textAlignment="center"
-                    android:textColor="@color/design_default_color_on_primary"
-                    android:textSize="16sp" />
-            </androidx.cardview.widget.CardView>
-        </TableRow>
-
-        <TableRow>
-
-            <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:text="Create a network" />
-        </TableRow>
-
-
-    </TableLayout>
-</LinearLayout>
+</RelativeLayout>
