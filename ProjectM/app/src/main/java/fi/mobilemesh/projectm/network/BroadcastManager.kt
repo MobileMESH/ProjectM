@@ -49,9 +49,9 @@ class BroadcastManager(
 
     private val peerListListener = PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
-    //    activity.deviceList.removeAllViews()
-        refreshedPeers.forEach { createDeviceButton(it) }
-     }
+        activity.deviceList.removeAllViews()
+        refreshedPeers.forEach { createDeviceCard(it) }
+    }
 
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
     private val connectionInfoListener = ConnectionInfoListener { conn ->
@@ -70,6 +70,16 @@ class BroadcastManager(
         }
     }
 
+    // TODO: Move this somewhere more sensible
+    private fun createDeviceCard(device: WifiP2pDevice) {
+        val card = Button(activity)
+        card.text = device.deviceName
+
+        card.setOnClickListener {
+            connectToDevice(device.deviceAddress)
+        }
+
+        activity.deviceList.addView(card)
     init {
         CoroutineScope(Dispatchers.Main).launch {
             val messages = dao.getChatGroupMessages(0)
@@ -251,6 +261,6 @@ class BroadcastManager(
             connectToDevice(device.deviceAddress)
         }
 
-       //activity.deviceList.addView(btn)
+       activity.deviceList.addView(btn)
     }
 }

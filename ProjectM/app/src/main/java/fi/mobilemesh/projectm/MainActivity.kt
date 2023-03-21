@@ -10,7 +10,10 @@ import android.content.IntentFilter
 import android.net.wifi.p2p.WifiP2pManager.Channel
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TableRow
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.cardview.widget.CardView
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.network.BroadcastManager
@@ -43,12 +46,14 @@ class MainActivity : AppCompatActivity() {
     private val intentFilter = IntentFilter()
 
     // UI
-    //
-    // The deviceList will be found on network view but I'm not sure if we need statusField?
-    // The message of having no connection could be shown in the receivingField instead!
-    //lateinit var deviceList: LinearLayout
+
+    // Networks
+    lateinit var deviceCard: CardView
+    lateinit var deviceList: TableRow
     //lateinit var statusField: TextView
-    lateinit var receivingField: LinearLayout
+
+    // Chat
+    lateinit var receivingField: TextView
     lateinit var sendingField: EditText
     lateinit var sendButton: FloatingActionButton
     lateinit var networkDetails: TextView
@@ -56,13 +61,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.chat_view)
+        setContentView(R.layout.networks)
 
         requestPermissions()
 
         //UI
         findUiElements()
         //mapButtons()
+
 
         // Wifi
         wifiManager = getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
@@ -79,17 +85,21 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
     private fun requestPermissions() {
 
         val permissionsToRequest = mutableListOf<String>()
         for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED)
-            {
+            if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
                 permissionsToRequest.add(permission)
             }
         }
         if (permissionsToRequest.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray() , REQUEST_CODE)
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsToRequest.toTypedArray(),
+                REQUEST_CODE
+            )
         }
     }
 
@@ -126,8 +136,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun findUiElements() {
-        // deviceList = findViewById(R.id.deviceList)
-        // statusField = findViewById(R.id.statusField)
+        //statusField = findViewById(R.id.statusField)
+        deviceList = findViewById(R.id.deviceList)
+
+        sendingField = findViewById(R.id.sendingField)
         receivingField = findViewById(R.id.receivingField)
         sendingField = findViewById(R.id.sendingField)
         sendButton = findViewById(R.id.sendTextButton)
@@ -141,6 +153,22 @@ class MainActivity : AppCompatActivity() {
             broadcastManager.sendText(text)
             sendingField.text.clear()
         }
+
+        // Builds network join alert when you click the card
+        val builder = AlertDialog.Builder(this)
+        deviceCard.setOnClickListener {
+            builder.setMessage("Joining network")
+            //builder.setNegativeButton("Cancel") { dialogInterface, it ->
+                // stop connection
+            //}
+                .show()
+        }
+
+        //Top bar menu listeners
+        //chatMenu.setOnClickListener {
+        //    val goToChat = Intent(this, Chat::class.java)
+        //    startActivity(goToChat)
+        //}
     }
 
     // Not sure if this is how it's done but something like this was shown in the
@@ -148,15 +176,15 @@ class MainActivity : AppCompatActivity() {
     private fun listenNavigation() {
         navigationBar.setOnItemSelectedListener{ item ->
             when(item.itemId) {
-                R.id.item_1 -> {
+                R.id.settingsMenu -> {
                     // Change screen to settings
                     true
                 }
-                R.id.item_2 -> {
+                R.id.chatMenu -> {
                     // Change screen to chat
                     true
                 }
-                R.id.item_3 -> {
+                R.id.networksMenu -> {
                     // Change screen to networks
                     setContentView(R.layout.networks)
                     true

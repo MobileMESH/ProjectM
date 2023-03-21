@@ -4,6 +4,8 @@
     <color name="secondary_bars_green">#214c47</color>
     <color name="tertiary_bars">#262626</color>
     <color name="background">#1a1a1a</color>
+    <color name="network_inactive"> #2D3130</color>
+    <color name="network_active">#214c47</color>
     <color name="buttons">#018768</color>
     <color name="messages_own">#017f61</color>
     <color name="messages_others"> #262626</color>
