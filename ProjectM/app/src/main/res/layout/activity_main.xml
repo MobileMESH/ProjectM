@@ -19,6 +19,7 @@
                 android:id="@+id/navigationBar"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:background="@color/main_bars_green"
                 android:clickable="true"
                 android:focusable="true"
@@ -32,13 +33,14 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragmentContainerView"
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 app:defaultNavHost="true"
                 app:navGraph="@navigation/app_navigation" />
         </TableRow>
