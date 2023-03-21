@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_navigation"
+    app:startDestination="@id/networks">
+    <fragment
+        android:id="@+id/chat"
+        android:name="fi.mobilemesh.projectm.Chat"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" />
+    <fragment
+        android:id="@+id/networks"
+        android:name="fi.mobilemesh.projectm.Networks"
+        android:label="fragment_networks"
+        tools:layout="@layout/fragment_networks" />
+    <fragment
+        android:id="@+id/settings"
+        android:name="fi.mobilemesh.projectm.Settings"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+</navigation>
