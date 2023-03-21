@@ -33,7 +33,7 @@
         android:padding="16sp">
 
         <!--
-                Clickable cards for each available node
+                Clickable cards for each node
                 TODO: find a way to bring these settings to the deviceCard
                -->
 
