@@ -37,7 +37,7 @@
                 TODO: find a way to bring these settings to the deviceCard
                -->
 
-        <!-- Model for the card view, trying to move to createDeviceCard in Broadcast Manager
+
         <androidx.cardview.widget.CardView
             android:id="@+id/nodecard"
             android:layout_width="360dp"
