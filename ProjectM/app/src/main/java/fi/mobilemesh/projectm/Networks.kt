@@ -53,10 +53,18 @@ class Networks : Fragment() {
         return view
     }
 
+    /**
+     * Clears all nearby devices from the nodeCard displaying them
+     */
     fun clearDevices() {
         nodeList.removeAllViews()
     }
 
+    /**
+     * Creates a card for given device so it can be connected to Usually called from
+     * BroadcastManager when a new nearby device is detected
+     * @param device device for which to create the interactable card
+     */
     fun createCardViewLayout(device: WifiP2pDevice) {
         // Creating CardView
         println(view)
@@ -127,10 +135,5 @@ class Networks : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
-        @Volatile
-        private var instance: Networks?=null
-        fun getInstance(): Networks{
-            synchronized(this){ return instance ?: Networks().also { instance = it } }
-        }
     }
 }
