@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -28,8 +30,12 @@ class Networks : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    // Wi-Fi Direct
     private lateinit var broadcastManager: BroadcastManager
-    private lateinit var nodeList: CardView
+
+    // UI
+    private lateinit var availableView: TextView
+    private lateinit var nodeList: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +45,6 @@ class Networks : Fragment() {
         }
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,7 +52,9 @@ class Networks : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_networks, container, false)
         broadcastManager = BroadcastManager.getInstance(view.context)
-        nodeList = view.findViewById(R.id.nodecard)
+
+        availableView = view.findViewById(R.id.availableView)
+        nodeList = view.findViewById(R.id.nodeList)
 
         INSTANCE = this
 
@@ -77,56 +84,16 @@ class Networks : Fragment() {
      * BroadcastManager when a new nearby device is detected
      * @param device device for which to create the interactable card
      */
-    fun createCardViewLayout(device: WifiP2pDevice) {
-        // Creating CardView
-        val cardView = view?.let {
-            CardView(it.context).apply {
-                id = R.id.nodecard
-                layoutParams = TableRow.LayoutParams(380, 60)
-                setCardBackgroundColor(Color.parseColor("#434343"))
-                radius = 10F
-                setContentPadding(16, 16, 16, 16)
-                isClickable = true
-
-                setOnClickListener{
-                    broadcastManager.connectToDevice(device.deviceAddress)
-                }
-            }
+    // TODO: Styles for buttons
+    private fun createCardViewLayout(device: WifiP2pDevice) {
+        val btn = Button(view?.context)
+        btn.text = device.deviceName
+        btn.setOnClickListener {
+            broadcastManager.connectToDevice(device.deviceAddress)
         }
 
-        // Creating TextView
-        val textView = TextView(view?.context).apply {
-            layoutParams = TableRow.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-            text = device.deviceName
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-            setTextColor(ContextCompat.getColor(context, R.color.white))
-            textSize = 16f
-        }
-
-        // Adding TextView to CardView
-        cardView?.addView(textView)
-
-        // Creating TableRow for CardView
-        val tableRow = TableRow(context)
-        tableRow.addView(cardView)
-
-        // Adding TableRow to your TableLayout or any other ViewGroup
-        nodeList.addView(tableRow)
+        nodeList.addView(btn)
     }
-
-    // Helper function to convert dp to px
-    /*private fun dpToPx(dp: Int): Int {
-        val scale = view?.context?.resources?.displayMetrics?.density
-        return (dp * scale!! + 0.5f).toInt()
-    }
-
-    private fun dpToPx(dp: Float): Float {
-        val scale = view?.context?.resources?.displayMetrics?.density
-        return dp * scale!! + 0.5f
-    }*/
 
     companion object {
         /**
