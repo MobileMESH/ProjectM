@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="78dp"
     android:background="@drawable/device_list_row_bg"
-    tools:context=".NetworkDetailsActivity">
+    tools:context=".Chat">
 
     <!-- This will need to be changed when the profile picture can be changed by the user
         Look into AvatarView, that might be an option for that? -->
