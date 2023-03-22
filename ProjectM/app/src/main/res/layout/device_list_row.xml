@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="78dp"
+    android:background="@drawable/device_list_row_bg"
+    tools:context=".NetworkDetailsActivity">
+
+    <!-- This will need to be changed when the profile picture can be changed by the user
+        Look into AvatarView, that might be an option for that? -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/icon"
+        android:layout_width="78dp"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:contentDescription="Avatar"
+        android:padding="16dp"
+        android:src="@drawable/device_default_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full" />
+
+    <!-- For now you can see both the name and the address, might change to only name later.
+        Placement can also be changed-->
+
+    <TextView
+        android:id="@+id/deviceName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@id/icon"
+        android:padding="8dp"
+        android:singleLine="true"
+        android:text="Device Name"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.028" />
+
+    <TextView
+        android:id="@+id/deviceAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@id/icon"
+        android:padding="8dp"
+        android:singleLine="true"
+        android:text="Device Address"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintTop_toBottomOf="@+id/deviceName" />
+
+    <!-- need to add the location icon for each user at the end of the row -->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
