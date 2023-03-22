@@ -85,7 +85,7 @@
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
                 app:srcCompat="@drawable/arrow_forward_icon"
                 app:tint="@null"
-                tools:ignore="SpeakableTextPresentCheck" /
+                tools:ignore="SpeakableTextPresentCheck" />
         </LinearLayout>
 
     </LinearLayout>
