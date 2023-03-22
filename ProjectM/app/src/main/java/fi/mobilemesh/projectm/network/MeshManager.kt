@@ -2,34 +2,22 @@ package fi.mobilemesh.projectm.network
 
 import android.net.wifi.p2p.WifiP2pDevice
 
+/**
+ * handles the management of discovered devices,
+ * device connections, and group operations within a mesh network.
+ */
 class MeshManager(private val broadcastManager: BroadcastManager){
     private val connectedDevices: MutableMap<String, Device> = mutableMapOf()
     private val deviceGroups: MutableMap<String,MutableList<Device>> = mutableMapOf()
     private val devicesToJoin: MutableMap<String, Device> = mutableMapOf()
 
 
-    fun handleDiscoveredDevice(device: WifiP2pDevice){
+    fun handleDiscoveredDevice(device: Device){
         // Check if the device is already connected or wants to join
         if (connectedDevices.containsKey(device.deviceAddress) || devicesToJoin.containsKey(device.deviceAddress)) {
             return
-
-    }
-
-    fun connectToDevice(deviceAddress: String) {
-        val device = devicesToJoin[deviceAddress] ?: return
-
-        // Use the broadcastManager to connect to the device
-        broadcastManager.connectToDevice(deviceAddress)
-
-        // Move the device from devicesToJoin to connectedDevices
-        devicesToJoin.remove(deviceAddress)
-        connectedDevices[deviceAddress] = device
-
-        // Share the list of devices that want to join with the connected device
-        shareDevicesToJoin(deviceAddress)
-    }
-
-    fun shareDevicesToJoin(targetDeviceAddress: String) {
+        }
+        broadcastManager.connectToDevice(device.deviceAddress)
 
     }
 
@@ -57,5 +45,4 @@ class MeshManager(private val broadcastManager: BroadcastManager){
             group.remove(device)
         }
     }
-}
 }
