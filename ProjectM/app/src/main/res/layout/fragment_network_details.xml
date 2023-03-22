@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:backgroundTint="@color/background"
-    tools:context=".Chat">
+    tools:context=".NetworkDetails">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBar"
