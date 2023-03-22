@@ -12,6 +12,7 @@ import android.widget.*
 import androidx.core.view.marginBottom
 import androidx.core.view.setMargins
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -87,6 +88,21 @@ class Chat : Fragment() {
             chatLayout.visibility = View.VISIBLE
             detailsLayout.visibility = View.GONE
         }
+
+        leaveNetworkButton.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage("Are you sure you want to leave the network?")
+                .setCancelable(false)
+                .setPositiveButton("Yes") { dialog, id ->
+                    // TODO: Disconnect device from network
+                }
+                .setNegativeButton("No") { dialog, id ->
+                    // Dismiss the dialog
+                    dialog.dismiss()
+                }
+            val alert = builder.create()
+            alert.show()
+        }
     }
 
     // This function is used to do all magic
@@ -110,6 +126,8 @@ class Chat : Fragment() {
         broadcastManager = BroadcastManager.getInstance(view.context)
 
         mapButtons()
+
+        setupConnectedDevicesList()
 
         lifecycleScope.launch { observeLiveMessages() }
 
@@ -146,6 +164,31 @@ class Chat : Fragment() {
         networkDescription = detailsLayout.findViewById(R.id.networkDescription)
         openChatButton = detailsLayout.findViewById(R.id.openChatButton)
         leaveNetworkButton = detailsLayout.findViewById(R.id.leaveNetworkButton)
+    }
+
+
+    /**
+     * Sets up the RecyclerView for displaying a list of connected devices.
+     * For now only populates the list with test devices for demo purposes.
+     */
+    // TODO: Update when device object is ready
+    private fun setupConnectedDevicesList() {
+
+        // Set up the RecyclerView for showing connected devices
+        val devices = mutableListOf<DeviceList>()
+
+        // Note: first device should be the one the app is currently running on so that
+        // they appear on top of the device list
+        devices.add(DeviceList("Own device", "Own address" ))
+
+        for (i in 0..20) {
+            devices.add(DeviceList("Test device", "Test address"))
+        }
+
+        connectedDevicesList.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = DevicesAdapter(devices)
+        }
     }
 
     /**
