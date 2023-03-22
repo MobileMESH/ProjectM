@@ -15,7 +15,7 @@
         android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
-        android:contentDescription="@string/icon"
+        android:contentDescription="Avatar"
         android:padding="16dp"
         android:src="@drawable/device_default_icon"
         app:layout_constraintBottom_toBottomOf="parent"
