@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -7,12 +8,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
+import android.widget.*
 import androidx.core.view.marginBottom
 import androidx.core.view.setMargins
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
@@ -40,9 +40,23 @@ class Chat : Fragment() {
     private lateinit var dao: MessageQueries
     private lateinit var broadcastManager: BroadcastManager
 
+    private lateinit var chatLayout: View
+    private lateinit var detailsLayout: View
+    private lateinit var fragmentChat: FrameLayout
+
+    // chat
     lateinit var sendButton: FloatingActionButton
     lateinit var sendingField: EditText
     lateinit var receivingField: LinearLayout
+    lateinit var openDetailsButton: Button
+
+    // details
+    lateinit var networkDetails: TextView
+    lateinit var networkDescription: TextView
+    lateinit var connectedDevicesHeader: TextView
+    lateinit var connectedDevicesList: RecyclerView
+    lateinit var leaveNetworkButton: Button
+    lateinit var openChatButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +77,16 @@ class Chat : Fragment() {
             sendingField.text.clear()
             CoroutineScope(Dispatchers.IO).launch { sendMessage(text) }
         }
+
+        openDetailsButton.setOnClickListener {
+            chatLayout.visibility = View.GONE
+            detailsLayout.visibility = View.VISIBLE
+        }
+
+        openChatButton.setOnClickListener {
+            chatLayout.visibility = View.VISIBLE
+            detailsLayout.visibility = View.GONE
+        }
     }
 
     // This function is used to do all magic
@@ -70,11 +94,17 @@ class Chat : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_chat, container, false)
-        receivingField = view.findViewById(R.id.receivingField)
-        sendingField = view.findViewById(R.id.sendingField)
-        sendButton = view.findViewById(R.id.sendTextButton)
+        val view = inflater.inflate(R.layout.fragment_chat, container, false)
+        fragmentChat = view.findViewById(R.id.fragment_chat)
+
+        inflateChildLayouts(inflater)
+
+        addLayoutsToFrameLayout()
+
+        // Set one layout to be initially hidden
+        detailsLayout.visibility = View.GONE
+
+        findUiElements()
 
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)
@@ -84,6 +114,38 @@ class Chat : Fragment() {
         lifecycleScope.launch { observeLiveMessages() }
 
         return view
+    }
+
+    /**
+     * Inflate the child layouts inside the FrameLayout
+     */
+    private fun inflateChildLayouts(inflater: LayoutInflater) {
+        chatLayout = inflater.inflate(R.layout.chat, fragmentChat, false)
+        detailsLayout = inflater.inflate(R.layout.network_details, fragmentChat, false)
+    }
+
+    /**
+     * Add the child layouts to the FrameLayout
+     */
+    private fun addLayoutsToFrameLayout() {
+        fragmentChat.addView(chatLayout)
+        fragmentChat.addView(detailsLayout)
+    }
+
+    private fun findUiElements() {
+        //layout one
+        receivingField = chatLayout.findViewById(R.id.receivingField)
+        sendingField = chatLayout.findViewById(R.id.sendingField)
+        sendButton = chatLayout.findViewById(R.id.sendTextButton)
+        openDetailsButton = chatLayout.findViewById(R.id.openDetailsButton)
+
+        //layout two
+        networkDetails = detailsLayout.findViewById(R.id.networkDetails)
+        connectedDevicesList = detailsLayout.findViewById(R.id.connectedDevicesList)
+        connectedDevicesHeader = detailsLayout.findViewById(R.id.connectedDevicesHeader)
+        networkDescription = detailsLayout.findViewById(R.id.networkDescription)
+        openChatButton = detailsLayout.findViewById(R.id.openChatButton)
+        leaveNetworkButton = detailsLayout.findViewById(R.id.leaveNetworkButton)
     }
 
     /**

@@ -6,12 +6,13 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:backgroundTint="@color/background"
-    tools:context=".NetworkDetailsActivity">
+    tools:context=".Chat">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
