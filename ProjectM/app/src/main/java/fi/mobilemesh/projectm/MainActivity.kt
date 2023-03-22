@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.mobilemesh.projectm.network.BroadcastManager
@@ -95,6 +96,8 @@ class MainActivity : AppCompatActivity() {
         findUiElements()
         //mapButtons()
         listenNavigation()
+
+        handleDetailsSwitch()
 
         // Wifi
         broadcastManager = BroadcastManager.getInstance(this)
@@ -185,6 +188,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun handleDetailsSwitch() {
+        val button = findViewById<Button>(R.id.openDetailsButton)
+        button.setOnClickListener {
+            switchFragment(NetworkDetails::class.java)
+        }
+        val button2 = findViewById<Button>(R.id.openChatButton)
+        button2.setOnClickListener {
+            switchFragment(Chat::class.java)
+        }
+    }
+
     private fun switchFragment(target: Class<*>) {
         val f: Fragment = target.newInstance() as Fragment
         val fm = supportFragmentManager
@@ -192,6 +206,7 @@ class MainActivity : AppCompatActivity() {
         transaction.replace(R.id.fragmentContainerView, f)
         transaction.commit()
     }
+
 
     private fun addIntentFilters() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION)

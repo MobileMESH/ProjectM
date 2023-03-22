@@ -81,13 +81,6 @@ class Chat : Fragment() {
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)
 
-        // Setting up network details button
-        val button = view.findViewById<Button>(R.id.openChatButton)
-        button.setOnClickListener {
-            val intent = Intent(requireContext(), NetworkDetails::class.java)
-            startActivity(intent)
-        }
-
         mapButtons()
 
         lifecycleScope.launch { observeLiveMessages() }
@@ -246,6 +239,4 @@ class Chat : Fragment() {
                 }
             }
     }
-
-
 }

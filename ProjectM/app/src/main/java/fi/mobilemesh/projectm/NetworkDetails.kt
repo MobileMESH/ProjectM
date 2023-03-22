@@ -5,18 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-import android.content.Intent
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.app.AlertDialog
-import androidx.lifecycle.lifecycleScope
-import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.network.BroadcastManager
-import kotlinx.coroutines.launch
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,6 +31,8 @@ class NetworkDetails : Fragment() {
     lateinit var connectedDevicesList: RecyclerView
     lateinit var leaveNetworkButton: Button
 
+    private lateinit var broadcastManager: BroadcastManager
+
     private var param1: String? = null
     private var param2: String? = null
 
@@ -53,20 +50,14 @@ class NetworkDetails : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_network_details, container, false)
+        val view = inflater.inflate(R.layout.fragment_network_details, container, false)
 
+        broadcastManager = BroadcastManager.getInstance(view.context)
         networkDetails = view.findViewById(R.id.networkDetails)
         connectedDevicesList = view.findViewById(R.id.connectedDevicesList)
         connectedDevicesHeader = view.findViewById(R.id.connectedDevicesHeader)
         networkDescription = view.findViewById(R.id.networkDescription)
         leaveNetworkButton = view.findViewById(R.id.leaveNetworkButton)
-
-        // Setting up back to chat button
-        val button = view.findViewById<Button>(R.id.openChatButton)
-        button.setOnClickListener {
-            val intent = Intent(requireContext(), Chat::class.java)
-            startActivity(intent)
-        }
 
         // Alert to disconnect from network
         confirmLeaveNetwork()
@@ -102,7 +93,7 @@ class NetworkDetails : Fragment() {
 
         // Note: first device should be the one the app is currently running on so that
         // they appear on top of the device list
-        devices.add(DeviceList("Own device", "Own address" ))
+        devices.add(DeviceList("Own device", "Own address"))
 
         for (i in 0..20) {
             devices.add(DeviceList("Test device", "Test address"))
@@ -113,5 +104,4 @@ class NetworkDetails : Fragment() {
             adapter = DevicesAdapter(devices)
         }
     }
-
 }
