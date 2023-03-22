@@ -96,9 +96,6 @@ class MainActivity : AppCompatActivity() {
         findUiElements()
         //mapButtons()
         listenNavigation()
-
-        handleDetailsSwitch()
-
         // Wifi
         broadcastManager = BroadcastManager.getInstance(this)
         addIntentFilters()
@@ -187,18 +184,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun handleDetailsSwitch() {
-        val button = findViewById<Button>(R.id.openDetailsButton)
-        button.setOnClickListener {
-            switchFragment(NetworkDetails::class.java)
-        }
-        val button2 = findViewById<Button>(R.id.openChatButton)
-        button2.setOnClickListener {
-            switchFragment(Chat::class.java)
-        }
-    }
-
     private fun switchFragment(target: Class<*>) {
         val f: Fragment = target.newInstance() as Fragment
         val fm = supportFragmentManager
