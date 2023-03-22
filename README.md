@@ -1,4 +1,4 @@
 # ProjectM
-TODO: add some description. 
+This branch is for minor bugfixes that don't need their own branch.
 
 [Figma project](https://www.figma.com/file/aUDNbLDIvzjaT6hjugMgCT/Mesh-project?node-id=53100%3A27267)
