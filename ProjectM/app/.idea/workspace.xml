@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="328ce9ee-160a-414c-a430-7d7647a4196e" name="Changes" comment="" />
+=======
+    <list default="true" id="df61b29d-adc2-4729-87a2-0c734b1adcf0" name="Changes" comment="" />
+>>>>>>> origin/main
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,10 +17,14 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
+<<<<<<< HEAD
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2N0rjjVGPXoZh0jVKVM2IvUhAuW" />
+=======
+  <component name="ProjectId" id="2N0sNeNuQQcBQBkpaTYe89C7Q37" />
+>>>>>>> origin/main
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -28,17 +36,29 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "cidr.known.project.marker": "true",
+<<<<<<< HEAD
     "last_opened_file_path": "C:/Users/tunii/Desktop/SE Project 2/ProjectM"
+=======
+    "last_opened_file_path": "C:/Users/vonnu/Desktop/MobileMESH/ProjectM/app"
+>>>>>>> origin/main
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+<<<<<<< HEAD
       <changelist id="328ce9ee-160a-414c-a430-7d7647a4196e" name="Changes" comment="" />
       <created>1678811977664</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1678811977664</updated>
+=======
+      <changelist id="df61b29d-adc2-4729-87a2-0c734b1adcf0" name="Changes" comment="" />
+      <created>1678812296328</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1678812296328</updated>
+>>>>>>> origin/main
     </task>
     <servers />
   </component>

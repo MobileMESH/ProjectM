@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <color name="main_bars_green">#173532</color>
+    <color name="secondary_bars_green">#214c47</color>
+    <color name="tertiary_bars">#262626</color>
+    <color name="background">#1a1a1a</color>
+    <color name="network_inactive"> #2D3130</color>
+    <color name="network_active">#214c47</color>
+    <color name="buttons">#018768</color>
+    <color name="messages_own">#017f61</color>
+    <color name="messages_others"> #262626</color>
+    <color name="pop_ups">#018768</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>
