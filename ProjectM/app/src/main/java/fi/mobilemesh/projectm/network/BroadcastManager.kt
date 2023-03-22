@@ -36,6 +36,7 @@ class BroadcastManager(
     private val peerListListener = PeerListListener { peers ->
         val refreshedPeers = peers.deviceList
         activity.deviceList.removeAllViews()
+
         refreshedPeers.forEach { createButton(it) }
     }
 
