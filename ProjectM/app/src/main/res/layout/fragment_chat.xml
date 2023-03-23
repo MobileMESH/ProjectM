@@ -10,5 +10,6 @@
 
     <include layout="@layout/chat" />
     <include layout="@layout/network_details" />
+    <include layout="@layout/chat_disconnected" />
 
 </FrameLayout>

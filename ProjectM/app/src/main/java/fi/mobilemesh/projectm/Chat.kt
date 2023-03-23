@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.core.view.marginBottom
-import androidx.core.view.setMargins
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.widget.*
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -20,6 +20,7 @@ import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.utils.showNeutralAlert
+import fi.mobilemesh.projectm.utils.showConfirmationAlert
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -38,6 +39,7 @@ class Chat : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private var currentState: ChatUIState = ChatUIState.Chat
     private lateinit var dao: MessageQueries
     private lateinit var broadcastManager: BroadcastManager
 
@@ -47,14 +49,21 @@ class Chat : Fragment() {
     private lateinit var fragmentChat: FrameLayout
 
     // chat
-    lateinit var sendButton: FloatingActionButton
-    lateinit var sendingField: EditText
-    lateinit var receivingField: LinearLayout
+    private lateinit var sendButton: FloatingActionButton
+    private lateinit var sendingField: EditText
+    private lateinit var receivingField: LinearLayout
+    private lateinit var openDetailsButton: Button
+
+    // details
+    private lateinit var networkDetails: TextView
+    private lateinit var networkDescription: TextView
+    private lateinit var connectedDevicesHeader: TextView
+    private lateinit var connectedDevicesList: RecyclerView
+    private lateinit var leaveNetworkButton: Button
+    private lateinit var openChatButton: Button
 
     // disconnected
-    lateinit var disconnectedMsg: TextView
-
-    private var currentState: ChatUIState = ChatUIState.Chat
+    private lateinit var disconnectedMsg: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,11 +144,6 @@ class Chat : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_chat, container, false)
-        receivingField = view.findViewById(R.id.receivingField)
-        sendingField = view.findViewById(R.id.sendingField)
-        sendButton = view.findViewById(R.id.sendTextButton)
-
         val view = inflater.inflate(R.layout.fragment_chat, container, false)
         fragmentChat = view.findViewById(R.id.fragment_chat)
 
@@ -152,12 +156,16 @@ class Chat : Fragment() {
         broadcastManager = BroadcastManager.getInstance(view.context)
 
 
-        //Commented out for testing UI without connection
+        //commented out for testing UI without connection
         //setLayout()
+
+        //these two will be removed
         currentState = ChatUIState.Chat
         updateUI()
 
         mapButtons()
+
+        setupConnectedDevicesList()
 
         lifecycleScope.launch { observeLiveMessages() }
 
@@ -202,7 +210,8 @@ class Chat : Fragment() {
     }
 
     /**
-     * Checks connection and sets chatLayout by default if there is one
+     * Checks connection.
+     * Sets chatLayout as the visible layout by default if connection is found.
      */
     private fun setLayout() {
         if (!broadcastManager.isConnected()) {
