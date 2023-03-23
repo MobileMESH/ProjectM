@@ -10,9 +10,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.core.view.marginBottom
-import androidx.core.view.setMargins
-import android.widget.*
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -41,51 +38,16 @@ class Chat : Fragment() {
     private lateinit var dao: MessageQueries
     private lateinit var broadcastManager: BroadcastManager
 
-    private lateinit var chatLayout: View
-    private lateinit var detailsLayout: View
-    private lateinit var disconnectedLayout: View
-    private lateinit var fragmentChat: FrameLayout
-
-    // chat
     lateinit var sendButton: FloatingActionButton
     lateinit var sendingField: EditText
     lateinit var receivingField: LinearLayout
-
-    // disconnected
-    lateinit var disconnectedMsg: TextView
-
-    private var currentState: ChatUIState = ChatUIState.Chat
+    lateinit var openDetailsButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
-        }
-        println("Chat")
-    }
-
-    /**
-     * Updates the visibility of different UI elements between chat, network details,
-     * and disconnected chat based on the current state of the chat section.
-     */
-    private fun updateUI() {
-        when (currentState) {
-            is ChatUIState.Chat -> {
-                chatLayout.visibility = View.VISIBLE
-                detailsLayout.visibility = View.GONE
-                disconnectedLayout.visibility = View.GONE
-            }
-            is ChatUIState.Details -> {
-                chatLayout.visibility = View.GONE
-                detailsLayout.visibility = View.VISIBLE
-                disconnectedLayout.visibility = View.GONE
-            }
-            is ChatUIState.Disconnected -> {
-                chatLayout.visibility = View.GONE
-                detailsLayout.visibility = View.GONE
-                disconnectedLayout.visibility = View.VISIBLE
-            }
         }
     }
 
@@ -101,62 +63,22 @@ class Chat : Fragment() {
         }
 
         openDetailsButton.setOnClickListener {
-            currentState = ChatUIState.Details
-            updateUI()
+            // switch to Details
+            (parentFragment as ContainerFragmentChat).switchFragment(ChatNetworkDetails::class.java)
         }
-
-        openChatButton.setOnClickListener {
-            currentState = ChatUIState.Chat
-            updateUI()
-        }
-
-        leaveNetworkButton.setOnClickListener {
-            showConfirmationAlert(
-                "Leave Network",
-                "Are you sure you want to leave the network?",
-                "Yes",
-                "No",
-                requireContext(),
-                {
-                    // TODO: Disconnect device from network
-                    setLayout()
-                },
-                {
-                    // Do nothing
-                }
-            )
-        }
-
     }
 
-    // This function is used to do all magic
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_chat, container, false)
-        receivingField = view.findViewById(R.id.receivingField)
-        sendingField = view.findViewById(R.id.sendingField)
-        sendButton = view.findViewById(R.id.sendTextButton)
 
-        val view = inflater.inflate(R.layout.fragment_chat, container, false)
-        fragmentChat = view.findViewById(R.id.fragment_chat)
-
-        inflateChildLayouts(inflater)
-        addLayoutsToFrameLayout()
-
-        findUiElements()
+        findUiElements(view)
 
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)
-
-
-        //Commented out for testing UI without connection
-        //setLayout()
-        currentState = ChatUIState.Chat
-        updateUI()
-
         mapButtons()
 
         lifecycleScope.launch { observeLiveMessages() }
@@ -164,78 +86,11 @@ class Chat : Fragment() {
         return view
     }
 
-    /**
-     * Inflate the child layouts inside the FrameLayout
-     */
-    private fun inflateChildLayouts(inflater: LayoutInflater) {
-        chatLayout = inflater.inflate(R.layout.chat, fragmentChat, false)
-        detailsLayout = inflater.inflate(R.layout.network_details, fragmentChat, false)
-        disconnectedLayout = inflater.inflate(R.layout.chat_disconnected, fragmentChat, false)
-    }
-
-    /**
-     * Add the child layouts to the FrameLayout
-     */
-    private fun addLayoutsToFrameLayout() {
-        fragmentChat.addView(chatLayout)
-        fragmentChat.addView(detailsLayout)
-        fragmentChat.addView(disconnectedLayout)
-    }
-
-    private fun findUiElements() {
-        // chat
-        receivingField = chatLayout.findViewById(R.id.receivingField)
-        sendingField = chatLayout.findViewById(R.id.sendingField)
-        sendButton = chatLayout.findViewById(R.id.sendTextButton)
-        openDetailsButton = chatLayout.findViewById(R.id.openDetailsButton)
-
-        // details
-        networkDetails = detailsLayout.findViewById(R.id.networkDetails)
-        connectedDevicesList = detailsLayout.findViewById(R.id.connectedDevicesList)
-        connectedDevicesHeader = detailsLayout.findViewById(R.id.connectedDevicesHeader)
-        networkDescription = detailsLayout.findViewById(R.id.networkDescription)
-        openChatButton = detailsLayout.findViewById(R.id.openChatButton)
-        leaveNetworkButton = detailsLayout.findViewById(R.id.leaveNetworkButton)
-
-        // disconnected
-        disconnectedMsg = disconnectedLayout.findViewById(R.id.disconnectedMsg)
-    }
-
-    /**
-     * Checks connection and sets chatLayout by default if there is one
-     */
-    private fun setLayout() {
-        if (!broadcastManager.isConnected()) {
-            currentState = ChatUIState.Disconnected
-            updateUI()
-        }
-        else {
-            currentState = ChatUIState.Chat
-            updateUI()
-        }
-    }
-
-    /**
-     * Sets up the RecyclerView for displaying a list of connected devices.
-     * For now only populates the list with test devices for demo purposes.
-     */
-    // TODO: Should be updated when Device object is ready
-    private fun setupConnectedDevicesList() {
-
-        val devices = mutableListOf<DeviceList>()
-
-        // Note: first device should be the one the app is currently running on so that
-        // they appear on top of the device list
-        devices.add(DeviceList("Own device", "Own address" ))
-
-        for (i in 0..20) {
-            devices.add(DeviceList("Test device", "Test address"))
-        }
-
-        connectedDevicesList.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = DevicesAdapter(devices)
-        }
+    private fun findUiElements(view: View) {
+        receivingField = view.findViewById(R.id.receivingField)
+        sendingField = view.findViewById(R.id.sendingField)
+        sendButton = view.findViewById(R.id.sendTextButton)
+        openDetailsButton = view.findViewById(R.id.openDetailsButton)
     }
 
     /**
@@ -327,9 +182,9 @@ class Chat : Fragment() {
             val messages = dao.getChatGroupMessages(0)
             messages.forEach {
                 val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
-                    else Color.parseColor("#262626")
+                else Color.parseColor("#262626")
                 val textColor = if (it.isOwnMessage) Color.BLACK
-                    else Color.WHITE
+                else Color.WHITE
                 createMessage(it, messageColor, textColor)
             }
         }
@@ -379,7 +234,7 @@ class Chat : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment chat.
+         * @return A new instance of fragment Chat.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
