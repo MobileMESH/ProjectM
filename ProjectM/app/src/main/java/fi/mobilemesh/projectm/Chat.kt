@@ -1,6 +1,5 @@
 package fi.mobilemesh.projectm
 
-import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -19,6 +18,7 @@ import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.utils.showConfirmationAlert
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.*
 import java.util.*
@@ -90,19 +90,22 @@ class Chat : Fragment() {
         }
 
         leaveNetworkButton.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
-            builder.setMessage("Are you sure you want to leave the network?")
-                .setCancelable(false)
-                .setPositiveButton("Yes") { dialog, id ->
+            showConfirmationAlert(
+                "Leave Network",
+                "Are you sure you want to leave the network?",
+                "Yes",
+                "No",
+                requireContext(),
+                {
                     // TODO: Disconnect device from network
+                    setLayout()
+                },
+                {
+                    // Do nothing
                 }
-                .setNegativeButton("No") { dialog, id ->
-                    // Dismiss the dialog
-                    dialog.dismiss()
-                }
-            val alert = builder.create()
-            alert.show()
+            )
         }
+
     }
 
     // This function is used to do all magic
