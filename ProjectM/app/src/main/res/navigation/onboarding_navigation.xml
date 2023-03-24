@@ -20,4 +20,19 @@
         android:name="fi.mobilemesh.projectm.CreateNetwork"
         android:label="fragment_create_network"
         tools:layout="@layout/fragment_create_network" />
+    <fragment
+        android:id="@+id/locationPermission"
+        android:name="fi.mobilemesh.projectm.LocationPermission"
+        android:label="fragment_location_permission"
+        tools:layout="@layout/fragment_location_permission" />
+    <fragment
+        android:id="@+id/notificationsPermission"
+        android:name="fi.mobilemesh.projectm.NotificationPermission"
+        android:label="fragment_notifications_permission"
+        tools:layout="@layout/fragment_notification_permission" />
+    <fragment
+        android:id="@+id/locationSharing"
+        android:name="fi.mobilemesh.projectm.LocationSharing"
+        android:label="fragment_location_sharing"
+        tools:layout="@layout/fragment_location_sharing" />
 </navigation>
