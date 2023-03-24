@@ -13,6 +13,8 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.*
+import androidx.core.view.isVisible
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -39,31 +41,33 @@ class Chat : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    private var currentState: ChatUIState = ChatUIState.Chat
     private lateinit var dao: MessageQueries
     private lateinit var broadcastManager: BroadcastManager
+    private val uiState = MutableLiveData<ChatUIState>(ChatUIState.Chat)
 
+    // TODO: move to separate UI element classes?
+    // layouts
     private lateinit var chatLayout: View
     private lateinit var detailsLayout: View
     private lateinit var disconnectedLayout: View
     private lateinit var fragmentChat: FrameLayout
 
     // chat
-    private lateinit var sendButton: FloatingActionButton
-    private lateinit var sendingField: EditText
-    private lateinit var receivingField: LinearLayout
-    private lateinit var openDetailsButton: Button
+    lateinit var sendButton: FloatingActionButton
+    lateinit var sendingField: EditText
+    lateinit var receivingField: LinearLayout
+    lateinit var openDetailsButton: Button
 
     // details
-    private lateinit var networkDetails: TextView
-    private lateinit var networkDescription: TextView
-    private lateinit var connectedDevicesHeader: TextView
-    private lateinit var connectedDevicesList: RecyclerView
-    private lateinit var leaveNetworkButton: Button
-    private lateinit var openChatButton: Button
+    lateinit var networkDetails: TextView
+    lateinit var networkDescription: TextView
+    lateinit var connectedDevicesHeader: TextView
+    lateinit var connectedDevicesList: RecyclerView
+    lateinit var leaveNetworkButton: Button
+    lateinit var openChatButton: Button
 
     // disconnected
-    private lateinit var disconnectedMsg: TextView
+    lateinit var disconnectedMsg: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,30 +76,6 @@ class Chat : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         println("Chat")
-    }
-
-    /**
-     * Updates the visibility of different UI elements between chat, network details,
-     * and disconnected chat based on the current state of the chat section.
-     */
-    private fun updateUI() {
-        when (currentState) {
-            is ChatUIState.Chat -> {
-                chatLayout.visibility = View.VISIBLE
-                detailsLayout.visibility = View.GONE
-                disconnectedLayout.visibility = View.GONE
-            }
-            is ChatUIState.Details -> {
-                chatLayout.visibility = View.GONE
-                detailsLayout.visibility = View.VISIBLE
-                disconnectedLayout.visibility = View.GONE
-            }
-            is ChatUIState.Disconnected -> {
-                chatLayout.visibility = View.GONE
-                detailsLayout.visibility = View.GONE
-                disconnectedLayout.visibility = View.VISIBLE
-            }
-        }
     }
 
     /**
@@ -110,13 +90,11 @@ class Chat : Fragment() {
         }
 
         openDetailsButton.setOnClickListener {
-            currentState = ChatUIState.Details
-            updateUI()
+            uiState.value = ChatUIState.Details
         }
 
         openChatButton.setOnClickListener {
-            currentState = ChatUIState.Chat
-            updateUI()
+            uiState.value = ChatUIState.Chat
         }
 
         leaveNetworkButton.setOnClickListener {
@@ -128,14 +106,13 @@ class Chat : Fragment() {
                 requireContext(),
                 {
                     // TODO: Disconnect device from network
-                    setLayout()
+                    uiState.value = ChatUIState.Disconnected
                 },
                 {
                     // Do nothing
                 }
             )
         }
-
     }
 
     // This function is used to do all magic
@@ -151,21 +128,14 @@ class Chat : Fragment() {
         addLayoutsToFrameLayout()
 
         findUiElements()
+        observeUI()
 
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)
 
-
-        //commented out for testing UI without connection
-        //setLayout()
-
-        //these two will be removed
-        currentState = ChatUIState.Chat
-        updateUI()
-
         mapButtons()
-
         setupConnectedDevicesList()
+        setInitialUIState()
 
         lifecycleScope.launch { observeLiveMessages() }
 
@@ -185,9 +155,8 @@ class Chat : Fragment() {
      * Add the child layouts to the FrameLayout
      */
     private fun addLayoutsToFrameLayout() {
-        fragmentChat.addView(chatLayout)
-        fragmentChat.addView(detailsLayout)
-        fragmentChat.addView(disconnectedLayout)
+        arrayOf(chatLayout, detailsLayout, disconnectedLayout)
+            .forEach { fragmentChat.addView(it) }
     }
 
     private fun findUiElements() {
@@ -210,17 +179,27 @@ class Chat : Fragment() {
     }
 
     /**
-     * Checks connection.
-     * Sets chatLayout as the visible layout by default if connection is found.
+     * Updates the visibility of different UI elements between chat, network details,
+     * and disconnected chat based on the current state of the chat section.
      */
-    private fun setLayout() {
-        if (!broadcastManager.isConnected()) {
-            currentState = ChatUIState.Disconnected
-            updateUI()
+    private fun observeUI() {
+        uiState.observe(viewLifecycleOwner) { state ->
+            chatLayout.isVisible = state is ChatUIState.Chat
+            detailsLayout.isVisible = state is ChatUIState.Details
+            disconnectedLayout.isVisible = state is ChatUIState.Disconnected
         }
-        else {
-            currentState = ChatUIState.Chat
-            updateUI()
+    }
+
+    /**
+     * Checks the connection and sets the appropriate layout.
+     * Chat is visible by default, but if the connection is not found, changes it to disconnectedLayout
+     *
+     * Note: This function currently only checks the connection status once during initial setup
+     * TODO: Implement active checking of the connection status
+     */
+    private fun setInitialUIState() {
+        if (!broadcastManager.isConnected()) {
+            uiState.value = ChatUIState.Disconnected
         }
     }
 
