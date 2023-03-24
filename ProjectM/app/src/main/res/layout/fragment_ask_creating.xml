@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/layered_peaks_haikei__2_"
 
-    tools:context=".NamingDevice">
+    tools:context=".AskCreating">
 
 
     <LinearLayout
@@ -17,18 +17,19 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="360dp"
-            android:layout_height="291dp"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="30dp"
-            android:src="@drawable/seated" />
+            android:layout_width="310dp"
+            android:layout_height="234dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/campfire" />
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Name your device"
+            android:text="Create a new network"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#aec2bd"
             android:textSize="27dp"
@@ -38,6 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
 
+            android:layout_marginTop="10dp"
+            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
@@ -48,45 +51,43 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginRight="40dp"
                 android:gravity="center"
-                android:text="Enter a name for your device. The name can be changed later in the settings."
+                android:text="If you wish, your device can act as a base for a new network where other users are able to join. You may also create a new network later in the network tab if you choose to."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="#aec2bd"
                 android:textSize="18dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/deviceName"
-                style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginRight="40dp"
-                android:background="@drawable/borders"
-                android:clickable="true"
-                android:gravity="center|start"
-                android:hint="@string/device_name"
-                android:outlineProvider="bounds"
-                android:paddingStart="20dp"
-                android:shadowColor="#1B1B1B"
-                android:textColorHint="#aec2bd" />
+                android:layout_height="67dp"
 
-            <Button
-                android:id="@+id/continueButton"
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="35dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="10dp"
-                android:backgroundTint="@color/buttons"
-                android:text="Continue"
-                android:textStyle="bold" />
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/notNowButton"
+                    android:layout_width="130dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="70dp"
+                    android:backgroundTint="@color/buttons"
+                    android:text="Not now"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/createButton"
+                    android:layout_width="130dp"
+                    android:layout_height="55dp"
+                    android:backgroundTint="@color/buttons"
+                    android:text="Create"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="170dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="48dp"
                 android:layout_marginEnd="170dp"
                 android:orientation="horizontal">
 
@@ -98,10 +99,18 @@
                     android:layout_weight="1"
                     android:background="#00D89393"
                     android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/buttons" />
+                    app:tint="@color/tertiary_bars" />
 
                 <ImageView
                     android:id="@+id/imageView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/radiobutton_off_background"
+                    app:tint="@color/tertiary_bars" />
+
+                <ImageView
+                    android:id="@+id/imageView7"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -122,15 +131,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/tertiary_bars" />
-
-                <ImageView
-                    android:id="@+id/imageView6"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/tertiary_bars" />
+                    app:tint="@color/buttons" />
             </LinearLayout>
 
         </LinearLayout>
