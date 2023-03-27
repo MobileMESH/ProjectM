@@ -2,6 +2,7 @@ package fi.mobilemesh.projectm.network
 
 import android.content.Context
 import android.net.wifi.p2p.WifiP2pDevice
+import java.util.UUID
 
 /**
  * handles the management of discovered devices,
@@ -23,7 +24,14 @@ class MeshManager() {
 
     private lateinit var broadcastManager: BroadcastManager
 
-    private val connectedDevices: MutableMap<String, Device> = mutableMapOf()
+    private val currentNetworks: MutableMap<String, MutableList<String>> = mutableMapOf()
+
+    fun createNetwork(other: String) {
+        val tempName = UUID.randomUUID().toString()
+        currentNetworks[tempName] = mutableListOf(other)
+    }
+
+    /*private val connectedDevices: MutableMap<String, Device> = mutableMapOf()
     private val deviceGroups: MutableMap<String,MutableList<Device>> = mutableMapOf()
     private val devicesToJoin: MutableMap<String, Device> = mutableMapOf()
 
@@ -60,5 +68,5 @@ class MeshManager() {
         if (group.contains(device)) {
             group.remove(device)
         }
-    }
+    }*/
 }

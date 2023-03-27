@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,7 +10,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.forEach
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.network.MeshManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.net.InetAddress
 
@@ -30,11 +36,14 @@ class Networks : Fragment() {
 
     // Wi-Fi Direct
     private lateinit var broadcastManager: BroadcastManager
+    private lateinit var meshManager: MeshManager
+    private var selectedDevice: WifiP2pDevice? = null
 
     // UI
     private lateinit var availableView: TextView
     private lateinit var networkList: LinearLayout
     private lateinit var nodeList: LinearLayout
+    private lateinit var createNetworkButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,10 +60,14 @@ class Networks : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_networks, container, false)
         broadcastManager = BroadcastManager.getInstance(view.context)
+        meshManager = MeshManager.getInstance(view.context)
 
         availableView = view.findViewById(R.id.availableView)
         networkList = view.findViewById(R.id.networkList)
         nodeList = view.findViewById(R.id.deviceList)
+        createNetworkButton = view.findViewById(R.id.button)
+
+        mapButtons()
 
         INSTANCE = WeakReference(this)
 
@@ -67,6 +80,17 @@ class Networks : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (deviceList.isNotEmpty()) refreshDeviceCards()
+    }
+
+    private fun mapButtons() {
+        createNetworkButton.setOnClickListener {
+            if (selectedDevice != null) {
+                meshManager.createNetwork(selectedDevice!!.deviceAddress)
+                CoroutineScope(Dispatchers.IO).launch {
+                    broadcastManager.sendNetworkCreationInfo(selectedDevice!!)
+                }
+            }
+        }
     }
 
     /**
@@ -89,15 +113,12 @@ class Networks : Fragment() {
         val btn = Button(view?.context)
         btn.text = device.deviceName
         btn.setOnClickListener {
-            broadcastManager.connectToDevice(device.deviceAddress)
-            connectedDevice = device.deviceName
+            nodeList.forEach { it.setBackgroundColor(Color.WHITE) }
+            btn.setBackgroundColor(Color.GRAY)
+            selectedDevice = device
         }
 
         networkList.addView(btn)
-    }
-
-    private fun refreshConnectionStatus(connectedDevice: InetAddress?) {
-        availableView.text = connectedDevice?.toString() ?: "Available"
     }
 
     companion object {
@@ -122,16 +143,11 @@ class Networks : Fragment() {
         @Volatile
         private var INSTANCE: WeakReference<Networks>? = null
         private val deviceList: MutableCollection<WifiP2pDevice> = mutableListOf()
-        private var connectedDevice: String? = null
 
         fun refreshDeviceList(devices: Collection<WifiP2pDevice>) {
             deviceList.clear()
             deviceList.addAll(devices)
             INSTANCE?.get()?.refreshDeviceCards()
-        }
-
-        fun changeTargetAddress(target: InetAddress?) {
-            INSTANCE?.get()?.refreshConnectionStatus(target)
         }
     }
 }

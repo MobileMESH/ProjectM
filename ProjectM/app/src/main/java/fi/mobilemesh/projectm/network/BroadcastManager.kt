@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Context.WIFI_P2P_SERVICE
 import android.content.Intent
 import android.net.wifi.p2p.WifiP2pConfig
+import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -20,6 +21,7 @@ import java.net.ServerSocket
 import java.net.Socket
 import fi.mobilemesh.projectm.Networks
 import kotlinx.coroutines.*
+import java.util.concurrent.CountDownLatch
 
 private const val PORT = 8888
 private const val TIMEOUT = 5000
@@ -35,6 +37,7 @@ class BroadcastManager(
         @Volatile
         private var INSTANCE: BroadcastManager? = null
         private lateinit var dao: MessageQueries
+        private lateinit var meshManager: MeshManager
 
         /**
          * Gets the common/static BroadcastManager from any fragment/activity
@@ -51,12 +54,16 @@ class BroadcastManager(
                     .also {
                         INSTANCE = it
                         dao = MessageDatabase.getInstance(context).dao
+                        meshManager = MeshManager.getInstance(context)
                     }
             }
         }
     }
 
+    private var thisDevice: WifiP2pDevice? = null
+
     private val serverSocket = ServerSocket(PORT)
+    private var connectionLatch = CountDownLatch(1)
     private var targetAddress: InetAddress? = null
 
     /**
@@ -72,9 +79,6 @@ class BroadcastManager(
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
     // TODO: Show the user information about status
     private val connectionInfoListener = ConnectionInfoListener { conn ->
-        // TODO: Get device name instead
-        Networks.changeTargetAddress(conn.groupOwnerAddress)
-
         if (!conn.groupFormed) {
             targetAddress = null
             return@ConnectionInfoListener
@@ -98,10 +102,12 @@ class BroadcastManager(
         when (intent.action) {
             WIFI_P2P_STATE_CHANGED_ACTION -> {
                 val state = intent.getIntExtra(EXTRA_WIFI_STATE, -1)
+
                 if (state != WIFI_P2P_STATE_ENABLED) {
                     return
                 }
-                discoverPeers()
+
+                wifiManager.discoverPeers(channel, null)
             }
 
               WIFI_P2P_PEERS_CHANGED_ACTION -> {
@@ -111,23 +117,11 @@ class BroadcastManager(
             WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 wifiManager.requestConnectionInfo(channel, connectionInfoListener)
             }
+
+            WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
+                thisDevice = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)
+            }
         }
-    }
-
-    /**
-     * Used to refresh list of nearby devices. Has triggers for success and failure, currently
-     * not used
-     */
-    private fun discoverPeers() {
-        wifiManager.discoverPeers(channel, object : ActionListener {
-            override fun onSuccess() {
-                //TODO: Does not seem to need anything?
-            }
-
-            override fun onFailure(reason: Int) {
-                //TODO: Display error
-            }
-        })
     }
 
     /**
@@ -138,17 +132,7 @@ class BroadcastManager(
         val config = WifiP2pConfig()
         config.deviceAddress = address
 
-        wifiManager.connect(channel, config, object : ActionListener {
-            override fun onSuccess() {
-            // activity.statusField.text = "Started connection to $address"
-                println("Successfully started connection")
-            }
-
-            override fun onFailure(reason: Int) {
-                //activity.statusField.text = "Failed to connect! - code $reason"
-                println("Failed to connect - $reason")
-            }
-        })
+        wifiManager.connect(channel, config, null)
     }
 
     /**
@@ -161,7 +145,7 @@ class BroadcastManager(
             targetAddress = client.inetAddress
             client.close()
 
-            receiveText()
+            receiveData()
         }
     }
 
@@ -175,7 +159,7 @@ class BroadcastManager(
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
             socket.close()
 
-            receiveText()
+            receiveData()
         }
     }
 
@@ -183,23 +167,24 @@ class BroadcastManager(
      * Continually run by both client and "server" to listen for incoming traffic. Reads incoming
      * data and fires itself again to set up listening
      */
-    private fun receiveText() {
+    private fun receiveData() {
+        connectionLatch.countDown()
         CoroutineScope(Dispatchers.IO).launch {
             val client = serverSocket.accept()
             // Client has connected
             // (Buffered) input stream from client
             val istream = ObjectInputStream(BufferedInputStream(client.getInputStream()))
+            val incoming = istream.readObject()
 
-            val message: Message = istream.readObject() as Message
-            println(message.isOwnMessage)
+            when (incoming) {
+                is Message -> dao.insertMessage(incoming)
+                is String -> meshManager.createNetwork(incoming)
+            }
 
             istream.close()
             client.close()
 
-            // Insert message to database via Data Access Object
-            dao.insertMessage(message)
-
-            receiveText()
+            receiveData()
         }
     }
 
@@ -226,6 +211,34 @@ class BroadcastManager(
 
         ostream.close()
         socket.close()
+    }
+
+    /**
+     * Used to send information about the creation of a group to the device the group was
+     * created with
+     */
+    fun sendNetworkCreationInfo(other: WifiP2pDevice) {
+        connectToDevice(other.deviceAddress)
+        connectionLatch.await()
+
+        val socket = Socket()
+        socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
+        val ostream = ObjectOutputStream(BufferedOutputStream(socket.getOutputStream()))
+
+        ostream.writeObject(thisDevice?.deviceName)
+
+        ostream.close()
+        socket.close()
+    }
+
+    /**
+     * Resets the connection after all data has been transferred
+     */
+    private fun resetConnection() {
+        connectionLatch = CountDownLatch(1)
+        targetAddress = null
+        serverSocket.close()
+        wifiManager.removeGroup(channel, null)
     }
 
     /**
