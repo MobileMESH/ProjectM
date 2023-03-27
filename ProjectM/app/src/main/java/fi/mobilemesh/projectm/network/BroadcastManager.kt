@@ -8,6 +8,7 @@ import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
+import android.util.Log
 import android.widget.Button
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
@@ -23,6 +24,7 @@ import java.net.Socket
 import fi.mobilemesh.projectm.Networks
 import kotlinx.coroutines.*
 
+
 private const val PORT = 8888
 private const val TIMEOUT = 5000
 
@@ -33,6 +35,8 @@ class BroadcastManager(
     /**
      * Used to get the BroadcastManager from any fragment/class
      */
+
+    val devices = mutableListOf<Device>()
     companion object {
         @Volatile
         private var INSTANCE: BroadcastManager? = null
@@ -64,10 +68,31 @@ class BroadcastManager(
     /**
      * Listener object for when nearby devices get updated
      */
+//    private val peerListListener = PeerListListener { peers ->
+//
+//        Networks.refreshDeviceList(peers.deviceList)
+//        val deviceList = peers.deviceList
+//        val devices = deviceList.map { Device(it) }
+//        devices.forEach { device ->
+//
+//            println("Device name: ${device.returnName()}, address: ${device.returnAddress()}")
+//        }
+//
+//
+//    }
+
     private val peerListListener = PeerListListener { peers ->
-
         Networks.refreshDeviceList(peers.deviceList)
+        val deviceList = peers.deviceList
 
+        for (device in deviceList) {
+            val neDevice = Device(device)
+            devices.add(neDevice)
+
+        }
+        devices.forEach { device ->
+            println("Device name: ${device.returnName()}, address: ${device.returnAddress()}")
+        }
     }
 
     /**

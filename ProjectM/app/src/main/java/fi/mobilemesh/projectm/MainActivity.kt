@@ -114,8 +114,8 @@ class MainActivity : AppCompatActivity() {
 
 
         myPrefs = MyPreferences(this, device = WifiP2pDevice())
-        //saveMyValue("Jahid Sagor")
         myPrefs.getDeviceAddress()?.let { Log.d("Device Address: ", it) }
+        myPrefs.getDemoDeviceAddress()?.let { Log.d("Device Address: ", it) }
         myPrefs.getDeviceName()?.let { Log.d("Device Name: ", it) }
 
         // Message database (Data Access Object)
@@ -226,7 +226,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getMyValue(): String? {
-        return myPrefs.getDeviceAddress()
+//        return myPrefs.getDeviceAddress()
+        return ""
     }
 }
 
