@@ -1,6 +1,5 @@
 package fi.mobilemesh.projectm
 
-import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,10 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.TableRow
 import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import fi.mobilemesh.projectm.network.BroadcastManager
 import java.lang.ref.WeakReference
 import java.net.InetAddress
@@ -37,6 +33,7 @@ class Networks : Fragment() {
 
     // UI
     private lateinit var availableView: TextView
+    private lateinit var networkList: LinearLayout
     private lateinit var nodeList: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +53,8 @@ class Networks : Fragment() {
         broadcastManager = BroadcastManager.getInstance(view.context)
 
         availableView = view.findViewById(R.id.availableView)
-        nodeList = view.findViewById(R.id.nodeList)
+        networkList = view.findViewById(R.id.networkList)
+        nodeList = view.findViewById(R.id.deviceList)
 
         INSTANCE = WeakReference(this)
 
@@ -76,7 +74,7 @@ class Networks : Fragment() {
      */
     private fun refreshDeviceCards() {
         if (view?.context != null) {
-            nodeList.removeAllViews()
+            networkList.removeAllViews()
             deviceList.forEach { createCardViewLayout(it) }
         }
     }
@@ -95,7 +93,7 @@ class Networks : Fragment() {
             connectedDevice = device.deviceName
         }
 
-        nodeList.addView(btn)
+        networkList.addView(btn)
     }
 
     private fun refreshConnectionStatus(connectedDevice: InetAddress?) {

@@ -24,15 +24,20 @@
         android:padding="10dp"
         android:textSize="20sp" />
 
-        <LinearLayout
-            android:id="@+id/nodeList"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:padding="16sp" />
+            android:layout_height="wrap_content">
 
-    <LinearLayout
+            <LinearLayout
+                android:id="@+id/networkList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:padding="16sp" />
+        </ScrollView>
+
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="end">
@@ -46,7 +51,19 @@
             android:text="Create a network"
             android:textSize="16sp" />
 
-    </LinearLayout>
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/deviceList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
     </LinearLayout>
 
 </RelativeLayout>
