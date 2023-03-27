@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.view.marginBottom
 import androidx.core.view.setMargins
 import androidx.lifecycle.lifecycleScope
@@ -120,11 +121,9 @@ class Chat : Fragment() {
         message.isOwnMessage = true
         dao.insertMessage(message)
 
-        // TODO: Set color properly (UI team?)
-        val messageColor = Color.parseColor("#017f61")
-        val textColor = Color.BLACK
+        val messageType = R.drawable.outgoing_bubble
 
-        withContext(Dispatchers.Main) { createMessage(message, messageColor, textColor) }
+        withContext(Dispatchers.Main) { createMessage(message, messageType) }
     }
 
     /**
@@ -132,21 +131,19 @@ class Chat : Fragment() {
      * Make sure to call this in the main thread
      * @param message a [Message] instance from which to create the visual message in the chat
      * area
-     * @param messageColor background color for the message
-     * @param textColor color of the messages text
+     * @param messageType is the drawable for the message
      */
     // TODO: Make the message using proper tools (UI team?)
-    private fun createMessage(message: Message, messageColor: Int, textColor: Int) {
-        val btn = Button(activity)
+    private fun createMessage(message: Message, messageType: Int) {
+        val txt = TextView(activity)
         // Left/right side of screen depending on whose message this is
         val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
 
-        btn.isClickable = false
-        btn.text = "[${message.timestamp}] [${message.sender}] ${message.body}"
+        txt.text = "[${message.timestamp}] [${message.sender}] ${message.body}"
 
-        btn.maxWidth = (receivingField.width * 0.67).toInt()
+        txt.maxWidth = (receivingField.width * 0.67).toInt()
 
-        btn.layoutParams = LinearLayout.LayoutParams(
+        txt.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, // Width
             LinearLayout.LayoutParams.WRAP_CONTENT  // Height
         ).apply {
@@ -156,12 +153,12 @@ class Chat : Fragment() {
         }
 
         // Text alignment
-        btn.gravity = Gravity.START
-        btn.isAllCaps = false
-        btn.setBackgroundColor(messageColor)
-        btn.setTextColor(textColor)
+        txt.gravity = Gravity.START
+        txt.isAllCaps = false
+        txt.setPadding(20, 4, 10, 10)
+        txt.setBackgroundResource(messageType)
 
-        receivingField.addView(btn)
+        receivingField.addView(txt)
     }
 
     /**
@@ -174,11 +171,9 @@ class Chat : Fragment() {
         CoroutineScope(Dispatchers.Main).launch {
             val messages = dao.getChatGroupMessages(0)
             messages.forEach {
-                val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
-                    else Color.parseColor("#262626")
-                val textColor = if (it.isOwnMessage) Color.BLACK
-                    else Color.WHITE
-                createMessage(it, messageColor, textColor)
+                val messageType = if (it.isOwnMessage) R.drawable.outgoing_bubble
+                    else R.drawable.incoming_bubble
+                createMessage(it, messageType)
             }
         }
     }
