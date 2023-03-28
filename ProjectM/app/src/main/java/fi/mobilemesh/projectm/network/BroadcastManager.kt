@@ -83,11 +83,11 @@ class BroadcastManager(
     private val connectionInfoListener = ConnectionInfoListener { conn ->
         if (!conn.groupFormed || isConnecting) {
             targetAddress = null
+            wifiManager.discoverPeers(channel, null)
             return@ConnectionInfoListener
         }
 
         isConnecting = true
-        println(conn)
 
         if (!conn.isGroupOwner) {
             targetAddress = conn.groupOwnerAddress
@@ -134,7 +134,6 @@ class BroadcastManager(
      * @param address address of the target device
      */
     private fun connectToDevice(address: String) {
-        println("CONNECT $targetAddress ORIGIN ${thisDevice?.deviceName}")
         val config = WifiP2pConfig()
         config.deviceAddress = address
 
@@ -151,8 +150,6 @@ class BroadcastManager(
             targetAddress = client.inetAddress
             client.close()
 
-            println("HANDSHAKE/RECEIVE $targetAddress ORIGIN ${thisDevice?.deviceName}")
-
             receiveData()
         }
     }
@@ -167,8 +164,6 @@ class BroadcastManager(
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
             socket.close()
 
-            println("HANDSHAKE/SEND $targetAddress ORIGIN ${thisDevice?.deviceName}")
-
             receiveData()
         }
     }
@@ -179,7 +174,6 @@ class BroadcastManager(
      */
     private fun receiveData() {
         connectionLatch.countDown()
-        println("RECEIVE/READY $targetAddress ORIGIN ${thisDevice?.deviceName}")
         CoroutineScope(Dispatchers.IO).launch {
             val client = serverSocket.accept()
             // Client has connected
@@ -253,6 +247,7 @@ class BroadcastManager(
         connectionLatch = CountDownLatch(1)
         targetAddress = null
         isConnecting = false
+
         wifiManager.removeGroup(channel, null)
     }
 
