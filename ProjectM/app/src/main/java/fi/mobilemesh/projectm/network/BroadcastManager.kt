@@ -21,6 +21,8 @@ import java.net.ServerSocket
 import java.net.Socket
 import fi.mobilemesh.projectm.Networks
 import kotlinx.coroutines.*
+import java.io.EOFException
+import java.net.SocketException
 import java.util.concurrent.CountDownLatch
 
 private const val PORT = 8888
@@ -64,7 +66,7 @@ class BroadcastManager(
 
     private var thisDevice: WifiP2pDevice? = null
 
-    private val serverSocket = ServerSocket(PORT)
+    private var serverSocket = ServerSocket(PORT)
     private var connectionLatch = CountDownLatch(1)
     private var targetAddress: InetAddress? = null
 
@@ -152,6 +154,7 @@ class BroadcastManager(
             targetAddress = client.inetAddress
             client.close()
 
+            println("HS/RECEIVE")
             receiveData()
         }
     }
@@ -166,6 +169,7 @@ class BroadcastManager(
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
             socket.close()
 
+            println("HS/SEND")
             receiveData()
         }
     }
@@ -176,14 +180,30 @@ class BroadcastManager(
      */
     private suspend fun receiveData() {
         connectionLatch.countDown()
+        println("RECEIVE/START")
         withContext(Dispatchers.IO) {
-            val client = serverSocket.accept()
-            // Client has connected
+            val client = try {
+                serverSocket.accept()
+            }
+            catch (e: SocketException) {
+                println("RECEIVE/ABORT")
+                return@withContext
+            }
+            // Client has connected at this point
             // (Buffered) input stream from client
-            val istream = ObjectInputStream(BufferedInputStream(client.getInputStream()))
-            val incoming = istream.readObject()
+            val istream = try {
+                ObjectInputStream(BufferedInputStream(client.getInputStream()))
+            }
+            catch (e: EOFException) {
+                println(e)
+                return@withContext
+            }
+            catch(e: SocketException) {
+                println(e)
+                return@withContext
+            }
 
-            when (incoming) {
+            when (val incoming = istream.readObject()) {
                 is Message -> dao.insertMessage(incoming)
                 is String -> meshManager.createNetwork(incoming)
             }
@@ -191,6 +211,7 @@ class BroadcastManager(
             istream.close()
             client.close()
 
+            println("RECEIVE/END")
             resetConnection()
         }
     }
@@ -239,6 +260,7 @@ class BroadcastManager(
         ostream.close()
         socket.close()
 
+        println("SEND/END")
         resetConnection()
     }
 
@@ -250,7 +272,11 @@ class BroadcastManager(
         targetAddress = null
         isConnecting = false
 
+        serverSocket.close()
+        serverSocket = ServerSocket(PORT)
+
         wifiManager.removeGroup(channel, null)
+        println("DISCONNECTED")
     }
 
     /**
