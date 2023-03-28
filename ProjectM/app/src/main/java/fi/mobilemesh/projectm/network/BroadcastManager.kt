@@ -86,8 +86,8 @@ class BroadcastManager(
         val deviceList = peers.deviceList
 
         for (device in deviceList) {
-            val neDevice = Device(device)
-            devices.add(neDevice)
+            val newDevice = Device(device)
+            devices.add(newDevice)
 
         }
         devices.forEach { device ->

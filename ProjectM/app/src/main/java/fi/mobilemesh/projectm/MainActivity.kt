@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.ChatGroup
+import fi.mobilemesh.projectm.network.Device
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -113,7 +114,7 @@ class MainActivity : AppCompatActivity() {
         addIntentFilters()
 
 
-        myPrefs = MyPreferences(this, device = WifiP2pDevice())
+        myPrefs = MyPreferences(this, device = Device(WifiP2pDevice()))
         myPrefs.getDeviceAddress()?.let { Log.d("Device Address: ", it) }
         myPrefs.getDemoDeviceAddress()?.let { Log.d("Device Address: ", it) }
         myPrefs.getDeviceName()?.let { Log.d("Device Name: ", it) }
