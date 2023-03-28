@@ -91,7 +91,7 @@ class BroadcastManager(
 
         }
         devices.forEach { device ->
-            println("Device name: ${device.returnName()}, address: ${device.returnAddress()}")
+            println("Device name: ${device.getName()}, address: ${device.getAddress()}")
         }
     }
 
