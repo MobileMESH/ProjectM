@@ -3,11 +3,15 @@ package fi.mobilemesh.projectm.network
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.WIFI_P2P_SERVICE
+import android.content.Context.WIFI_SERVICE
 import android.content.Intent
+import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
+import android.os.Build
+import android.os.Build.VERSION_CODES
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
@@ -63,8 +67,6 @@ class BroadcastManager(
     }
     @Volatile
     private var isConnecting = false
-
-    private var thisDevice: WifiP2pDevice? = null
 
     private var serverSocket = ServerSocket(PORT)
     private var connectionLatch = CountDownLatch(1)
@@ -125,10 +127,6 @@ class BroadcastManager(
 
             WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 wifiManager.requestConnectionInfo(channel, connectionInfoListener)
-            }
-
-            WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
-                thisDevice = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)
             }
         }
     }
@@ -247,15 +245,15 @@ class BroadcastManager(
      * Used to send information about the creation of a group to the device the group was
      * created with
      */
-    fun sendNetworkCreationInfo(other: WifiP2pDevice) {
-        connectToDevice(other.deviceAddress)
+    fun sendData(address: String, data: Any) {
+        connectToDevice(address)
         connectionLatch.await()
 
         val socket = Socket()
         socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
         val ostream = ObjectOutputStream(BufferedOutputStream(socket.getOutputStream()))
 
-        ostream.writeObject(thisDevice?.deviceName)
+        ostream.writeObject(data)
 
         ostream.close()
         socket.close()

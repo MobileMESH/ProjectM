@@ -85,9 +85,12 @@ class Networks : Fragment() {
     private fun mapButtons() {
         createNetworkButton.setOnClickListener {
             if (selectedDevice != null) {
-                meshManager.createNetwork(selectedDevice!!.deviceName)
+                meshManager.createNetwork(selectedDevice!!.deviceAddress)
                 CoroutineScope(Dispatchers.IO).launch {
-                    broadcastManager.sendNetworkCreationInfo(selectedDevice!!)
+                    // TODO: Send Device.kt representation of this device
+                    broadcastManager.sendData(
+                        selectedDevice!!.deviceAddress,
+                        "this device object")
                 }
             }
         }
