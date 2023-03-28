@@ -29,6 +29,8 @@ class MeshManager() {
     fun createNetwork(other: String) {
         val tempName = UUID.randomUUID().toString()
         currentNetworks[tempName] = mutableListOf(other)
+        println("GROUP/CREATE $other")
+        println(currentNetworks)
     }
 
     /*private val connectedDevices: MutableMap<String, Device> = mutableMapOf()

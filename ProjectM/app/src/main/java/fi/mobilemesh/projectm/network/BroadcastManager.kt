@@ -59,6 +59,8 @@ class BroadcastManager(
             }
         }
     }
+    @Volatile
+    private var isConnecting = false
 
     private var thisDevice: WifiP2pDevice? = null
 
@@ -79,10 +81,13 @@ class BroadcastManager(
     // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
     // TODO: Show the user information about status
     private val connectionInfoListener = ConnectionInfoListener { conn ->
-        if (!conn.groupFormed) {
+        if (!conn.groupFormed || isConnecting) {
             targetAddress = null
             return@ConnectionInfoListener
         }
+
+        isConnecting = true
+        println(conn)
 
         if (!conn.isGroupOwner) {
             targetAddress = conn.groupOwnerAddress
@@ -128,7 +133,8 @@ class BroadcastManager(
      * Connects this device to given address through Wi-Fi Direct framework
      * @param address address of the target device
      */
-    fun connectToDevice(address: String) {
+    private fun connectToDevice(address: String) {
+        println("CONNECT $targetAddress ORIGIN ${thisDevice?.deviceName}")
         val config = WifiP2pConfig()
         config.deviceAddress = address
 
@@ -145,6 +151,8 @@ class BroadcastManager(
             targetAddress = client.inetAddress
             client.close()
 
+            println("HANDSHAKE/RECEIVE $targetAddress ORIGIN ${thisDevice?.deviceName}")
+
             receiveData()
         }
     }
@@ -159,6 +167,8 @@ class BroadcastManager(
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
             socket.close()
 
+            println("HANDSHAKE/SEND $targetAddress ORIGIN ${thisDevice?.deviceName}")
+
             receiveData()
         }
     }
@@ -169,6 +179,7 @@ class BroadcastManager(
      */
     private fun receiveData() {
         connectionLatch.countDown()
+        println("RECEIVE/READY $targetAddress ORIGIN ${thisDevice?.deviceName}")
         CoroutineScope(Dispatchers.IO).launch {
             val client = serverSocket.accept()
             // Client has connected
@@ -184,7 +195,7 @@ class BroadcastManager(
             istream.close()
             client.close()
 
-            receiveData()
+            resetConnection()
         }
     }
 
@@ -211,6 +222,8 @@ class BroadcastManager(
 
         ostream.close()
         socket.close()
+
+        resetConnection()
     }
 
     /**
@@ -229,6 +242,8 @@ class BroadcastManager(
 
         ostream.close()
         socket.close()
+
+        resetConnection()
     }
 
     /**
@@ -237,7 +252,7 @@ class BroadcastManager(
     private fun resetConnection() {
         connectionLatch = CountDownLatch(1)
         targetAddress = null
-        serverSocket.close()
+        isConnecting = false
         wifiManager.removeGroup(channel, null)
     }
 
