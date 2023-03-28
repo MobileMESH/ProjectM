@@ -89,11 +89,13 @@ class BroadcastManager(
 
         isConnecting = true
 
-        if (!conn.isGroupOwner) {
-            targetAddress = conn.groupOwnerAddress
-            sendHandshake()
-        } else {
-           receiveHandshake()
+        CoroutineScope(Dispatchers.IO).launch {
+            if (!conn.isGroupOwner) {
+                targetAddress = conn.groupOwnerAddress
+                sendHandshake()
+            } else {
+                receiveHandshake()
+            }
         }
     }
 
@@ -144,8 +146,8 @@ class BroadcastManager(
      * Used by the "server" when first connecting through [connectToDevice]. Used to get
      * the clients IP address
      */
-    private fun receiveHandshake() {
-        CoroutineScope(Dispatchers.IO).launch {
+    private suspend fun receiveHandshake() {
+        withContext(Dispatchers.IO) {
             val client = serverSocket.accept()
             targetAddress = client.inetAddress
             client.close()
@@ -158,8 +160,8 @@ class BroadcastManager(
      * Used by the client to initiate connection to the "server" device when first
      * connecting through [connectToDevice]. Used to send this devices IP address to "server"
      */
-    private fun sendHandshake() {
-        CoroutineScope(Dispatchers.IO).launch {
+    private suspend fun sendHandshake() {
+        withContext(Dispatchers.IO) {
             val socket = Socket()
             socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
             socket.close()
@@ -172,9 +174,9 @@ class BroadcastManager(
      * Continually run by both client and "server" to listen for incoming traffic. Reads incoming
      * data and fires itself again to set up listening
      */
-    private fun receiveData() {
+    private suspend fun receiveData() {
         connectionLatch.countDown()
-        CoroutineScope(Dispatchers.IO).launch {
+        withContext(Dispatchers.IO) {
             val client = serverSocket.accept()
             // Client has connected
             // (Buffered) input stream from client
