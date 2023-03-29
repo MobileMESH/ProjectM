@@ -127,6 +127,8 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    /*
     private fun requestPermissions() {
 
         val permissionsToRequest = mutableListOf<String>()
@@ -162,6 +164,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    */
 
     override fun onResume() {
         super.onResume()

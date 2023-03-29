@@ -35,19 +35,22 @@ class LocationSharing : Fragment() {
 
     private fun mapButtons() {
         shareButton.setOnClickListener {
-            val fragment = NotificationPermission()
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragmentContainerView2, fragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
+
+            // TODO: Change user preferences (wait for ticket #60)
+
+            nextFragment()
         }
         notNowButton.setOnClickListener {
-            val fragment = NotificationPermission()
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragmentContainerView2, fragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
+            nextFragment()
         }
+    }
+
+    private fun nextFragment() {
+        val fragment = NotificationPermission()
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragmentContainerView2, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 
     override fun onCreateView(
