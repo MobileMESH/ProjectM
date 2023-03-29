@@ -32,6 +32,11 @@ class Device (device: WifiP2pDevice) : java.io.Serializable {
         return sharesLocation
     }
 
+    fun setAvailableDevices(devices: Collection<Device>) {
+        availableDevices.clear()
+        availableDevices.addAll(devices)
+    }
+
     fun getAvailableDevices(): Collection<Device> {
         return availableDevices
     }
