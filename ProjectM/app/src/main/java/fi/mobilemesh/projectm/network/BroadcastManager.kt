@@ -16,6 +16,7 @@ import androidx.lifecycle.MutableLiveData
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
+import fi.mobilemesh.projectm.database.entities.MessageData
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.ObjectInputStream
@@ -202,6 +203,7 @@ class BroadcastManager(
      * @param address MAC address of the target device
      */
     private fun connectToDevice(address: String) {
+        println("CONNECT")
         val config = WifiP2pConfig()
         config.deviceAddress = address
 
@@ -268,10 +270,15 @@ class BroadcastManager(
             }
 
             when (val incoming = istream.readObject()) {
-                is Message -> {
-                    incoming.isOwnMessage = false
-                    dao.insertMessage(incoming)
+                is MessageData -> {
+                    val message = incoming.message
+                    val alreadySent = incoming.alreadySent
+
+                    message.isOwnMessage = false
+                    dao.insertMessage(message)
+                    meshManager.sendGroupMessage(message, alreadySent)
                 }
+
                 is Pair<*, *> -> {
                     // TODO: Placeholder until a Network class is created
                     val other = incoming.first as Device

@@ -10,8 +10,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.core.view.marginBottom
-import androidx.core.view.setMargins
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -95,7 +93,7 @@ class Chat : Fragment() {
      */
     // TODO: Don't reload all messages...
     private fun observeLiveMessages() {
-        dao.getLiveChatGroupMessages(0).observe(viewLifecycleOwner) {
+        dao.getLiveChatGroupMessages(meshManager.getTestGroupId()).observe(viewLifecycleOwner) {
             //createMessage(it.last(), Color.parseColor("#262626"), Color.WHITE)
             receivingField.removeAllViews()
             loadAllMessages()
@@ -110,12 +108,15 @@ class Chat : Fragment() {
     private suspend fun sendMessage(text: String) {
         if (!isMessageValid(text)) return
 
+        val networkId = meshManager.getTestGroupId()
+        val messageId = dao.getNextMessageId(networkId)
+        // TODO: Get chat group id, this just gets a random one for testing
+        val sender = broadcastManager.getThisDevice().getName()
         val time = Date(System.currentTimeMillis())
-        val id = dao.getNextMessageId(0)
-        // TODO: Get chat group id
-        val message = Message(id, 0, broadcastManager.getThisDevice().getName(), time, text)
 
-        meshManager.sendGroupMessage(meshManager.getRandomNetworkTest(), message)
+        val message = Message(messageId, networkId, sender, time, text)
+
+        meshManager.sendGroupMessage(message)
         dao.insertMessage(message)
 
         // TODO: Set color properly (UI team?)
@@ -170,7 +171,7 @@ class Chat : Fragment() {
     //  only one extra parameter needed)
     private fun loadAllMessages() {
         CoroutineScope(Dispatchers.Main).launch {
-            val messages = dao.getChatGroupMessages(0)
+            val messages = dao.getChatGroupMessages(meshManager.getTestGroupId())
             messages.forEach {
                 val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
                     else Color.parseColor("#262626")

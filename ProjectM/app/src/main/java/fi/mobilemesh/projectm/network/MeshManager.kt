@@ -1,8 +1,8 @@
 package fi.mobilemesh.projectm.network
 
 import android.content.Context
-import android.net.wifi.p2p.WifiP2pManager.DeviceInfoListener
 import fi.mobilemesh.projectm.database.entities.Message
+import fi.mobilemesh.projectm.database.entities.MessageData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,15 +28,15 @@ class MeshManager {
     }
 
     private lateinit var broadcastManager: BroadcastManager
-    // Networks we have joined (TODO: Currently runtime only)
+    // Networks we have joined (TODO: Save somewhere, currently runtime only)
     private val currentNetworks: MutableMap<String, MutableList<Device>> = mutableMapOf()
 
     /**
      * Returns the first network/chat group id available for us. Testing only
      * @return id of the first network we have available
      */
-    fun getRandomNetworkTest(): String {
-        return currentNetworks.keys.first()
+    fun getTestGroupId(): String {
+        return "TEST_GROUP"
     }
 
     /**
@@ -47,7 +47,8 @@ class MeshManager {
      */
     fun createNetwork(other: Device, networkId: String?=null) {
         if (networkId == null) {
-            val newNetworkId = UUID.randomUUID().toString()
+            //val newNetworkId = UUID.randomUUID().toString()
+            val newNetworkId = getTestGroupId() // TODO: Test purposes
             currentNetworks[newNetworkId] = mutableListOf(other)
             CoroutineScope(Dispatchers.IO).launch {
                 val own = broadcastManager.getThisDevice()
@@ -62,16 +63,36 @@ class MeshManager {
 
     /**
      * Sends a group-wide message to the network/chat group specified in the networkId
-     * @param networkId id of the network/chat group to send the message to
      * @param message actual [Message] to send to the group
+     * @param alreadySent set of devices the message was already sent to, avoiding repeat
      */
-    fun sendGroupMessage(networkId: String, message: Message) {
-        val network = currentNetworks[networkId] ?: return
+    fun sendGroupMessage(message: Message, alreadySent: Set<Device>?=null) {
+        val network = currentNetworks[message.chatGroupId] ?: return
         val availableDevices = broadcastManager.getThisDevice().getAvailableDevices()
-        val validDevices = availableDevices.filter { a -> network.any { b -> a.getName() == b.getName() } }
+
+        // Valid devices are both in range (available) and within the selected network
+        var validDevices = availableDevices.filter { a: Device ->
+            network.any { n: Device ->
+                a.getName() == n.getName() } } as MutableList
+
+        // Don't send this to those it has already been sent to
+        if (alreadySent != null) {
+            validDevices = validDevices.filterNot { v: Device ->
+                alreadySent.any { a: Device ->
+                    v.getName() == a.getName() } } as MutableList<Device>
+        }
+        // Our device can also be considered to already have received the message
+        val thisDevice = broadcastManager.getThisDevice()
+        validDevices.add(thisDevice)
+
+        val messageData = MessageData(message, validDevices.toSet())
 
         CoroutineScope(Dispatchers.IO).launch {
-            validDevices.forEach { broadcastManager.sendData(it.getAddress(), message) }
+            validDevices.forEach {
+                if (it.getName() != thisDevice.getName()) {
+                    broadcastManager.sendData(it.getAddress(), messageData)
+                }
+            }
         }
     }
 

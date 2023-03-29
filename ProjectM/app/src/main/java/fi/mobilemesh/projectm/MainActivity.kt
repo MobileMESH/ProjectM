@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.ChatGroup
+import fi.mobilemesh.projectm.network.MeshManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,6 +76,7 @@ class MainActivity : AppCompatActivity() {
     )
 
     private lateinit var broadcastManager: BroadcastManager
+    private lateinit var meshManager: MeshManager
     private val intentFilter = IntentFilter()
 
     // UI
@@ -98,7 +100,8 @@ class MainActivity : AppCompatActivity() {
         listenNavigation()
 
         // Wifi
-        broadcastManager = BroadcastManager.getInstance(this)
+        broadcastManager = BroadcastManager.getInstance(applicationContext)
+        meshManager = MeshManager.getInstance(applicationContext)
         addIntentFilters()
 
         // Message database (Data Access Object)
@@ -106,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             // TODO: Placeholder chat group for tests. Should be replaced when chat groups are
             //  implemented
-            dao.insertChatGroup(ChatGroup(0))
+            dao.insertChatGroup(ChatGroup(meshManager.getTestGroupId()))
         }
 
 
