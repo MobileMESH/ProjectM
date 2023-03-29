@@ -7,21 +7,11 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
-import android.net.wifi.p2p.WifiP2pDevice
-import android.net.wifi.p2p.WifiP2pManager.Channel
-import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
 import fi.mobilemesh.projectm.network.BroadcastManager
-import fi.mobilemesh.projectm.network.MyPreferences
-
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.ChatGroup
-import fi.mobilemesh.projectm.network.Device
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -96,8 +86,6 @@ class MainActivity : AppCompatActivity() {
     //lateinit var networkDetails: TextView
     lateinit var navigationBar: BottomNavigationView
 
-    private lateinit var myPrefs: MyPreferences
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -112,12 +100,6 @@ class MainActivity : AppCompatActivity() {
         // Wifi
         broadcastManager = BroadcastManager.getInstance(this)
         addIntentFilters()
-
-
-        myPrefs = MyPreferences(this, device = Device(WifiP2pDevice()))
-        myPrefs.getDeviceAddress()?.let { Log.d("Device Address: ", it) }
-        myPrefs.getDemoDeviceAddress()?.let { Log.d("Device Address: ", it) }
-        myPrefs.getDeviceName()?.let { Log.d("Device Name: ", it) }
 
         // Message database (Data Access Object)
         val dao = MessageDatabase.getInstance(this).dao
@@ -218,17 +200,6 @@ class MainActivity : AppCompatActivity() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
-    }
-
-
-
-    fun saveMyValue(value: String) {
-       // myPrefs.setMyValue(value)
-    }
-
-    fun getMyValue(): String? {
-//        return myPrefs.getDeviceAddress()
-        return ""
     }
 }
 
