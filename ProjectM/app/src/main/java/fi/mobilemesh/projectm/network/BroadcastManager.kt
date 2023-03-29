@@ -82,17 +82,9 @@ class BroadcastManager(
 //    }
 
     private val peerListListener = PeerListListener { peers ->
-        Networks.refreshDeviceList(peers.deviceList)
         val deviceList = peers.deviceList
-
-        for (device in deviceList) {
-            val newDevice = Device(device)
-            devices.add(newDevice)
-
-        }
-        devices.forEach { device ->
-            println("Device name: ${device.getName()}, address: ${device.getAddress()}")
-        }
+        Networks.refreshDeviceList(peers.deviceList)
+        deviceList.forEach { devices.add(Device(it)) }
     }
 
     /**
