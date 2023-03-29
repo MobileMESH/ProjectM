@@ -87,6 +87,7 @@
                     android:layout_marginEnd="70dp"
                     android:backgroundTint="@color/buttons"
                     android:text="Cancel"
+                    android:textColor="@color/white"
                     android:textStyle="bold" />
 
                 <Button
@@ -95,6 +96,7 @@
                     android:layout_height="55dp"
                     android:backgroundTint="@color/buttons"
                     android:text="Create"
+                    android:textColor="@color/white"
                     android:textStyle="bold" />
             </LinearLayout>
 

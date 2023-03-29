@@ -71,6 +71,7 @@
                     android:layout_marginEnd="70dp"
                     android:backgroundTint="@color/buttons"
                     android:text="Not now"
+                    android:textColor="@color/white"
                     android:textStyle="bold" />
 
                 <Button
@@ -79,6 +80,7 @@
                     android:layout_height="55dp"
                     android:backgroundTint="@color/buttons"
                     android:text="Share"
+                    android:textColor="@color/white"
                     android:textStyle="bold" />
             </LinearLayout>
             <LinearLayout

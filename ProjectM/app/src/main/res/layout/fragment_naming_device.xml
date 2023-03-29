@@ -80,6 +80,7 @@
                 android:layout_marginBottom="10dp"
                 android:backgroundTint="@color/buttons"
                 android:text="Continue"
+                android:textColor="@color/white"
                 android:textStyle="bold" />
 
             <LinearLayout
