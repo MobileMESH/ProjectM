@@ -3,15 +3,12 @@ package fi.mobilemesh.projectm.network
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.WIFI_P2P_SERVICE
-import android.content.Context.WIFI_SERVICE
 import android.content.Intent
-import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
-import android.os.Build
-import android.os.Build.VERSION_CODES
+import androidx.lifecycle.MutableLiveData
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
@@ -71,15 +68,21 @@ class BroadcastManager(
     // TODO: Workaround for Device obj. / SharedPrefsHandler
     var ownDeviceName = ""
 
+    private var nearbyDevices: MutableLiveData<Collection<WifiP2pDevice>> = MutableLiveData()
+
     private var serverSocket = ServerSocket(PORT)
     private var connectionLatch = CountDownLatch(1)
     private var targetAddress: InetAddress? = null
+
+    fun getLiveNearbyDevices(): MutableLiveData<Collection<WifiP2pDevice>> {
+        return  nearbyDevices
+    }
 
     /**
      * Listener object for when nearby devices get updated
      */
     private val peerListListener = PeerListListener { peers ->
-        Networks.refreshDeviceList(peers.deviceList)
+        nearbyDevices.value = peers.deviceList
     }
 
     /**

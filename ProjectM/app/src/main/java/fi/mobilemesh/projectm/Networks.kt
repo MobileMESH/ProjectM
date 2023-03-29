@@ -11,13 +11,13 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.forEach
+import androidx.lifecycle.lifecycleScope
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.network.MeshManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
-import java.net.InetAddress
 
 // TODO: Rename parameter arguments, choose names that match
 //  the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -69,7 +69,7 @@ class Networks : Fragment() {
 
         mapButtons()
 
-        INSTANCE = WeakReference(this)
+        lifecycleScope.launch { observeNearbyDevices() }
 
         return view
     }
@@ -79,7 +79,7 @@ class Networks : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (deviceList.isNotEmpty()) refreshDeviceCards()
+        refreshDeviceCards()
     }
 
     private fun mapButtons() {
@@ -91,13 +91,19 @@ class Networks : Fragment() {
         }
     }
 
+    private fun observeNearbyDevices() {
+        broadcastManager.getLiveNearbyDevices().observe(viewLifecycleOwner) {
+            refreshDeviceCards()
+        }
+    }
+
     /**
      * Reloads the device list onto view
      */
     private fun refreshDeviceCards() {
         if (view?.context != null) {
             networkList.removeAllViews()
-            deviceList.forEach { createCardViewLayout(it) }
+            broadcastManager.getLiveNearbyDevices().value?.forEach { createCardViewLayout(it) }
         }
     }
 
@@ -137,15 +143,5 @@ class Networks : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
-
-        @Volatile
-        private var INSTANCE: WeakReference<Networks>? = null
-        private val deviceList: MutableCollection<WifiP2pDevice> = mutableListOf()
-
-        fun refreshDeviceList(devices: Collection<WifiP2pDevice>) {
-            deviceList.clear()
-            deviceList.addAll(devices)
-            INSTANCE?.get()?.refreshDeviceCards()
-        }
     }
 }
