@@ -69,7 +69,6 @@ class BroadcastManager(
         }
     }
 
-    // TODO: Find a reliable way to always get this at startup!
     private var thisDevice: Device? = null
     private var nearbyDevices: MutableLiveData<List<Device>> = MutableLiveData(listOf())
 
@@ -80,6 +79,13 @@ class BroadcastManager(
     private var connectionLatch = CountDownLatch(1)
     private var targetAddress: InetAddress? = null
 
+    /**
+     * Used to initialize information about the current device, so information can be sent
+     * properly
+     * @param intent if called from an onReceive method, [Intent] is provided to get
+     * information about this device. Otherwise, if called with an API level >= 29,
+     * no Intent is needed
+     */
     private fun initThisDevice(intent: Intent?) {
         if (Build.VERSION.SDK_INT >= 29) {
             wifiManager.requestDeviceInfo(channel) { dev ->
@@ -99,18 +105,36 @@ class BroadcastManager(
         }
     }
 
+    /**
+     * Returns the device we are currently running this application on
+     * @return [Device] representing the current Android device
+     */
     fun getThisDevice(): Device {
         return thisDevice ?: Device(WifiP2pDevice())
     }
 
+    /**
+     * Returns a [MutableLiveData], which includes a list of all detected devices.
+     * Note that devices that aren't available anymore are included in this as well, as
+     * there is currently no way to remove them from available peers
+     * @return live data which contains a list of 'available' peers
+     */
     fun getLiveNearbyDevices(): MutableLiveData<List<Device>> {
         return nearbyDevices
     }
 
+    /**
+     * Returns a static [Collection] of all detected devices, for when that information
+     * is not needed live but rather momentarily
+     * @return collection of detected devices at the moment of calling this function
+     */
     fun getNearbyDevices(): Collection<Device> {
         return nearbyDevices.value ?: listOf()
     }
 
+    /**
+     * Listens to changes in available devices, updating live lists accordingly
+     */
     private val peerListListener = PeerListListener { peers ->
         val newDevices: MutableList<Device> = mutableListOf()
         peers.deviceList.forEach { newDevices.add(Device(it)) }
@@ -123,8 +147,6 @@ class BroadcastManager(
     /**
      * Listener for when connection status to another device changes
      */
-    // TODO: Move to its own class? This fires as soon as any, even incomplete information is available
-    // TODO: Show the user information about status
     private val connectionInfoListener = ConnectionInfoListener { conn ->
         if (!conn.groupFormed || isConnecting) {
             targetAddress = null
@@ -151,7 +173,6 @@ class BroadcastManager(
      * @param context context of fragment/activity where the event could fire
      * @param intent intent of the fragment/activity, maybe??
      */
-
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
@@ -178,7 +199,7 @@ class BroadcastManager(
 
     /**
      * Connects this device to given address through Wi-Fi Direct framework
-     * @param address address of the target device
+     * @param address MAC address of the target device
      */
     private fun connectToDevice(address: String) {
         val config = WifiP2pConfig()
@@ -218,8 +239,8 @@ class BroadcastManager(
     }
 
     /**
-     * Continually run by both client and "server" to listen for incoming traffic. Reads incoming
-     * data and fires itself again to set up listening
+     * Run by both client and "server" to listen for incoming traffic. Reads incoming
+     * data and shuts down after reading
      */
     private suspend fun receiveData() {
         connectionLatch.countDown()
@@ -253,12 +274,9 @@ class BroadcastManager(
                 }
                 is Pair<*, *> -> {
                     // TODO: Placeholder until a Network class is created
-                    val d = incoming.first as Device
-                    val s = incoming.second as String?
-                    println("D ${d.getName()}")
-                    println("S $s")
-                    println("THIS ${getThisDevice().getName()}")
-                    meshManager.createNetwork(d, getThisDevice(), s)
+                    val other = incoming.first as Device
+                    val id = incoming.second as String?
+                    meshManager.createNetwork(other, id)
                 }
             }
 
@@ -271,39 +289,15 @@ class BroadcastManager(
     }
 
     /**
-     * Transfers text to the other device with a [Message].
-     * @param message [Message] to transfer to the other device
-     */
-    fun transferText(message: Message) {
-        // Should be checked externally but left for redundancy
-        if (!isConnected()) {
-            return
-        }
-
-        // Empty message should be checked externally but left for redundancy
-        if (message.body == "") {
-            return
-        }
-
-        val socket = Socket()
-        socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
-        val ostream = ObjectOutputStream(BufferedOutputStream(socket.getOutputStream()))
-
-        ostream.writeObject(message)
-
-        ostream.close()
-        socket.close()
-
-        resetConnection()
-    }
-
-    /**
-     * Used to send information about the creation of a group to the device the group was
-     * created with
+     * Used to send any type of data to another device. Connects to given address automatically
+     * before sending data
+     * @param address MAC address of the target device to send data to
+     * @param data any type of data to send to the target
      */
     fun sendData(address: String, data: Any) {
         println("SEND FROM ${getThisDevice().getName()}")
         connectToDevice(address)
+        // Latch is used to wait for connection to be established
         connectionLatch.await()
 
         val socket = Socket()
@@ -320,7 +314,8 @@ class BroadcastManager(
     }
 
     /**
-     * Resets the connection after all data has been transferred
+     * Resets the connection after all data has been transferred, effectively disconnecting
+     * from the connection freeing both devices for further connections
      */
     private fun resetConnection() {
         connectionLatch = CountDownLatch(1)
@@ -332,13 +327,5 @@ class BroadcastManager(
 
         wifiManager.removeGroup(channel, null)
         println("DISCONNECTED")
-    }
-
-    /**
-     * Checks if this device is connected to another device, so messages can be sent
-     * @return true if [targetAddress] is set, false otherwise
-     */
-    fun isConnected(): Boolean {
-        return targetAddress != null
     }
 }

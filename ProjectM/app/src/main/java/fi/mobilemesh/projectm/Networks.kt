@@ -86,7 +86,7 @@ class Networks : Fragment() {
     private fun mapButtons() {
         createNetworkButton.setOnClickListener {
             if (selectedDevice != null) {
-                meshManager.createNetwork(selectedDevice!!, broadcastManager.getThisDevice())
+                meshManager.createNetwork(selectedDevice!!)
             }
         }
     }

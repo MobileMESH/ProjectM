@@ -28,36 +28,47 @@ class MeshManager {
     }
 
     private lateinit var broadcastManager: BroadcastManager
-
+    // Networks we have joined (TODO: Currently runtime only)
     private val currentNetworks: MutableMap<String, MutableList<Device>> = mutableMapOf()
 
+    /**
+     * Returns the first network/chat group id available for us. Testing only
+     * @return id of the first network we have available
+     */
     fun getRandomNetworkTest(): String {
         return currentNetworks.keys.first()
     }
 
-    fun createNetwork(other: Device, own: Device, networkId: String?=null) {
+    /**
+     * Used to initialize a network/chat group between two devices
+     * @param other the other [Device] to create this group with
+     * @param networkId unique id for the network. Should be null (as is by default) when
+     * initiating the creation, and should be set if receiving creation request
+     */
+    fun createNetwork(other: Device, networkId: String?=null) {
         if (networkId == null) {
             val newNetworkId = UUID.randomUUID().toString()
             currentNetworks[newNetworkId] = mutableListOf(other)
             CoroutineScope(Dispatchers.IO).launch {
+                val own = broadcastManager.getThisDevice()
                 broadcastManager.sendData(other.getAddress(), Pair(own, newNetworkId))
             }
         }
+
         else {
             currentNetworks[networkId] = mutableListOf(other)
         }
     }
 
+    /**
+     * Sends a group-wide message to the network/chat group specified in the networkId
+     * @param networkId id of the network/chat group to send the message to
+     * @param message actual [Message] to send to the group
+     */
     fun sendGroupMessage(networkId: String, message: Message) {
         val network = currentNetworks[networkId] ?: return
         val availableDevices = broadcastManager.getThisDevice().getAvailableDevices()
         val validDevices = availableDevices.filter { a -> network.any { b -> a.getName() == b.getName() } }
-
-        println("NET $networkId")
-        for (d in network) {
-            println("DEV ${d.getName()}")
-        }
-        println("VALID $validDevices")
 
         CoroutineScope(Dispatchers.IO).launch {
             validDevices.forEach { broadcastManager.sendData(it.getAddress(), message) }

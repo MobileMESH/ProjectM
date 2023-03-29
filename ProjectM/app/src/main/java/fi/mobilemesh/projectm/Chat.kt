@@ -108,18 +108,14 @@ class Chat : Fragment() {
      * @param text text as [String] to send
      */
     private suspend fun sendMessage(text: String) {
-        //if (!canSendMessage(text)) return
+        if (!isMessageValid(text)) return
 
         val time = Date(System.currentTimeMillis())
-        // TODO: Set chat group id properly. Current is a placeholder
         val id = dao.getNextMessageId(0)
-        // TODO: Get sender name from Device object (probably?)
         // TODO: Get chat group id
-        // TODO: Get unique message id within chat group (should be in rising order)
         val message = Message(id, 0, broadcastManager.getThisDevice().getName(), time, text)
 
         meshManager.sendGroupMessage(meshManager.getRandomNetworkTest(), message)
-
         dao.insertMessage(message)
 
         // TODO: Set color properly (UI team?)
@@ -192,32 +188,18 @@ class Chat : Fragment() {
      * @return true if the device is connected to the network and the message is not empty,
      * false if either condition fails
      */
-    private suspend fun canSendMessage(text: String): Boolean {
-        return CoroutineScope(Dispatchers.Main).async {
-            // Can't send message if there is no connection
-            if (!broadcastManager.isConnected()) {
-                view?.let {
-                    showNeutralAlert(
-                        "No connection!",
-                        "You are not connected to any device.",
-                        it.context
-                    )
-                }
-                return@async false
+    private fun isMessageValid(text: String): Boolean {
+        if (text.trim() == "") {
+            view?.let {
+                showNeutralAlert(
+                    "Empty message",
+                    "Can not send empty message (this is a placeholder)",
+                    it.context
+                )
             }
-            // Can't send empty message
-            if (text.trim() == "") {
-                view?.let {
-                    showNeutralAlert(
-                        "Empty message",
-                        "Can not send empty message (this is a placeholder)",
-                        it.context
-                    )
-                }
-                return@async false
-            }
-            return@async true
-        }.await()
+            return false
+        }
+        return true
     }
 
     companion object {
