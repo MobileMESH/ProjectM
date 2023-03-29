@@ -18,6 +18,7 @@ import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.network.MeshManager
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.*
 import java.util.*
@@ -39,6 +40,7 @@ class Chat : Fragment() {
 
     private lateinit var dao: MessageQueries
     private lateinit var broadcastManager: BroadcastManager
+    private lateinit var meshManager: MeshManager
 
     lateinit var sendButton: FloatingActionButton
     lateinit var sendingField: EditText
@@ -78,6 +80,7 @@ class Chat : Fragment() {
 
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)
+        meshManager = MeshManager.getInstance(view.context)
 
         mapButtons()
 
@@ -105,7 +108,7 @@ class Chat : Fragment() {
      * @param text text as [String] to send
      */
     private suspend fun sendMessage(text: String) {
-        if (!canSendMessage(text)) return
+        //if (!canSendMessage(text)) return
 
         val time = Date(System.currentTimeMillis())
         // TODO: Set chat group id properly. Current is a placeholder
@@ -113,11 +116,10 @@ class Chat : Fragment() {
         // TODO: Get sender name from Device object (probably?)
         // TODO: Get chat group id
         // TODO: Get unique message id within chat group (should be in rising order)
-        val message = Message(id, 0, "SENDER", time, text)
+        val message = Message(id, 0, broadcastManager.getThisDevice().getName(), time, text)
 
-        broadcastManager.transferText(message)
+        meshManager.sendGroupMessage(meshManager.getRandomNetworkTest(), message)
 
-        message.isOwnMessage = true
         dao.insertMessage(message)
 
         // TODO: Set color properly (UI team?)

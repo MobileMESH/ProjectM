@@ -1,7 +1,8 @@
 package fi.mobilemesh.projectm.network
 
 import android.content.Context
-import android.net.wifi.p2p.WifiP2pDevice
+import android.net.wifi.p2p.WifiP2pManager.DeviceInfoListener
+import fi.mobilemesh.projectm.database.entities.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ class MeshManager {
             synchronized(this) {
                 return INSTANCE ?: MeshManager()
                     .also {
+                        INSTANCE = it
                         it.broadcastManager = BroadcastManager.getInstance(context)
                     }
             }
@@ -29,14 +31,36 @@ class MeshManager {
 
     private val currentNetworks: MutableMap<String, MutableList<Device>> = mutableMapOf()
 
+    fun getRandomNetworkTest(): String {
+        return currentNetworks.keys.first()
+    }
+
     fun createNetwork(other: Device, own: Device, networkId: String?=null) {
-        if (networkId == null) CoroutineScope(Dispatchers.IO).launch {
+        if (networkId == null) {
             val newNetworkId = UUID.randomUUID().toString()
             currentNetworks[newNetworkId] = mutableListOf(other)
-            broadcastManager.sendData(other.getAddress(), Pair(own, newNetworkId))
+            CoroutineScope(Dispatchers.IO).launch {
+                broadcastManager.sendData(other.getAddress(), Pair(own, newNetworkId))
+            }
         }
         else {
             currentNetworks[networkId] = mutableListOf(other)
+        }
+    }
+
+    fun sendGroupMessage(networkId: String, message: Message) {
+        val network = currentNetworks[networkId] ?: return
+        val availableDevices = broadcastManager.getThisDevice().getAvailableDevices()
+        val validDevices = availableDevices.filter { a -> network.any { b -> a.getName() == b.getName() } }
+
+        println("NET $networkId")
+        for (d in network) {
+            println("DEV ${d.getName()}")
+        }
+        println("VALID $validDevices")
+
+        CoroutineScope(Dispatchers.IO).launch {
+            validDevices.forEach { broadcastManager.sendData(it.getAddress(), message) }
         }
     }
 

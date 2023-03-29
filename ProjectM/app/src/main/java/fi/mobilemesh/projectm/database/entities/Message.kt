@@ -33,7 +33,7 @@ data class Message(
 
     val body: String,
 
-    var isOwnMessage: Boolean = false) : java.io.Serializable
+    var isOwnMessage: Boolean = true) : java.io.Serializable
 
 /**
  * Converts a Date to Long and vice versa so it can be stored and read from the Room database

@@ -63,13 +63,14 @@ class BroadcastManager(
                         INSTANCE = it
                         dao = MessageDatabase.getInstance(context).dao
                         meshManager = MeshManager.getInstance(context)
+                        it.initThisDevice(null)
                     }
             }
         }
     }
 
     // TODO: Find a reliable way to always get this at startup!
-    private var thisDevice: Device = Device(WifiP2pDevice())
+    private var thisDevice: Device? = null
     private var nearbyDevices: MutableLiveData<List<Device>> = MutableLiveData(listOf())
 
     @Volatile
@@ -79,8 +80,27 @@ class BroadcastManager(
     private var connectionLatch = CountDownLatch(1)
     private var targetAddress: InetAddress? = null
 
+    private fun initThisDevice(intent: Intent?) {
+        if (Build.VERSION.SDK_INT >= 29) {
+            wifiManager.requestDeviceInfo(channel) { dev ->
+                thisDevice = Device(dev ?: WifiP2pDevice())
+            }
+        }
+
+        // Old SDK way of initializing needs an Intent, so return if not available
+        if (intent == null) return
+
+        // getParcelableExtra deprecated from API >= 33, which is already
+        // handled when api >= 29 above
+        @Suppress("DEPRECATION")
+        if (thisDevice == null) {
+            val device: WifiP2pDevice? = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)
+            if (device != null) thisDevice = Device(device)
+        }
+    }
+
     fun getThisDevice(): Device {
-        return thisDevice
+        return thisDevice ?: Device(WifiP2pDevice())
     }
 
     fun getLiveNearbyDevices(): MutableLiveData<List<Device>> {
@@ -97,7 +117,7 @@ class BroadcastManager(
 
         nearbyDevices.value = newDevices
 
-        thisDevice.setAvailableDevices(getNearbyDevices())
+        thisDevice?.setAvailableDevices(getNearbyDevices())
     }
 
     /**
@@ -134,21 +154,15 @@ class BroadcastManager(
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            // TODO: Find a reliable way to always get current device info at startup!
-            //  This is not reliable!
             WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
-                val device: WifiP2pDevice = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)!!
-                thisDevice = Device(device)
-                thisDevice.setAvailableDevices(getNearbyDevices())
+                initThisDevice(intent)
             }
 
             WIFI_P2P_STATE_CHANGED_ACTION -> {
                 val state = intent.getIntExtra(EXTRA_WIFI_STATE, -1)
-
                 if (state != WIFI_P2P_STATE_ENABLED) {
                     return
                 }
-
                 wifiManager.discoverPeers(channel, null)
             }
 
@@ -234,11 +248,17 @@ class BroadcastManager(
 
             when (val incoming = istream.readObject()) {
                 is Message -> {
+                    incoming.isOwnMessage = false
                     dao.insertMessage(incoming)
                 }
                 is Pair<*, *> -> {
                     // TODO: Placeholder until a Network class is created
-                    meshManager.createNetwork(incoming.first as Device, getThisDevice(), incoming.second as String?)
+                    val d = incoming.first as Device
+                    val s = incoming.second as String?
+                    println("D ${d.getName()}")
+                    println("S $s")
+                    println("THIS ${getThisDevice().getName()}")
+                    meshManager.createNetwork(d, getThisDevice(), s)
                 }
             }
 
@@ -282,6 +302,7 @@ class BroadcastManager(
      * created with
      */
     fun sendData(address: String, data: Any) {
+        println("SEND FROM ${getThisDevice().getName()}")
         connectToDevice(address)
         connectionLatch.await()
 
