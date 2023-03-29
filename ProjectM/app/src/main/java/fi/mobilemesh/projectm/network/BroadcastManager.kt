@@ -20,11 +20,11 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.ServerSocket
 import java.net.Socket
-import fi.mobilemesh.projectm.Networks
 import kotlinx.coroutines.*
 import java.io.EOFException
 import java.net.SocketException
 import java.util.concurrent.CountDownLatch
+
 
 private const val PORT = 8888
 private const val TIMEOUT = 5000
@@ -36,6 +36,7 @@ class BroadcastManager(
     /**
      * Used to get the BroadcastManager from any fragment/class
      */
+
     companion object {
         @Volatile
         private var INSTANCE: BroadcastManager? = null
@@ -62,27 +63,32 @@ class BroadcastManager(
             }
         }
     }
+
+
+    private lateinit var thisDevice: Device
+    private var nearbyDevices: MutableLiveData<MutableList<Device>> = MutableLiveData(mutableListOf())
+
     @Volatile
     private var isConnecting = false
-
-    // TODO: Workaround for Device obj. / SharedPrefsHandler
-    var ownDeviceName = ""
-
-    private var nearbyDevices: MutableLiveData<Collection<WifiP2pDevice>> = MutableLiveData()
 
     private var serverSocket = ServerSocket(PORT)
     private var connectionLatch = CountDownLatch(1)
     private var targetAddress: InetAddress? = null
 
-    fun getLiveNearbyDevices(): MutableLiveData<Collection<WifiP2pDevice>> {
-        return  nearbyDevices
+    fun getLiveNearbyDevices(): MutableLiveData<MutableList<Device>> {
+        return nearbyDevices
     }
 
-    /**
-     * Listener object for when nearby devices get updated
-     */
+    fun getNearbyDevices(): Collection<Device> {
+        return nearbyDevices.value ?: listOf()
+    }
+
     private val peerListListener = PeerListListener { peers ->
-        nearbyDevices.value = peers.deviceList
+        val deviceList = peers.deviceList
+        nearbyDevices.value?.clear()
+        deviceList.forEach { nearbyDevices.value?.add(Device(it)) }
+
+        thisDevice.setAvailableDevices(getNearbyDevices())
     }
 
     /**
@@ -109,12 +115,14 @@ class BroadcastManager(
         }
     }
 
+
     /**
      * Used to detect status changes related to Wi-Fi Direct, such as nearby devices changing
      * and connection changing
      * @param context context of fragment/activity where the event could fire
      * @param intent intent of the fragment/activity, maybe??
      */
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             WIFI_P2P_STATE_CHANGED_ACTION -> {
@@ -135,10 +143,12 @@ class BroadcastManager(
                 wifiManager.requestConnectionInfo(channel, connectionInfoListener)
             }
 
-            // TODO: Workaround for Device obj. / SharedPrefsHandler
             WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
-                ownDeviceName = (intent.getParcelableExtra<WifiP2pDevice>(EXTRA_WIFI_P2P_DEVICE))?.deviceName ?: "ERR. No device name"
+                val device: WifiP2pDevice = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)!!
+                thisDevice = Device(device)
+                thisDevice.setAvailableDevices(getNearbyDevices())
             }
+
         }
     }
 
@@ -218,8 +228,7 @@ class BroadcastManager(
                 }
                 is String -> {
                     val otherDevice = WifiP2pDevice().also { it.deviceName = incoming }
-                    println(otherDevice)
-                    meshManager.createNetwork(otherDevice, ownDeviceName, false)
+                    //meshManager.createNetwork(otherDevice, ownDeviceName, false)
                 }
             }
 

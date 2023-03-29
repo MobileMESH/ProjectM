@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.core.view.forEach
 import androidx.lifecycle.lifecycleScope
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.network.Device
 import fi.mobilemesh.projectm.network.MeshManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,7 @@ class Networks : Fragment() {
     // Wi-Fi Direct
     private lateinit var broadcastManager: BroadcastManager
     private lateinit var meshManager: MeshManager
-    private var selectedDevice: WifiP2pDevice? = null
+    private var selectedDevice: Device? = null
 
     // UI
     private lateinit var availableView: TextView
@@ -86,7 +87,7 @@ class Networks : Fragment() {
         createNetworkButton.setOnClickListener {
             if (selectedDevice != null) {
                 // TODO: Workaround for Device obj. / SharedPrefsHandler
-                meshManager.createNetwork(selectedDevice!!, broadcastManager.ownDeviceName)
+                //meshManager.createNetwork(selectedDevice!!, BroadcastManager.getThisDevice().getName())
             }
         }
     }
@@ -113,9 +114,9 @@ class Networks : Fragment() {
      * @param device device for which to create the interactable card
      */
     // TODO: Styles for buttons
-    private fun createCardViewLayout(device: WifiP2pDevice) {
+    private fun createCardViewLayout(device: Device) {
         val btn = Button(view?.context)
-        btn.text = device.deviceName
+        btn.text = device.getName()
         btn.setOnClickListener {
             nodeList.forEach { it.setBackgroundColor(Color.WHITE) }
             btn.setBackgroundColor(Color.GRAY)
