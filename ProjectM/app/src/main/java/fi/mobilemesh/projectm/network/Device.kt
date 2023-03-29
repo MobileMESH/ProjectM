@@ -5,7 +5,7 @@ import android.net.wifi.p2p.WifiP2pDevice
 import android.location.Location
 import android.location.LocationManager
 
-open class Device (device: WifiP2pDevice) :java.io.Serializable{
+class Device (device: WifiP2pDevice) : java.io.Serializable{
 
     private val macAdd = device.deviceAddress
     private val name = device.deviceName
@@ -14,29 +14,28 @@ open class Device (device: WifiP2pDevice) :java.io.Serializable{
     private var share_location = false
     private var availableDevices = mutableListOf<Device>()
 
-    fun getName(): String{
+    public fun getName(): String{
         return name
     }
 
-    fun getAddress(): String{
+    public fun getAddress(): String{
         return macAdd
     }
 
-    fun getLocation(): Location{
+    public fun getLocation(): Location{
         return location
     }
 
-    fun getNotification(): Boolean{
+    public fun getHasNotification(): Boolean{
         return has_notifications
     }
 
-    fun getHasSharedLocation(): Boolean {
+    public fun getHasSharedLocation(): Boolean {
         return share_location
     }
 
-    fun getAvailableDevices(): List<Device> {
+    public fun getAvailableDevices(): List<Device> {
         return availableDevices
     }
-
 }
 
