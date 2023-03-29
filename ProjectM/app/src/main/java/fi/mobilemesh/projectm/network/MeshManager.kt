@@ -11,7 +11,7 @@ import java.util.UUID
  * handles the management of discovered devices,
  * device connections, and group operations within a mesh network.
  */
-class MeshManager() {
+class MeshManager {
     companion object {
         private var INSTANCE: MeshManager? = null
 
@@ -27,16 +27,17 @@ class MeshManager() {
 
     private lateinit var broadcastManager: BroadcastManager
 
-    private val currentNetworks: MutableMap<String, MutableList<String>> = mutableMapOf()
+    private val currentNetworks: MutableMap<String, MutableList<Device>> = mutableMapOf()
 
-    // TODO: Replace other and own with Devices. Atm they are WifiP2pDevice/Name
-    fun createNetwork(other: WifiP2pDevice, own: String, reSend: Boolean=true) {
-        //val tempName = UUID.randomUUID().toString()
-        currentNetworks["tempName"] = mutableListOf(other.deviceName)
-        if (reSend) CoroutineScope(Dispatchers.IO).launch {
-            broadcastManager.sendData(other.deviceAddress, own)
+    fun createNetwork(other: Device, own: Device, networkId: String?=null) {
+        if (networkId == null) CoroutineScope(Dispatchers.IO).launch {
+            val newNetworkId = UUID.randomUUID().toString()
+            currentNetworks[newNetworkId] = mutableListOf(other)
+            broadcastManager.sendData(other.getAddress(), Pair(own, newNetworkId))
         }
-        println(currentNetworks)
+        else {
+            currentNetworks[networkId] = mutableListOf(other)
+        }
     }
 
     /*private val connectedDevices: MutableMap<String, Device> = mutableMapOf()

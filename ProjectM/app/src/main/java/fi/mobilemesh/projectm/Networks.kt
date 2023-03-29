@@ -86,14 +86,14 @@ class Networks : Fragment() {
     private fun mapButtons() {
         createNetworkButton.setOnClickListener {
             if (selectedDevice != null) {
-                // TODO: Workaround for Device obj. / SharedPrefsHandler
-                //meshManager.createNetwork(selectedDevice!!, BroadcastManager.getThisDevice().getName())
+                meshManager.createNetwork(selectedDevice!!, broadcastManager.getThisDevice())
             }
         }
     }
 
     private fun observeNearbyDevices() {
-        broadcastManager.getLiveNearbyDevices().observe(viewLifecycleOwner) {
+        broadcastManager.getLiveNearbyDevices().observe(viewLifecycleOwner) { list ->
+            if (!list.any { it == selectedDevice }) selectedDevice = null
             refreshDeviceCards()
         }
     }
@@ -104,7 +104,7 @@ class Networks : Fragment() {
     private fun refreshDeviceCards() {
         if (view?.context != null) {
             networkList.removeAllViews()
-            broadcastManager.getLiveNearbyDevices().value?.forEach { createCardViewLayout(it) }
+            broadcastManager.getNearbyDevices().forEach { createCardViewLayout(it) }
         }
     }
 

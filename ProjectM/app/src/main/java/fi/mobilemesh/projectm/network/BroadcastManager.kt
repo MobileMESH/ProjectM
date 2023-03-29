@@ -3,11 +3,15 @@ package fi.mobilemesh.projectm.network
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.WIFI_P2P_SERVICE
+import android.content.Context.WIFI_SERVICE
 import android.content.Intent
+import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
@@ -64,18 +68,22 @@ class BroadcastManager(
         }
     }
 
-
-    private lateinit var thisDevice: Device
-    private var nearbyDevices: MutableLiveData<MutableList<Device>> = MutableLiveData(mutableListOf())
+    // TODO: Find a reliable way to always get this at startup!
+    private var thisDevice: Device = Device(WifiP2pDevice())
+    private var nearbyDevices: MutableLiveData<List<Device>> = MutableLiveData(listOf())
 
     @Volatile
     private var isConnecting = false
 
-    private var serverSocket = ServerSocket(PORT)
+    private var serverSocket = ServerSocket(PORT).also { it.reuseAddress = true }
     private var connectionLatch = CountDownLatch(1)
     private var targetAddress: InetAddress? = null
 
-    fun getLiveNearbyDevices(): MutableLiveData<MutableList<Device>> {
+    fun getThisDevice(): Device {
+        return thisDevice
+    }
+
+    fun getLiveNearbyDevices(): MutableLiveData<List<Device>> {
         return nearbyDevices
     }
 
@@ -84,9 +92,10 @@ class BroadcastManager(
     }
 
     private val peerListListener = PeerListListener { peers ->
-        val deviceList = peers.deviceList
-        nearbyDevices.value?.clear()
-        deviceList.forEach { nearbyDevices.value?.add(Device(it)) }
+        val newDevices: MutableList<Device> = mutableListOf()
+        peers.deviceList.forEach { newDevices.add(Device(it)) }
+
+        nearbyDevices.value = newDevices
 
         thisDevice.setAvailableDevices(getNearbyDevices())
     }
@@ -125,6 +134,14 @@ class BroadcastManager(
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
+            // TODO: Find a reliable way to always get current device info at startup!
+            //  This is not reliable!
+            WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
+                val device: WifiP2pDevice = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)!!
+                thisDevice = Device(device)
+                thisDevice.setAvailableDevices(getNearbyDevices())
+            }
+
             WIFI_P2P_STATE_CHANGED_ACTION -> {
                 val state = intent.getIntExtra(EXTRA_WIFI_STATE, -1)
 
@@ -135,20 +152,13 @@ class BroadcastManager(
                 wifiManager.discoverPeers(channel, null)
             }
 
-              WIFI_P2P_PEERS_CHANGED_ACTION -> {
+            WIFI_P2P_PEERS_CHANGED_ACTION -> {
                 wifiManager.requestPeers(channel, peerListListener)
             }
 
             WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 wifiManager.requestConnectionInfo(channel, connectionInfoListener)
             }
-
-            WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
-                val device: WifiP2pDevice = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)!!
-                thisDevice = Device(device)
-                thisDevice.setAvailableDevices(getNearbyDevices())
-            }
-
         }
     }
 
@@ -226,9 +236,9 @@ class BroadcastManager(
                 is Message -> {
                     dao.insertMessage(incoming)
                 }
-                is String -> {
-                    val otherDevice = WifiP2pDevice().also { it.deviceName = incoming }
-                    //meshManager.createNetwork(otherDevice, ownDeviceName, false)
+                is Pair<*, *> -> {
+                    // TODO: Placeholder until a Network class is created
+                    meshManager.createNetwork(incoming.first as Device, getThisDevice(), incoming.second as String?)
                 }
             }
 
@@ -297,7 +307,7 @@ class BroadcastManager(
         isConnecting = false
 
         serverSocket.close()
-        serverSocket = ServerSocket(PORT)
+        serverSocket = ServerSocket(PORT).also { it.reuseAddress = true }
 
         wifiManager.removeGroup(channel, null)
         println("DISCONNECTED")
