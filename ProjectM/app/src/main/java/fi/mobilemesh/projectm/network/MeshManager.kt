@@ -2,6 +2,9 @@ package fi.mobilemesh.projectm.network
 
 import android.content.Context
 import android.net.wifi.p2p.WifiP2pDevice
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 /**
@@ -26,10 +29,13 @@ class MeshManager() {
 
     private val currentNetworks: MutableMap<String, MutableList<String>> = mutableMapOf()
 
-    fun createNetwork(other: String) {
-        val tempName = UUID.randomUUID().toString()
-        currentNetworks[tempName] = mutableListOf(other)
-        println("GROUP/CREATE $other")
+    // TODO: Replace other and own with Devices. Atm they are WifiP2pDevice/Name
+    fun createNetwork(other: WifiP2pDevice, own: String, reSend: Boolean=true) {
+        //val tempName = UUID.randomUUID().toString()
+        currentNetworks["tempName"] = mutableListOf(other.deviceName)
+        if (reSend) CoroutineScope(Dispatchers.IO).launch {
+            broadcastManager.sendData(other.deviceAddress, own)
+        }
         println(currentNetworks)
     }
 

@@ -68,6 +68,9 @@ class BroadcastManager(
     @Volatile
     private var isConnecting = false
 
+    // TODO: Workaround for Device obj. / SharedPrefsHandler
+    var ownDeviceName = ""
+
     private var serverSocket = ServerSocket(PORT)
     private var connectionLatch = CountDownLatch(1)
     private var targetAddress: InetAddress? = null
@@ -127,6 +130,11 @@ class BroadcastManager(
 
             WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 wifiManager.requestConnectionInfo(channel, connectionInfoListener)
+            }
+
+            // TODO: Workaround for Device obj. / SharedPrefsHandler
+            WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
+                ownDeviceName = (intent.getParcelableExtra<WifiP2pDevice>(EXTRA_WIFI_P2P_DEVICE))?.deviceName ?: "ERR. No device name"
             }
         }
     }
@@ -202,8 +210,14 @@ class BroadcastManager(
             }
 
             when (val incoming = istream.readObject()) {
-                is Message -> dao.insertMessage(incoming)
-                is String -> meshManager.createNetwork(incoming)
+                is Message -> {
+                    dao.insertMessage(incoming)
+                }
+                is String -> {
+                    val otherDevice = WifiP2pDevice().also { it.deviceName = incoming }
+                    println(otherDevice)
+                    meshManager.createNetwork(otherDevice, ownDeviceName, false)
+                }
             }
 
             istream.close()
