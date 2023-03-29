@@ -1,10 +1,12 @@
 package fi.mobilemesh.projectm
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,6 +23,9 @@ class AskCreating : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    lateinit var createButton: Button
+    lateinit var notNowButton: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -29,12 +34,36 @@ class AskCreating : Fragment() {
         }
     }
 
+    private fun mapButtons() {
+        createButton.setOnClickListener {
+            val fragment = CreateNetwork()
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragmentContainerView2, fragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+        notNowButton.setOnClickListener {
+            // Go to the main activity and finish the current activity
+            val intent = Intent(activity, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+            activity?.finish()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_ask_creating, container, false)
+        val view = inflater.inflate(R.layout.fragment_ask_creating, container, false)
+
+        createButton = view.findViewById(R.id.createButton)
+        notNowButton = view.findViewById(R.id.notNowButton)
+
+        mapButtons()
+
+        return view
     }
 
     companion object {

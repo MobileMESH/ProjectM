@@ -1,5 +1,7 @@
 package fi.mobilemesh.projectm
 
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
 import androidx.appcompat.app.AppCompatActivity
@@ -88,9 +90,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Get the shared preferences
+        val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
+
+        // Check if this is the first time the app is being opened
+        val isFirstTime = prefs.getBoolean("is_first_time", true)
+
+        if (isFirstTime) {
+            // Show the onboarding activity
+            startActivity(Intent(this, OnboardingActivity::class.java))
+
+            // Save the flag indicating that the app has been opened at least once
+            prefs.edit().putBoolean("is_first_time", false).apply()
+        }
+        
         setContentView(R.layout.activity_main)
 
-        requestPermissions()
+        // TODO: move this to Onboarding
+        //requestPermissions()
 
         //UI
         findUiElements()
