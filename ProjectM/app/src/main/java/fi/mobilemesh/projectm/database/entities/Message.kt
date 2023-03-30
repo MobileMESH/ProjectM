@@ -51,8 +51,15 @@ class DateConverter {
     }
 }
 
+/**
+ * Data class for messages being sent through Wi-Fi Direct. Contains both the message
+ * and the devices the message has already been sent to
+ *  @param message [Message] data to be sent
+ *  @param alreadySent [MutableSet] of [Device]s the message has already been sent to,
+ *  and where it is not needed to be sent again
+ */
 data class MessageData(
     val message: Message,
 
-    val alreadySent: Set<Device>
+    val alreadySent: MutableSet<Device>
 ) : java.io.Serializable

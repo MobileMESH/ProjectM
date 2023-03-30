@@ -66,32 +66,27 @@ class MeshManager {
      * @param message actual [Message] to send to the group
      * @param alreadySent set of devices the message was already sent to, avoiding repeat
      */
-    fun sendGroupMessage(message: Message, alreadySent: Set<Device>?=null) {
+    fun sendGroupMessage(message: Message,
+                         alreadySent: MutableSet<Device>
+                         = mutableSetOf(broadcastManager.getThisDevice())) {
+
         val network = currentNetworks[message.chatGroupId] ?: return
         val availableDevices = broadcastManager.getThisDevice().getAvailableDevices()
 
-        // Valid devices are both in range (available) and within the selected network
-        var validDevices = availableDevices.filter { a: Device ->
-            network.any { n: Device ->
-                a.getName() == n.getName() } } as MutableList
+        // Valid devices are both in range (available) and within the selected network,
+        // but not in the devices the message has been sent to
 
-        // Don't send this to those it has already been sent to
-        if (alreadySent != null) {
-            validDevices = validDevices.filterNot { v: Device ->
-                alreadySent.any { a: Device ->
-                    v.getName() == a.getName() } } as MutableList<Device>
-        }
-        // Our device can also be considered to already have received the message
-        val thisDevice = broadcastManager.getThisDevice()
-        validDevices.add(thisDevice)
+        val validDevices = availableDevices
+            .filter { it in network }
+            .filterNot { it in alreadySent }
 
-        val messageData = MessageData(message, validDevices.toSet())
+        alreadySent.addAll(validDevices)
+
+        val messageData = MessageData(message, alreadySent)
 
         CoroutineScope(Dispatchers.IO).launch {
             validDevices.forEach {
-                if (it.getName() != thisDevice.getName()) {
-                    broadcastManager.sendData(it.getAddress(), messageData)
-                }
+                broadcastManager.sendData(it.getAddress(), messageData)
             }
         }
     }
