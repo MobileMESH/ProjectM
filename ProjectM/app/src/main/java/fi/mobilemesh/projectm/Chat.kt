@@ -10,11 +10,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import android.widget.*
-import androidx.core.view.isVisible
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -22,7 +17,6 @@ import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.utils.showNeutralAlert
-import fi.mobilemesh.projectm.utils.showConfirmationAlert
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -43,31 +37,11 @@ class Chat : Fragment() {
 
     private lateinit var dao: MessageQueries
     private lateinit var broadcastManager: BroadcastManager
-    private val uiState = MutableLiveData<ChatUIState>(ChatUIState.Chat)
 
-    // TODO: move to separate UI element classes?
-    // layouts
-    private lateinit var chatLayout: View
-    private lateinit var detailsLayout: View
-    private lateinit var disconnectedLayout: View
-    private lateinit var fragmentChat: FrameLayout
-
-    // chat
     lateinit var sendButton: FloatingActionButton
     lateinit var sendingField: EditText
     lateinit var receivingField: LinearLayout
     lateinit var openDetailsButton: Button
-
-    // details
-    lateinit var networkDetails: TextView
-    lateinit var networkDescription: TextView
-    lateinit var connectedDevicesHeader: TextView
-    lateinit var connectedDevicesList: RecyclerView
-    lateinit var leaveNetworkButton: Button
-    lateinit var openChatButton: Button
-
-    // disconnected
-    lateinit var disconnectedMsg: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +49,6 @@ class Chat : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        println("Chat")
     }
 
     /**
@@ -90,107 +63,51 @@ class Chat : Fragment() {
         }
 
         openDetailsButton.setOnClickListener {
-            uiState.value = ChatUIState.Details
-        }
-
-        openChatButton.setOnClickListener {
-            uiState.value = ChatUIState.Chat
-        }
-
-        leaveNetworkButton.setOnClickListener {
-            showConfirmationAlert(
-                "Leave Network",
-                "Are you sure you want to leave the network?",
-                "Yes",
-                "No",
-                requireContext(),
-                {
-                    // TODO: Disconnect device from network
-                    uiState.value = ChatUIState.Disconnected
-                },
-                {
-                    // Do nothing
-                }
-            )
+            // switch to Details
+            (parentFragment as ContainerFragmentChat).switchFragment(ChatNetworkDetails::class.java)
         }
     }
 
-    // This function is used to do all magic
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_chat, container, false)
-        fragmentChat = view.findViewById(R.id.fragment_chat)
+        val view =  inflater.inflate(R.layout.fragment_chat, container, false)
 
-        inflateChildLayouts(inflater)
-        addLayoutsToFrameLayout()
-
-        findUiElements()
-        observeUI()
+        findUiElements(view)
 
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)
-
         mapButtons()
-        setupConnectedDevicesList()
-        setInitialUIState()
 
         lifecycleScope.launch { observeLiveMessages() }
 
         return view
     }
+/*
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    /**
-     * Inflate the child layouts inside the FrameLayout
-     */
-    private fun inflateChildLayouts(inflater: LayoutInflater) {
-        chatLayout = inflater.inflate(R.layout.chat, fragmentChat, false)
-        detailsLayout = inflater.inflate(R.layout.network_details, fragmentChat, false)
-        disconnectedLayout = inflater.inflate(R.layout.chat_disconnected, fragmentChat, false)
+        findUiElements(view)
+
+        dao = MessageDatabase.getInstance(view.context).dao
+        broadcastManager = BroadcastManager.getInstance(view.context)
+        mapButtons()
+
+        lifecycleScope.launch { observeLiveMessages() }
+
+    }
+*/
+
+    private fun findUiElements(view: View) {
+        receivingField = view.findViewById(R.id.receivingField)
+        sendingField = view.findViewById(R.id.sendingField)
+        sendButton = view.findViewById(R.id.sendTextButton)
+        openDetailsButton = view.findViewById(R.id.openDetailsButton)
     }
 
-    /**
-     * Add the child layouts to the FrameLayout
-     */
-    private fun addLayoutsToFrameLayout() {
-        arrayOf(chatLayout, detailsLayout, disconnectedLayout)
-            .forEach { fragmentChat.addView(it) }
-    }
-
-    private fun findUiElements() {
-        // chat
-        receivingField = chatLayout.findViewById(R.id.receivingField)
-        sendingField = chatLayout.findViewById(R.id.sendingField)
-        sendButton = chatLayout.findViewById(R.id.sendTextButton)
-        openDetailsButton = chatLayout.findViewById(R.id.openDetailsButton)
-
-        // details
-        networkDetails = detailsLayout.findViewById(R.id.networkDetails)
-        connectedDevicesList = detailsLayout.findViewById(R.id.connectedDevicesList)
-        connectedDevicesHeader = detailsLayout.findViewById(R.id.connectedDevicesHeader)
-        networkDescription = detailsLayout.findViewById(R.id.networkDescription)
-        openChatButton = detailsLayout.findViewById(R.id.openChatButton)
-        leaveNetworkButton = detailsLayout.findViewById(R.id.leaveNetworkButton)
-
-        // disconnected
-        disconnectedMsg = disconnectedLayout.findViewById(R.id.disconnectedMsg)
-    }
-
-    /**
-     * Updates the visibility of different UI elements between chat, network details,
-     * and disconnected chat based on the current state of the chat section.
-     */
-    private fun observeUI() {
-        uiState.observe(viewLifecycleOwner) { state ->
-            chatLayout.isVisible = state is ChatUIState.Chat
-            detailsLayout.isVisible = state is ChatUIState.Details
-            disconnectedLayout.isVisible = state is ChatUIState.Disconnected
-        }
-    }
-
-    /**
+   /* /**
      * Checks the connection and sets the appropriate layout.
      * Chat is visible by default, but if the connection is not found, changes it to disconnectedLayout
      *
@@ -199,33 +116,10 @@ class Chat : Fragment() {
      */
     private fun setInitialUIState() {
         if (!broadcastManager.isConnected()) {
-            uiState.value = ChatUIState.Disconnected
+            // change fragment to disconnected
         }
     }
-
-    /**
-     * Sets up the RecyclerView for displaying a list of connected devices.
-     * For now only populates the list with test devices for demo purposes.
-     */
-    // TODO: Should be updated when Device object is ready
-    private fun setupConnectedDevicesList() {
-
-        val devices = mutableListOf<DeviceList>()
-
-        // Note: first device should be the one the app is currently running on so that
-        // they appear on top of the device list
-        devices.add(DeviceList("Own device", "Own address" ))
-
-        for (i in 0..20) {
-            devices.add(DeviceList("Test device", "Test address"))
-        }
-
-        connectedDevicesList.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = DevicesAdapter(devices)
-        }
-    }
-
+*/
     /**
      * Updates the chat every time a new message is added to the database (a message is receive).
      * WIP
@@ -315,9 +209,9 @@ class Chat : Fragment() {
             val messages = dao.getChatGroupMessages(0)
             messages.forEach {
                 val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
-                    else Color.parseColor("#262626")
+                else Color.parseColor("#262626")
                 val textColor = if (it.isOwnMessage) Color.BLACK
-                    else Color.WHITE
+                else Color.WHITE
                 createMessage(it, messageColor, textColor)
             }
         }
@@ -367,7 +261,7 @@ class Chat : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment chat.
+         * @return A new instance of fragment Chat.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
