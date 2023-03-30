@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.app.ActionBar.LayoutParams
 import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Bundle
@@ -36,7 +37,7 @@ class Networks : Fragment() {
 
     // UI
     private lateinit var availableView: TextView
-    private lateinit var nodeList: LinearLayout
+    private lateinit var deviceList: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +56,7 @@ class Networks : Fragment() {
         broadcastManager = BroadcastManager.getInstance(view.context)
 
         availableView = view.findViewById(R.id.availableView)
-        nodeList = view.findViewById(R.id.nodeList)
+        deviceList = view.findViewById(R.id.deviceList)
 
         INSTANCE = this
 
@@ -75,7 +76,7 @@ class Networks : Fragment() {
      */
     private fun refreshDeviceCards() {
         if (view?.context != null) {
-            nodeList.removeAllViews()
+            deviceList.removeAllViews()
             deviceList.forEach { createCardViewLayout(it) }
         }
     }
@@ -88,13 +89,14 @@ class Networks : Fragment() {
     // TODO: Styles for buttons
     private fun createCardViewLayout(device: WifiP2pDevice) {
         val btn = Button(view?.context)
+
         btn.text = device.deviceName
         btn.setOnClickListener {
             broadcastManager.connectToDevice(device.deviceAddress)
             connectedDevice = device.deviceName
         }
 
-        nodeList.addView(btn)
+        deviceList.addView(btn)
     }
 
     private fun refreshConnectionStatus(connectedDevice: InetAddress?) {

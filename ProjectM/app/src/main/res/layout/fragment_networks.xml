@@ -24,13 +24,33 @@
         android:padding="10dp"
         android:textSize="20sp" />
 
+        <!--A list of the available devices-->
         <LinearLayout
-            android:id="@+id/nodeList"
+            android:id="@+id/deviceList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical"
-            android:padding="16sp" />
+            android:padding="16sp" >
+            <!--TODO: PLEASE DO NOT REMOVE THIS! Until TODO below is complete
+            TODO: Look for a way to make the device buttons in nodeList look like this card
+            <androidx.cardview.widget.CardView
+                android:layout_width="360dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:clickable="true"
+                app:cardBackgroundColor="@color/network_inactive"
+                app:cardCornerRadius="10dp"
+                app:contentPadding="16dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Available device here"
+                    android:textAlignment="center"
+                    android:textColor="@color/design_default_color_on_primary"
+                    android:textSize="16sp" />
+            </androidx.cardview.widget.CardView>-->
+        </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,6 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:backgroundTint="@color/buttons"
+            android:textColor="#FFFFFF"
             android:text="Create a network"
             android:textSize="16sp" />
 
