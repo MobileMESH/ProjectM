@@ -65,6 +65,7 @@
                 android:clickable="true"
                 android:gravity="center|start"
                 android:hint="@string/device_name"
+                android:textColor="@color/white"
                 android:outlineProvider="bounds"
                 android:paddingStart="20dp"
                 android:shadowColor="#1B1B1B"

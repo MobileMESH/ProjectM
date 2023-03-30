@@ -9,15 +9,15 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
-import android.widget.Button
+import fi.mobilemesh.projectm.network.BroadcastManager
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.ChatGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -126,6 +126,7 @@ class MainActivity : AppCompatActivity() {
             dao.insertChatGroup(ChatGroup(0))
         }
 
+
     }
 
     /*
@@ -221,3 +222,6 @@ class MainActivity : AppCompatActivity() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 }
+
+
+

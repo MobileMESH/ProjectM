@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:backgroundTint="@color/background"
+    android:background="@drawable/layered_peaks_haikei__6_"
     tools:context=".NetworkDetails">
 
     <androidx.constraintlayout.widget.ConstraintLayout
