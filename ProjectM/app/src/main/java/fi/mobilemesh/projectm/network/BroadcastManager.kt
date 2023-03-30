@@ -3,19 +3,15 @@ package fi.mobilemesh.projectm.network
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.WIFI_P2P_SERVICE
-import android.content.Context.WIFI_SERVICE
 import android.content.Intent
-import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
-import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.database.entities.MessageData
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
@@ -76,7 +72,7 @@ class BroadcastManager(
     @Volatile
     private var isConnecting = false
 
-    private var serverSocket = ServerSocket(PORT).also { it.reuseAddress = true }
+    private var serverSocket = ServerSocket(PORT)
     private var connectionLatch = CountDownLatch(1)
     private var targetAddress: InetAddress? = null
 
@@ -149,6 +145,7 @@ class BroadcastManager(
      * Listener for when connection status to another device changes
      */
     private val connectionInfoListener = ConnectionInfoListener { conn ->
+        println(conn)
         if (!conn.groupFormed || isConnecting) {
             targetAddress = null
             wifiManager.discoverPeers(channel, null)
@@ -156,6 +153,7 @@ class BroadcastManager(
         }
 
         isConnecting = true
+        if (serverSocket.isClosed) serverSocket = ServerSocket(PORT)
 
         CoroutineScope(Dispatchers.IO).launch {
             if (!conn.isGroupOwner) {
@@ -247,6 +245,7 @@ class BroadcastManager(
     private suspend fun receiveData() {
         connectionLatch.countDown()
         println("RECEIVE/START")
+
         withContext(Dispatchers.IO) {
             val client = try {
                 serverSocket.accept()
@@ -261,11 +260,11 @@ class BroadcastManager(
                 ObjectInputStream(BufferedInputStream(client.getInputStream()))
             }
             catch (e: EOFException) {
-                println(e)
+                println("EOFException $e")
                 return@withContext
             }
             catch(e: SocketException) {
-                println(e)
+                println("SocketException: $e")
                 return@withContext
             }
 
@@ -329,8 +328,7 @@ class BroadcastManager(
         targetAddress = null
         isConnecting = false
 
-        serverSocket.close()
-        serverSocket = ServerSocket(PORT).also { it.reuseAddress = true }
+        println(serverSocket.close())
 
         wifiManager.removeGroup(channel, null)
         println("DISCONNECTED")
