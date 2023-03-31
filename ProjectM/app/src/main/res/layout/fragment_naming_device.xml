@@ -6,21 +6,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/layered_peaks_haikei__2_"
-
     tools:context=".NamingDevice">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="360dp"
-            android:layout_height="291dp"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="30dp"
+            android:layout_width="310dp"
+            android:layout_height="234dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
             android:src="@drawable/seated" />
 
         <TextView
@@ -35,18 +35,19 @@
             android:textStyle="bold" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/guidance"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
                 android:layout_marginTop="30dp"
-                android:layout_marginRight="40dp"
                 android:gravity="center"
                 android:text="Enter a name for your device. The name can be changed later in the settings."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -58,9 +59,7 @@
                 style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_marginLeft="40dp"
                 android:layout_marginTop="30dp"
-                android:layout_marginRight="40dp"
                 android:background="@drawable/borders"
                 android:clickable="true"
                 android:gravity="center|start"
@@ -71,25 +70,31 @@
                 android:shadowColor="#1B1B1B"
                 android:textColorHint="#aec2bd" />
 
-            <Button
-                android:id="@+id/continueButton"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="35dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="10dp"
-                android:backgroundTint="@color/buttons"
-                android:text="Continue"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content"
+                android:paddingTop="30dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/continueButton"
+                    android:layout_width="130dp"
+                    android:layout_height="55dp"
+                    android:backgroundTint="@color/buttons"
+                    android:text="Continue"
+                    android:layout_weight="1"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="170dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginEnd="170dp"
+                android:paddingLeft="130dp"
+                android:layout_marginTop="48dp"
+                android:paddingRight="130dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -111,6 +116,14 @@
                     app:tint="@color/tertiary_bars" />
 
                 <ImageView
+                    android:id="@+id/imageView7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/radiobutton_off_background"
+                    app:tint="@color/tertiary_bars" />
+
+                <ImageView
                     android:id="@+id/imageView5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -120,14 +133,6 @@
 
                 <ImageView
                     android:id="@+id/imageView4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/tertiary_bars" />
-
-                <ImageView
-                    android:id="@+id/imageView6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
