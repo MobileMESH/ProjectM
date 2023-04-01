@@ -88,49 +88,4 @@ class SharedPreferencesManager(
     fun getLocationEnabled(): Boolean {
         return sharedPreferences.getBoolean(LOCATION_STATUS_PATH, false)
     }
-
-    /*fun saveDevice() {
-        sharedPreferences.edit {
-            putString(deviceToModify.getAddress(), gson.toJson(deviceToModify))
-        }
-    }
-
-    fun getDevice(deviceAddress: String): Device? {
-        val deviceJson = sharedPreferences.getString(deviceAddress, null)
-        return if (deviceJson != null) {
-            gson.fromJson(deviceJson, Device::class.java)
-        } else {
-            null
-        }
-    }
-
-    fun deleteDevice(deviceAddress: String) {
-        sharedPreferences.edit {
-            remove(deviceAddress)
-        }
-    }
-
-    fun saveAvailableDevices(deviceAddress: String, availableDevices: List<Device>) {
-        val listType: Type = object : TypeToken<List<Device>>() {}.type
-        sharedPreferences.edit {
-            putString("$deviceAddress-availableDevices", gson.toJson(availableDevices, listType))
-        }
-    }
-
-    fun getAvailableDevices(deviceAddress: String): List<Device> {
-        val availableDevicesJson =
-            sharedPreferences.getString("$deviceAddress-availableDevices", null)
-        return if (availableDevicesJson != null) {
-            val listType: Type = object : TypeToken<List<Device>>() {}.type
-            gson.fromJson(availableDevicesJson, listType)
-        } else {
-            emptyList()
-        }
-    }
-
-    fun deleteAvailableDevices(deviceAddress: String) {
-        sharedPreferences.edit {
-            remove("$deviceAddress-availableDevices")
-        }
-    }*/
 }
