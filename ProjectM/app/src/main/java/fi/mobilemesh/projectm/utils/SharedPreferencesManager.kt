@@ -2,39 +2,91 @@ package fi.mobilemesh.projectm.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.content.edit
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import fi.mobilemesh.projectm.network.Device
-import java.lang.reflect.Type
 
 const val USER_DATA_PATH = "userData"
 const val UUID_PATH = "uuid"
 const val USERNAME_PATH = "username"
+const val LOCATION_STATUS_PATH = "locationStatus"
 
-class SharedPreferencesManager(context: Context) {
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(USER_DATA_PATH, Context.MODE_PRIVATE)
-    private val gson = Gson()
+/**
+ * Class for handling user preferences and attributes, such as location, username and UUID.
+ * Should be used for information that needs to be kept even between restarts. The preferences
+ * can be cleared manually by clearing app information or by uninstalling
+ */
+class SharedPreferencesManager(
+    private val sharedPreferences: SharedPreferences
+) {
+    companion object {
+        private var INSTANCE: SharedPreferencesManager? = null
 
-    fun saveUUID(uuid: String) {
+        fun getInstance(context: Context): SharedPreferencesManager {
+            synchronized(this) {
+                val sharedPrefs = context.getSharedPreferences(USER_DATA_PATH, Context.MODE_PRIVATE)
+                return INSTANCE ?: SharedPreferencesManager(sharedPrefs)
+                    .also {
+                        INSTANCE = it
+                    }
+            }
+        }
+    }
+
+    /**
+     * Saves the user's new UUID if one has not been saved already
+     * @param uuid the unique id of this user to save
+     * @return true if the new id was saved, false if one had already been saved
+     */
+    fun saveUUID(uuid: String): Boolean {
+        if (getUUID() != null){
+            return false
+        }
         sharedPreferences.edit()
             .putString(UUID_PATH, uuid)
             .apply()
+        return true
     }
 
+    /**
+     * Gets the unique id of this user
+     * @return the unique id if set, null otherwise
+     */
     fun getUUID(): String? {
         return sharedPreferences.getString(UUID_PATH, null)
     }
 
+    /**
+     * Saves the user's preferred username that is visible to other users
+     * @param username preferred username
+     */
     fun saveUsername(username: String) {
         sharedPreferences.edit()
             .putString(USERNAME_PATH, username)
             .apply()
     }
 
+    /**
+     * Gets the user's preferred username that is visible to others
+     * @return the username if set, null otherwise
+     */
     fun getUsername(): String? {
         return sharedPreferences.getString(USERNAME_PATH, null)
+    }
+
+    /**
+     * Updates the enabled/disabled status of the user's location sharing
+     * @param state new preference, true if location can be shared, false if not
+     */
+    fun setLocationEnabled(state: Boolean) {
+        sharedPreferences.edit()
+            .putBoolean(LOCATION_STATUS_PATH, state)
+            .apply()
+    }
+
+    /**
+     * Gets the user's preference, whether or not their location can be shared with others
+     * @return true/false status of the settings, false if not set
+     */
+    fun getLocationEnabled(): Boolean {
+        return sharedPreferences.getBoolean(LOCATION_STATUS_PATH, false)
     }
 
     /*fun saveDevice() {
