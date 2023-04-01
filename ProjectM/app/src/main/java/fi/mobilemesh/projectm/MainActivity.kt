@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.ChatGroup
+import fi.mobilemesh.projectm.utils.SharedPreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -96,8 +97,10 @@ class MainActivity : AppCompatActivity() {
         //mapButtons()
         listenNavigation()
 
-        // Wifi
-        broadcastManager = BroadcastManager.getInstance(this)
+        // Initializing handlers and such
+        MessageDatabase.getInstance(applicationContext)
+        broadcastManager = BroadcastManager.getInstance(applicationContext)
+        SharedPreferencesManager.getInstance(applicationContext)
         addIntentFilters()
 
         // Message database (Data Access Object)
