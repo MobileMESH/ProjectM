@@ -9,14 +9,35 @@ import fi.mobilemesh.projectm.network.Device
 import java.lang.reflect.Type
 
 const val USER_DATA_PATH = "userData"
+const val UUID_PATH = "uuid"
+const val USERNAME_PATH = "username"
 
-class SharedPreferencesManager(context: Context, device: Device) {
+class SharedPreferencesManager(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(USER_DATA_PATH, Context.MODE_PRIVATE)
     private val gson = Gson()
-    private val deviceToModify = device
 
-    fun saveDevice() {
+    fun saveUUID(uuid: String) {
+        sharedPreferences.edit()
+            .putString(UUID_PATH, uuid)
+            .apply()
+    }
+
+    fun getUUID(): String? {
+        return sharedPreferences.getString(UUID_PATH, null)
+    }
+
+    fun saveUsername(username: String) {
+        sharedPreferences.edit()
+            .putString(USERNAME_PATH, username)
+            .apply()
+    }
+
+    fun getUsername(): String? {
+        return sharedPreferences.getString(USERNAME_PATH, null)
+    }
+
+    /*fun saveDevice() {
         sharedPreferences.edit {
             putString(deviceToModify.getAddress(), gson.toJson(deviceToModify))
         }
@@ -59,5 +80,5 @@ class SharedPreferencesManager(context: Context, device: Device) {
         sharedPreferences.edit {
             remove("$deviceAddress-availableDevices")
         }
-    }
+    }*/
 }
