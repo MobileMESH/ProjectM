@@ -13,6 +13,10 @@ import fi.mobilemesh.projectm.utils.showConfirmationAlert
 
 class ChatNetworkDetails : Fragment() {
 
+    //TODO: implement feature to add and edit network desc
+    //private val isDescriptionPresent = false
+
+    lateinit var menuButton: Button
     lateinit var networkDetails: TextView
     lateinit var networkDescription: TextView
     lateinit var connectedDevicesHeader: TextView
@@ -28,6 +32,10 @@ class ChatNetworkDetails : Fragment() {
         openChatButton.setOnClickListener {
             // switch to Chat
             (parentFragment as ContainerFragmentChat).switchFragment(Chat::class.java)
+        }
+
+        menuButton.setOnClickListener {
+            // TODO: create menu to edit network name and desc
         }
 
         leaveNetworkButton.setOnClickListener {
@@ -68,6 +76,7 @@ class ChatNetworkDetails : Fragment() {
         networkDescription = view.findViewById(R.id.networkDescription)
         openChatButton = view.findViewById(R.id.openChatButton)
         leaveNetworkButton = view.findViewById(R.id.leaveNetworkButton)
+        menuButton = view.findViewById(R.id.menuButton)
     }
 
     /**
@@ -81,10 +90,14 @@ class ChatNetworkDetails : Fragment() {
 
         // Note: first device should be the one the app is currently running on so that
         // they appear on top of the device list
-        devices.add(DeviceList("Own device", "Own address"))
+        devices.add(DeviceList("Own device", true))
 
-        for (i in 0..20) {
-            devices.add(DeviceList("Test device", "Test address"))
+        for (i in 0..2) {
+            devices.add(DeviceList("Test device", true))
+        }
+
+        for (i in 0..2) {
+            devices.add(DeviceList("Test device", false))
         }
 
         connectedDevicesList.apply {
