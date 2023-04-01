@@ -6,12 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/layered_peaks_haikei__2_"
-
-    tools:context=".NotificationPermission">
+    tools:context=".LocationPermission">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical">
 
         <ImageView
@@ -19,7 +19,6 @@
             android:layout_width="310dp"
             android:layout_height="234dp"
             android:layout_gravity="center"
-            android:layout_marginTop="80dp"
             android:layout_marginBottom="20dp"
             android:src="@drawable/notification" />
 
@@ -35,20 +34,19 @@
             android:textStyle="bold" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
             android:gravity="center"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/guidance"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
                 android:layout_marginTop="30dp"
-                android:layout_marginRight="40dp"
                 android:gravity="center"
                 android:text="This enables you to receive alerts when you receive messages from other users. You can change this at any time in the settings."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -57,19 +55,18 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="67dp"
-
-                android:layout_marginTop="30dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="30dp"
+                android:gravity="center"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/continueButton"
-                    android:layout_width="match_parent"
+                    android:layout_width="130dp"
                     android:layout_height="55dp"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginEnd="40dp"
                     android:backgroundTint="@color/buttons"
                     android:text="Continue"
+                    android:layout_weight="1"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -78,9 +75,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="170dp"
+                android:paddingLeft="130dp"
                 android:layout_marginTop="48dp"
-                android:layout_marginEnd="170dp"
+                android:paddingRight="130dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -130,7 +127,4 @@
 
     </LinearLayout>
 </RelativeLayout>
-
-
-
 
