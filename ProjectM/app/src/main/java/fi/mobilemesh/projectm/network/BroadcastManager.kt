@@ -36,7 +36,9 @@ class BroadcastManager(
      * Used to get the BroadcastManager from any fragment/class
      */
 
-    val devices = mutableListOf<Device>()
+    private lateinit var thisDevice: Device
+    private val devices = mutableListOf<Device>()
+
     companion object {
         @Volatile
         private var INSTANCE: BroadcastManager? = null
@@ -82,17 +84,12 @@ class BroadcastManager(
 //    }
 
     private val peerListListener = PeerListListener { peers ->
-        Networks.refreshDeviceList(peers.deviceList)
         val deviceList = peers.deviceList
+        Networks.refreshDeviceList(peers.deviceList)
 
-        for (device in deviceList) {
-            val newDevice = Device(device)
-            devices.add(newDevice)
-
-        }
-        devices.forEach { device ->
-            println("Device name: ${device.getName()}, address: ${device.getAddress()}")
-        }
+        devices.clear()
+        deviceList.forEach { devices.add(Device(it)) }
+        thisDevice.setAvailableDevices(devices)
     }
 
     /**
@@ -141,6 +138,12 @@ class BroadcastManager(
 
             WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 wifiManager.requestConnectionInfo(channel, connectionInfoListener)
+            }
+
+            WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
+                val device: WifiP2pDevice = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)!!
+                thisDevice = Device(device)
+                thisDevice.setAvailableDevices(devices)
             }
         }
     }

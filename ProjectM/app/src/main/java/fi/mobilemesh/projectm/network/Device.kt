@@ -1,40 +1,43 @@
 package fi.mobilemesh.projectm.network
 
-import android.content.Context
 import android.net.wifi.p2p.WifiP2pDevice
 import android.location.Location
-import android.location.LocationManager
 
-class Device (device: WifiP2pDevice) : java.io.Serializable{
+class Device (device: WifiP2pDevice) : java.io.Serializable {
 
-    private val macAdd = device.deviceAddress
+    private val macAddress = device.deviceAddress
     private val name = device.deviceName
-    private lateinit var location: Location
-    private var has_notifications = false
-    private var share_location = false
+    private var location: Location? = null
+    private var notificationsEnabled = false
+    private var sharesLocation = false
     private var availableDevices = mutableListOf<Device>()
 
-    public fun getName(): String{
+    fun getName(): String {
         return name
     }
 
-    public fun getAddress(): String{
-        return macAdd
+    fun getAddress(): String {
+        return macAddress
     }
 
-    public fun getLocation(): Location{
+    fun getLocation(): Location? {
         return location
     }
 
-    public fun getHasNotification(): Boolean{
-        return has_notifications
+    fun getHasNotification(): Boolean {
+        return notificationsEnabled
     }
 
-    public fun getHasSharedLocation(): Boolean {
-        return share_location
+    fun getHasSharedLocation(): Boolean {
+        return sharesLocation
     }
 
-    public fun getAvailableDevices(): List<Device> {
+    fun setAvailableDevices(devices: Collection<Device>) {
+        availableDevices.clear()
+        availableDevices.addAll(devices)
+    }
+
+    fun getAvailableDevices(): Collection<Device> {
         return availableDevices
     }
 }
