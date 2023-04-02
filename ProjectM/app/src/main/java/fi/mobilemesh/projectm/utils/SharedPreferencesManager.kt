@@ -7,6 +7,7 @@ const val USER_DATA_PATH = "userData"
 const val UUID_PATH = "uuid"
 const val USERNAME_PATH = "username"
 const val LOCATION_STATUS_PATH = "locationStatus"
+const val NETWORKS_PATH = "joinedNetworks"
 
 /**
  * Class for handling user preferences and attributes, such as location, username and UUID.
@@ -87,5 +88,52 @@ class SharedPreferencesManager(
      */
     fun getLocationEnabled(): Boolean {
         return sharedPreferences.getBoolean(LOCATION_STATUS_PATH, false)
+    }
+
+    /**
+     * Saves the id of a network the user has joined
+     * @param id unique id of the network that has been joined
+     * @return true if the id had not already been saved, false otherwise
+     */
+    fun saveJoinedNetwork(id: String): Boolean {
+        val joined = getJoinedNetworks() ?: mutableSetOf()
+        // Can't modify original set so we have to do it like this
+        val set = joined.toMutableSet()
+        if (!set.add(id)) {
+            return false
+        }
+        sharedPreferences.edit()
+            .putStringSet(NETWORKS_PATH, set)
+            .apply()
+        return true
+    }
+
+    /**
+     * Removes the network with given id from joined networks
+     * @param id unique id of network to leave
+     * @return true if the network was found and successfully left, false if no networks
+     * had been saved or given id was not found
+     */
+    fun leaveJoinedNetwork(id: String): Boolean {
+        val joined = getJoinedNetworks() ?: return false
+        // Can't modify original set so we have to do it like this
+        val set = joined.toMutableSet()
+        if (!set.remove(id)) {
+            return false
+        }
+        sharedPreferences.edit()
+            .putStringSet(NETWORKS_PATH, set)
+            .apply()
+        return true
+    }
+
+    /**
+     * Gets a set of id's of the networks the user has joined. DO NOT MODIFY THE SET DIRECTLY!
+     * This is an Android limitation and any edits to the set should be made by copying it to
+     * another, using [toSet] or its variants!
+     * @return [Set] of id's of joined networks if found, null otherwise
+     */
+    fun getJoinedNetworks(): Set<String>? {
+        return sharedPreferences.getStringSet(NETWORKS_PATH, null)
     }
 }
