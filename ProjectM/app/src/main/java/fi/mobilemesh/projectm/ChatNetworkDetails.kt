@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,10 +10,15 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import fi.mobilemesh.projectm.network.Device
 import fi.mobilemesh.projectm.utils.showConfirmationAlert
 
 class ChatNetworkDetails : Fragment() {
 
+    //TODO: implement feature to add and edit network desc
+    //private val isDescriptionPresent = false
+
+    lateinit var menuButton: Button
     lateinit var networkDetails: TextView
     lateinit var networkDescription: TextView
     lateinit var connectedDevicesHeader: TextView
@@ -28,6 +34,10 @@ class ChatNetworkDetails : Fragment() {
         openChatButton.setOnClickListener {
             // switch to Chat
             (parentFragment as ContainerFragmentChat).switchFragment(Chat::class.java)
+        }
+
+        menuButton.setOnClickListener {
+            // TODO: create menu to edit network name and desc
         }
 
         leaveNetworkButton.setOnClickListener {
@@ -69,28 +79,40 @@ class ChatNetworkDetails : Fragment() {
         networkDescription = view.findViewById(R.id.networkDescription)
         openChatButton = view.findViewById(R.id.openChatButton)
         leaveNetworkButton = view.findViewById(R.id.leaveNetworkButton)
+        menuButton = view.findViewById(R.id.menuButton)
     }
 
     /**
      * Sets up the RecyclerView for displaying a list of connected devices.
      * For now only populates the list with test devices for demo purposes.
      */
-    // TODO: Should be updated when Device object is ready
     private fun setupConnectedDevicesList() {
 
-        val devices = mutableListOf<DeviceList>()
+        // TODO: Replace this with actual connected devices
 
-        // Note: first device should be the one the app is currently running on so that
-        // they appear on top of the device list
-        devices.add(DeviceList("Own device", "Own address"))
+        val devices = mutableListOf<Device>()
 
-        for (i in 0..20) {
-            devices.add(DeviceList("Test device", "Test address"))
+        for (i in 0..6) {
+            val device = Device(WifiP2pDevice().apply {
+                // Own device first
+                deviceName = if (i == 0) {
+                    "Own test device"
+                } else {
+                    "Test device $i"
+                }
+            })
+            // set sharing location to true for some devices to test UI
+            // TODO: delete setSharesLocation from Device class when this is updated
+            if (i < 4) {
+                device.setSharesLocation(true)
+            }
+            devices.add(device)
         }
+
 
         connectedDevicesList.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = DevicesAdapter(devices)
+            adapter = ConnectedDevicesAdapter(devices)
         }
     }
 }

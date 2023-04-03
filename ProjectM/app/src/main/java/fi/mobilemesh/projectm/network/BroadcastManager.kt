@@ -5,8 +5,11 @@ import android.content.Context
 import android.content.Context.WIFI_P2P_SERVICE
 import android.content.Intent
 import android.net.wifi.p2p.WifiP2pConfig
+import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
+import android.util.Log
+import android.widget.Button
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
@@ -21,6 +24,7 @@ import java.net.Socket
 import fi.mobilemesh.projectm.Networks
 import kotlinx.coroutines.*
 
+
 private const val PORT = 8888
 private const val TIMEOUT = 5000
 
@@ -31,6 +35,10 @@ class BroadcastManager(
     /**
      * Used to get the BroadcastManager from any fragment/class
      */
+
+    private lateinit var thisDevice: Device
+    private val devices = mutableListOf<Device>()
+
     companion object {
         @Volatile
         private var INSTANCE: BroadcastManager? = null
@@ -62,8 +70,26 @@ class BroadcastManager(
     /**
      * Listener object for when nearby devices get updated
      */
+//    private val peerListListener = PeerListListener { peers ->
+//
+//        Networks.refreshDeviceList(peers.deviceList)
+//        val deviceList = peers.deviceList
+//        val devices = deviceList.map { Device(it) }
+//        devices.forEach { device ->
+//
+//            println("Device name: ${device.returnName()}, address: ${device.returnAddress()}")
+//        }
+//
+//
+//    }
+
     private val peerListListener = PeerListListener { peers ->
+        val deviceList = peers.deviceList
         Networks.refreshDeviceList(peers.deviceList)
+
+        devices.clear()
+        deviceList.forEach { devices.add(Device(it)) }
+        thisDevice.setAvailableDevices(devices)
     }
 
     /**
@@ -88,12 +114,14 @@ class BroadcastManager(
         }
     }
 
+
     /**
      * Used to detect status changes related to Wi-Fi Direct, such as nearby devices changing
      * and connection changing
      * @param context context of fragment/activity where the event could fire
      * @param intent intent of the fragment/activity, maybe??
      */
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             WIFI_P2P_STATE_CHANGED_ACTION -> {
@@ -110,6 +138,12 @@ class BroadcastManager(
 
             WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 wifiManager.requestConnectionInfo(channel, connectionInfoListener)
+            }
+
+            WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
+                val device: WifiP2pDevice = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)!!
+                thisDevice = Device(device)
+                thisDevice.setAvailableDevices(devices)
             }
         }
     }

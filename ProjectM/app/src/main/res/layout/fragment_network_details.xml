@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:backgroundTint="@color/background"
+    android:background="@drawable/layered_peaks_haikei__6_"
     tools:context=".ChatNetworkDetails">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,7 +30,7 @@
                 android:clickable="true"
                 android:enabled="false"
                 android:gravity="center"
-                android:text="Network name"
+                android:text="@string/network_name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/white"
                 android:textColorHighlight="#FFFFFF"
@@ -54,10 +53,25 @@
                 app:layout_constraintStart_toStartOf="@+id/networkDetails"
                 app:layout_constraintTop_toTopOf="@+id/networkDetails" />
 
+            <Button
+                android:id="@+id/menuButton"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Show menu"
+                app:icon="@drawable/more_vert_icon"
+                app:iconTint="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.94"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Display all connected devices -->
-
+        <!-- The description is hidden if it's empty -->
         <TextView
             android:id="@+id/networkDescription"
             android:layout_width="0dp"
@@ -69,19 +83,20 @@
             android:background="@drawable/network_desc_bg"
             android:gravity="center_vertical"
             android:padding="18dp"
-            android:text="Network description"
+            android:text="@string/network_description"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/deviceListLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/topBar" />
+            app:layout_constraintTop_toBottomOf="@+id/topBar"
+            android:visibility="gone" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/deviceListLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="14dp"
             app:layout_constraintBottom_toTopOf="@id/bottomLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -94,9 +109,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="28dp"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:text="Connected devices"
                 android:textColor="@color/white"
                 android:textSize="18sp"
@@ -112,7 +127,8 @@
                 android:layout_height="0dp"
                 android:layout_marginStart="22dp"
                 android:layout_marginEnd="22dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="14dp"
                 android:scrollbars="vertical"
                 android:verticalScrollbarPosition="right"
                 app:layout_constraintBottom_toBottomOf="parent"

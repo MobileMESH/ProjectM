@@ -4,10 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:backgroundTint="@color/background"
+    android:background="@drawable/layered_peaks_haikei__6_"
     tools:context=".Chat">
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,7 +27,7 @@
                 android:clickable="true"
                 android:enabled="false"
                 android:gravity="center"
-                android:text="Network name"
+                android:text="@string/network_name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/white"
                 android:textColorHighlight="#FFFFFF"
@@ -55,12 +53,23 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
-            android:id="@+id/receivingField"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="0dp"
             android:layout_weight="2"
-            android:orientation="vertical" />
+            android:orientation="vertical">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/receivingField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </ScrollView>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -102,14 +111,11 @@
                 android:layout_marginBottom="10dp"
                 android:clickable="true"
                 android:tint="#EADDDD"
-                app:backgroundTint="@color/pop_ups"
-                app:backgroundTintMode="src_over"
+                app:backgroundTint="@color/buttons"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
                 app:srcCompat="@drawable/arrow_forward_icon"
                 app:tint="@null"
                 tools:ignore="SpeakableTextPresentCheck" />
-
-
         </LinearLayout>
 
     </LinearLayout>
