@@ -1,5 +1,7 @@
 package fi.mobilemesh.projectm
 
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
 import androidx.appcompat.app.AppCompatActivity
@@ -88,20 +90,29 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        requestPermissions()
-
-        //UI
-        findUiElements()
-        //mapButtons()
-        listenNavigation()
 
         // Initializing handlers and such
         MessageDatabase.getInstance(applicationContext)
         broadcastManager = BroadcastManager.getInstance(applicationContext)
         SharedPreferencesManager.getInstance(applicationContext)
         addIntentFilters()
+
+        // Show the onboarding activity
+        if (isFirstTimeOpeningApp()) {
+            showOnboardingActivity()
+            setAppOpenedFlag()
+        }
+        
+        setContentView(R.layout.activity_main)
+
+        // moved this to Onboarding
+        //requestPermissions()
+
+        //UI
+        findUiElements()
+        //mapButtons()
+        listenNavigation()
+
 
         // Message database (Data Access Object)
         val dao = MessageDatabase.getInstance(this).dao
@@ -112,6 +123,8 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    /*
     private fun requestPermissions() {
 
         val permissionsToRequest = mutableListOf<String>()
@@ -147,6 +160,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    */
 
     override fun onResume() {
         super.onResume()
@@ -156,6 +170,20 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(broadcastManager)
+    }
+
+    private fun isFirstTimeOpeningApp(): Boolean {
+        val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
+        return prefs.getBoolean("is_first_time", true)
+    }
+
+    private fun showOnboardingActivity() {
+        startActivity(Intent(this, OnboardingActivity::class.java))
+    }
+
+    private fun setAppOpenedFlag() {
+        val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("is_first_time", false).apply()
     }
 
     private fun findUiElements() {
@@ -187,7 +215,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun switchFragment(target: Class<*>) {
         val f: Fragment = target.newInstance() as Fragment
         val fm = supportFragmentManager
@@ -195,6 +222,7 @@ class MainActivity : AppCompatActivity() {
         transaction.replace(R.id.fragmentContainerView, f)
         transaction.commit()
     }
+
 
     private fun addIntentFilters() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION)

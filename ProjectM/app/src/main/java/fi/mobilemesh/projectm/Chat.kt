@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -72,6 +73,7 @@ class Chat : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_chat, container, false)
+
         receivingField = view.findViewById(R.id.receivingField)
         sendingField = view.findViewById(R.id.sendingField)
         sendButton = view.findViewById(R.id.sendTextButton)
