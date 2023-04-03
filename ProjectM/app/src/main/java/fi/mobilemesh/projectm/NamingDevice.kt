@@ -58,7 +58,6 @@ class NamingDevice : Fragment() {
             else {
                 sharedPreferencesManager.saveUsername(deviceName.text.toString())
             }
-            Log.d("hi", sharedPreferencesManager.getUsername().toString())
         }
     }
 
