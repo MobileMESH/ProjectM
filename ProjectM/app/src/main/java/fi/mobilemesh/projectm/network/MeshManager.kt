@@ -72,6 +72,23 @@ class MeshManager {
         }
     }
 
+    fun addToNetwork(other: Device) {
+        val id = getTestGroupId()
+        val network = Network(id, currentNetworks[id]!!)
+        CoroutineScope(Dispatchers.IO).launch {
+            broadcastManager.sendData(other.getAddress(), network)
+        }
+    }
+
+    fun joinNetwork(network: Network) {
+        val id = network.id
+        val others = network.others
+        if (currentNetworks[id] == null) {
+            currentNetworks[id] = mutableSetOf()
+        }
+        currentNetworks[id]?.addAll(others)
+    }
+
     /**
      * Sends a group-wide message to the network/chat group specified in the networkId
      * @param message actual [Message] to send to the group

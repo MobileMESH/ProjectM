@@ -284,6 +284,10 @@ class BroadcastManager(
                     val id = incoming.second as String?
                     meshManager.createNetwork(other, id)
                 }
+
+                is Network -> {
+                    meshManager.joinNetwork(incoming)
+                }
             }
 
             istream.close()
