@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="78dp"
     android:background="@drawable/device_list_row_bg"
-    tools:context=".Chat">
+    tools:context=".ChatNetworkDetails">
 
     <!-- This will need to be changed when the profile picture can be changed by the user
         Look into AvatarView, that might be an option for that? -->
@@ -54,7 +54,7 @@
         android:singleLine="true"
         android:paddingStart="8dp"
         android:text="Location off"
-        android:textColor="#BCBCBC"
+        android:textColor="@color/devicelist_text"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:backgroundTint="@color/background"
+    android:background="@drawable/layered_peaks_haikei__6_"
     tools:context=".ChatNetworkDetails">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,7 +61,7 @@
                 android:layout_marginEnd="4dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:contentDescription="More"
+                android:contentDescription="Show menu"
                 app:icon="@drawable/more_vert_icon"
                 app:iconTint="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -72,6 +71,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- The description is hidden if it's empty -->
         <TextView
             android:id="@+id/networkDescription"
             android:layout_width="0dp"
