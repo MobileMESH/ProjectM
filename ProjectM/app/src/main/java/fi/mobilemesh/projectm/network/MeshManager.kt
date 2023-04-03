@@ -5,6 +5,7 @@ import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.database.entities.MessageData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -45,22 +46,26 @@ class MeshManager {
      * @param networkId unique id for the network. Should be null (as is by default) when
      * initiating the creation, and should be set if receiving creation request
      */
-    fun createNetwork(other: Device, networkId: String?=null) {
-        if (networkId == null) {
-            //val newNetworkId = UUID.randomUUID().toString()
-            val newNetworkId = getTestGroupId() // TODO: Test purposes
+    fun createNetwork(other: Device) {
+        //val newNetworkId = UUID.randomUUID().toString()
+        val newNetworkId = getTestGroupId() // TODO: Test purposes
 
-            if (currentNetworks[newNetworkId] == null) {
-                currentNetworks[newNetworkId] = mutableSetOf()
-            }
-            currentNetworks[newNetworkId]?.add(other)
+        if (currentNetworks[newNetworkId] == null) {
+            currentNetworks[newNetworkId] = mutableSetOf()
+        }
+        val own = broadcastManager.getThisDevice()
+        currentNetworks[newNetworkId]?.add(other)
+        currentNetworks[newNetworkId]?.add(own)
 
-            println("TEST 1 $currentNetworks")
+        println("CREATE $currentNetworks")
+        currentNetworks[newNetworkId]?.forEach {
+            println("C ${it.getName()}")
+        }
 
-            CoroutineScope(Dispatchers.IO).launch {
-                val own = broadcastManager.getThisDevice()
-                broadcastManager.sendData(other.getAddress(), Pair(own, newNetworkId))
-            }
+        addToNetwork(other, newNetworkId)
+
+        /*CoroutineScope(Dispatchers.IO).launch {
+            broadcastManager.sendData(other.getAddress(), Pair(own, newNetworkId))
         }
 
         else {
@@ -69,11 +74,10 @@ class MeshManager {
             }
             currentNetworks[networkId]?.add(other)
             println("TEST 2 $currentNetworks")
-        }
+        }*/
     }
 
-    fun addToNetwork(other: Device) {
-        val id = getTestGroupId()
+    fun addToNetwork(other: Device, id: String=getTestGroupId()) {
         val network = Network(id, currentNetworks[id]!!)
         CoroutineScope(Dispatchers.IO).launch {
             broadcastManager.sendData(other.getAddress(), network)
@@ -87,6 +91,11 @@ class MeshManager {
             currentNetworks[id] = mutableSetOf()
         }
         currentNetworks[id]?.addAll(others)
+
+        println("JOIN ${currentNetworks}")
+        currentNetworks[id]?.forEach {
+            println("J ${it.getName()}")
+        }
     }
 
     /**
@@ -99,7 +108,7 @@ class MeshManager {
                          = mutableSetOf(broadcastManager.getThisDevice())) {
 
         val network = currentNetworks[message.chatGroupId] ?: return
-        val availableDevices = broadcastManager.getThisDevice().getAvailableDevices()
+        val availableDevices = broadcastManager.getNearbyDevices()
 
         // Valid devices are both in range (available) and within the selected network,
         // but not in the devices the message has been sent to
@@ -115,6 +124,7 @@ class MeshManager {
         CoroutineScope(Dispatchers.IO).launch {
             validDevices.forEach {
                 broadcastManager.sendData(it.getAddress(), messageData)
+                delay(100)
             }
         }
     }

@@ -278,12 +278,11 @@ class BroadcastManager(
                     meshManager.sendGroupMessage(message, alreadySent)
                 }
 
-                is Pair<*, *> -> {
-                    // TODO: Placeholder until a Network class is created
+                /*is Pair<*, *> -> {
                     val other = incoming.first as Device
                     val id = incoming.second as String?
                     meshManager.createNetwork(other, id)
-                }
+                }*/
 
                 is Network -> {
                     meshManager.joinNetwork(incoming)
