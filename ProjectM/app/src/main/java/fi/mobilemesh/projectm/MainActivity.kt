@@ -102,6 +102,7 @@ class MainActivity : AppCompatActivity() {
         // Initializing handlers and such
         MessageDatabase.getInstance(applicationContext)
         broadcastManager = BroadcastManager.getInstance(applicationContext)
+        meshManager = MeshManager.getInstance(applicationContext)
         SharedPreferencesManager.getInstance(applicationContext)
         addIntentFilters()
 
