@@ -24,9 +24,17 @@ class ContainerFragmentChat : Fragment() {
         return inflater.inflate(R.layout.fragment_chat_container, container, false)
     }
 
+    /**
+     * Checks the connection and sets the appropriate layout.
+     * Chat is visible by default, but if the connection is not found, changes it to disconnectedLayout
+     */
     override fun onResume() {
         super.onResume()
-        switchFragment(Chat::class.java)
+        if (broadcastManager.isConnected()) {
+            switchFragment(Chat::class.java)
+        } else {
+            switchFragment(ChatDisconnected::class.java)
+        }
     }
 
     fun switchFragment(target: Class<*>) {

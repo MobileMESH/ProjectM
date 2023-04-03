@@ -49,6 +49,7 @@ class ChatNetworkDetails : Fragment() {
                 requireContext(),
                 {
                     // TODO: Disconnect device from network
+                    (parentFragment as ContainerFragmentChat).switchFragment(ChatDisconnected::class.java)
                 },
                 {
                     // Do nothing
