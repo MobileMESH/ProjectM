@@ -78,9 +78,16 @@ class MeshManager {
     }
 
     fun addToNetwork(other: Device, id: String=getTestGroupId()) {
-        val network = Network(id, currentNetworks[id]!!)
+        val currentNetwork = currentNetworks[id]!!
+        currentNetwork.add(other)
+        val network = Network(id, currentNetwork)
         CoroutineScope(Dispatchers.IO).launch {
-            broadcastManager.sendData(other.getAddress(), network)
+            currentNetwork.forEach {
+                if (it != broadcastManager.getThisDevice()) {
+                    broadcastManager.sendData(it.getAddress(), network)
+                    delay(100)
+                }
+            }
         }
     }
 
@@ -123,6 +130,7 @@ class MeshManager {
 
         CoroutineScope(Dispatchers.IO).launch {
             validDevices.forEach {
+                println("SEND TO ${it.getName()}")
                 broadcastManager.sendData(it.getAddress(), messageData)
                 delay(100)
             }
