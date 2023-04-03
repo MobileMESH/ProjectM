@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.ChatGroup
+import fi.mobilemesh.projectm.utils.MakeNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -107,6 +109,13 @@ class MainActivity : AppCompatActivity() {
             //  implemented
             dao.insertChatGroup(ChatGroup(0))
         }
+
+
+        //Notification
+        val notificationHelper = MakeNotification(this)
+        val intent = Intent(this, MainActivity::class.java)
+        notificationHelper.showNotification("Anything", "You got it!", intent)
+
 
     }
     private fun requestPermissions() {
