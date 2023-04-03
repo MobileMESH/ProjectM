@@ -23,8 +23,8 @@ class AskCreating : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    lateinit var createButton: Button
-    lateinit var notNowButton: Button
+    lateinit var continueButton: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,14 +35,7 @@ class AskCreating : Fragment() {
     }
 
     private fun mapButtons() {
-        createButton.setOnClickListener {
-            val fragment = CreateNetwork()
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragmentContainerView2, fragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
-        }
-        notNowButton.setOnClickListener {
+        continueButton.setOnClickListener {
             // Go to the main activity and finish the current activity
             val intent = Intent(activity, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -58,8 +51,7 @@ class AskCreating : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_ask_creating, container, false)
 
-        createButton = view.findViewById(R.id.createButton)
-        notNowButton = view.findViewById(R.id.notNowButton)
+        continueButton = view.findViewById(R.id.continueButton)
 
         mapButtons()
 

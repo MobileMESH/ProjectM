@@ -62,24 +62,12 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/notNowButton"
+                    android:id="@+id/continueButton"
                     android:layout_width="130dp"
                     android:layout_height="55dp"
-                    android:layout_marginEnd="20dp"
                     android:backgroundTint="@color/buttons"
-                    android:text="Not now"
+                    android:text="Continue"
                     android:layout_weight="1"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/createButton"
-                    android:layout_width="130dp"
-                    android:layout_height="55dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_weight="1"
-                    android:backgroundTint="@color/buttons"
-                    android:text="Create"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
             </LinearLayout>
