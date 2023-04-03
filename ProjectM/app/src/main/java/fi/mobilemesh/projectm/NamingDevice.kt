@@ -49,8 +49,6 @@ class NamingDevice : Fragment() {
             transaction.commit()
             val name = deviceName.text.toString()
             sharedPreferencesManager.saveUsername(name)
-            print(sharedPreferencesManager.getUsername())
-
         }
     }
 
@@ -62,6 +60,7 @@ class NamingDevice : Fragment() {
         val view = inflater.inflate(R.layout.fragment_naming_device, container, false)
 
         continueButton = view.findViewById(R.id.continueButton)
+        deviceName = view.findViewById(R.id.deviceName)
         mapButtons()
 
         return view
