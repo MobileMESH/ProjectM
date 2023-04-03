@@ -3,16 +3,13 @@ package fi.mobilemesh.projectm
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.view.marginBottom
-import androidx.core.view.setMargins
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -134,12 +131,13 @@ class Chat : Fragment() {
      * @param messageType is the drawable for the message
      */
     // TODO: Make the message using proper tools (UI team?)
-    private fun createMessage(message: Message, messageType: Int) {
+    private fun createMessage(message: Message, messageType: Int){
         val txt = TextView(activity)
         // Left/right side of screen depending on whose message this is
         val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
 
-        txt.text = "[${message.timestamp}] [${message.sender}] ${message.body}"
+        // ${message.timestamp.time.hours}
+        txt.text = "${message.sender} \n ${message.body}"
 
         txt.maxWidth = (receivingField.width * 0.67).toInt()
 
@@ -149,12 +147,18 @@ class Chat : Fragment() {
         ).apply {
             gravity = alignment
         }.also {
-            it.setMargins(0, 0, 0, 16)
+            it.setMargins(0, 10, 0, 16)
         }
 
         // Text alignment
         txt.gravity = Gravity.START
+        txt.setTextColor(Color.WHITE)
         txt.isAllCaps = false
+
+        val params: ViewGroup.LayoutParams = txt.getLayoutParams()
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        txt.layoutParams = params
+
         txt.setPadding(20, 4, 10, 10)
         txt.setBackgroundResource(messageType)
 
