@@ -1,6 +1,8 @@
 package fi.mobilemesh.projectm
 
+import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -48,8 +50,15 @@ class NamingDevice : Fragment() {
             transaction.replace(R.id.fragmentContainerView2, fragment)
             transaction.addToBackStack(null)
             transaction.commit()
-            val name = deviceName.text.toString()
-            sharedPreferencesManager.saveUsername(name)
+
+            if (deviceName.text.toString().isEmpty()) {
+                val name = "Unnamed device"
+                sharedPreferencesManager.saveUsername(name)
+            }
+            else {
+                sharedPreferencesManager.saveUsername(deviceName.text.toString())
+            }
+            Log.d("hi", sharedPreferencesManager.getUsername().toString())
         }
     }
 
