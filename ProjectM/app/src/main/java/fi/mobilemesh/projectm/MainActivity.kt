@@ -97,23 +97,15 @@ class MainActivity : AppCompatActivity() {
         SharedPreferencesManager.getInstance(applicationContext)
         addIntentFilters()
 
-        // Get the shared preferences
-        val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
-
-        // Check if this is the first time the app is being opened
-        val isFirstTime = prefs.getBoolean("is_first_time", true)
-
-        if (isFirstTime) {
-            // Show the onboarding activity
-            startActivity(Intent(this, OnboardingActivity::class.java))
-
-            // Save the flag indicating that the app has been opened at least once
-            prefs.edit().putBoolean("is_first_time", false).apply()
+        // Show the onboarding activity
+        if (isFirstTimeOpeningApp()) {
+            showOnboardingActivity()
+            setAppOpenedFlag()
         }
         
         setContentView(R.layout.activity_main)
 
-        // TODO: move this to Onboarding
+        // moved this to Onboarding
         //requestPermissions()
 
         //UI
@@ -178,6 +170,20 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(broadcastManager)
+    }
+
+    private fun isFirstTimeOpeningApp(): Boolean {
+        val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
+        return prefs.getBoolean("is_first_time", true)
+    }
+
+    private fun showOnboardingActivity() {
+        startActivity(Intent(this, OnboardingActivity::class.java))
+    }
+
+    private fun setAppOpenedFlag() {
+        val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("is_first_time", false).apply()
     }
 
     private fun findUiElements() {
