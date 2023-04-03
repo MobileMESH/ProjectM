@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import fi.mobilemesh.projectm.utils.SharedPreferencesManager
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,19 +26,20 @@ class LocationSharing : Fragment() {
     lateinit var shareButton: Button
     lateinit var notNowButton: Button
 
+    lateinit var sharedPreferencesManager: SharedPreferencesManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        sharedPreferencesManager = SharedPreferencesManager.getInstance(requireContext())
     }
 
     private fun mapButtons() {
         shareButton.setOnClickListener {
-
-            // TODO: Change user preferences (wait for ticket #60)
-
+            sharedPreferencesManager.setLocationEnabled(true)
             nextFragment()
         }
         notNowButton.setOnClickListener {

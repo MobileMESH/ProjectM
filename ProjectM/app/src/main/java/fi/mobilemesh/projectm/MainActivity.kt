@@ -91,6 +91,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Initializing handlers and such
+        MessageDatabase.getInstance(applicationContext)
+        broadcastManager = BroadcastManager.getInstance(applicationContext)
+        SharedPreferencesManager.getInstance(applicationContext)
+        addIntentFilters()
+
         // Get the shared preferences
         val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
 
@@ -115,11 +121,6 @@ class MainActivity : AppCompatActivity() {
         //mapButtons()
         listenNavigation()
 
-        // Initializing handlers and such
-        MessageDatabase.getInstance(applicationContext)
-        broadcastManager = BroadcastManager.getInstance(applicationContext)
-        SharedPreferencesManager.getInstance(applicationContext)
-        addIntentFilters()
 
         // Message database (Data Access Object)
         val dao = MessageDatabase.getInstance(this).dao
