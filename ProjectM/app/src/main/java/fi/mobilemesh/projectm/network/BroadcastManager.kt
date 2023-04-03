@@ -328,7 +328,7 @@ class BroadcastManager(
         targetAddress = null
         isConnecting = false
 
-        println(serverSocket.close())
+        serverSocket.close()
 
         wifiManager.removeGroup(channel, null)
         println("DISCONNECTED")

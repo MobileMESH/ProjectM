@@ -29,7 +29,7 @@ class MeshManager {
 
     private lateinit var broadcastManager: BroadcastManager
     // Networks we have joined (TODO: Save somewhere, currently runtime only)
-    private val currentNetworks: MutableMap<String, MutableList<Device>> = mutableMapOf()
+    private val currentNetworks: MutableMap<String, MutableSet<Device>> = mutableMapOf()
 
     /**
      * Returns the first network/chat group id available for us. Testing only
@@ -49,7 +49,14 @@ class MeshManager {
         if (networkId == null) {
             //val newNetworkId = UUID.randomUUID().toString()
             val newNetworkId = getTestGroupId() // TODO: Test purposes
-            currentNetworks[newNetworkId] = mutableListOf(other)
+
+            if (currentNetworks[newNetworkId] == null) {
+                currentNetworks[newNetworkId] = mutableSetOf()
+            }
+            currentNetworks[newNetworkId]?.add(other)
+
+            println("TEST 1 $currentNetworks")
+
             CoroutineScope(Dispatchers.IO).launch {
                 val own = broadcastManager.getThisDevice()
                 broadcastManager.sendData(other.getAddress(), Pair(own, newNetworkId))
@@ -57,7 +64,11 @@ class MeshManager {
         }
 
         else {
-            currentNetworks[networkId] = mutableListOf(other)
+            if (currentNetworks[networkId] == null) {
+                currentNetworks[networkId] = mutableSetOf()
+            }
+            currentNetworks[networkId]?.add(other)
+            println("TEST 2 $currentNetworks")
         }
     }
 
