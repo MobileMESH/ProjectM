@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/layered_peaks_haikei__2_"
-    tools:context=".LocationSharing">
+    tools:context=".GettingStarted">
 
 
     <LinearLayout
@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Create a new network"
+            android:text="Getting started"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#aec2bd"
             android:textSize="27dp"
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:gravity="center"
-                android:text="If you wish, your device can act as a base for a new network where other users are able to join. You may also create a new network later in the network tab if you choose to."
+                android:text="In this application, you can either join a pre-existing network or create a new network to communicate with other users. Joining and creating a network can be done in the network tab opening up next."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="#aec2bd"
                 android:textSize="18dp" />
