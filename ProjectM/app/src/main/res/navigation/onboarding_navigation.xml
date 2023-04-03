@@ -11,15 +11,10 @@
         android:label="fragment_naming_device"
         tools:layout="@layout/fragment_naming_device" />
     <fragment
-        android:id="@+id/ask_creating"
-        android:name="fi.mobilemesh.projectm.AskCreating"
+        android:id="@+id/getting_started"
+        android:name="fi.mobilemesh.projectm.GettingStarted"
         android:label="fragment_ask_creating"
-        tools:layout="@layout/fragment_ask_creating" />
-    <fragment
-        android:id="@+id/createNetwork"
-        android:name="fi.mobilemesh.projectm.CreateNetwork"
-        android:label="fragment_create_network"
-        tools:layout="@layout/fragment_create_network" />
+        tools:layout="@layout/fragment_getting_started" />
     <fragment
         android:id="@+id/locationPermission"
         android:name="fi.mobilemesh.projectm.LocationPermission"

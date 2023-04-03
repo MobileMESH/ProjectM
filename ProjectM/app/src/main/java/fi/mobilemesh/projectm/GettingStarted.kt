@@ -15,10 +15,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [AskCreating.newInstance] factory method to
+ * Use the [GettingStarted.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AskCreating : Fragment() {
+class GettingStarted : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -49,7 +49,7 @@ class AskCreating : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_ask_creating, container, false)
+        val view = inflater.inflate(R.layout.fragment_getting_started, container, false)
 
         continueButton = view.findViewById(R.id.continueButton)
 
@@ -70,7 +70,7 @@ class AskCreating : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            AskCreating().apply {
+            GettingStarted().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

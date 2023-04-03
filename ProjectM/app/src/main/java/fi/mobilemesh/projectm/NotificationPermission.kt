@@ -54,7 +54,7 @@ class NotificationPermission : Fragment() {
     }
 
     private fun nextFragment() {
-        val fragment = AskCreating()
+        val fragment = GettingStarted()
         val transaction = parentFragmentManager.beginTransaction()
         transaction.replace(R.id.fragmentContainerView2, fragment)
         transaction.addToBackStack(null)
