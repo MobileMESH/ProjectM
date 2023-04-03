@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -10,6 +11,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.core.view.marginBottom
+import androidx.core.view.setMargins
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -49,6 +52,7 @@ class Chat : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        println("Chat")
     }
 
     /**
@@ -68,6 +72,7 @@ class Chat : Fragment() {
         }
     }
 
+    // This function is used to do all magic
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -75,22 +80,19 @@ class Chat : Fragment() {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_chat, container, false)
 
-        findUiElements(view)
+        receivingField = view.findViewById(R.id.receivingField)
+        sendingField = view.findViewById(R.id.sendingField)
+        sendButton = view.findViewById(R.id.sendTextButton)
+        openDetailsButton = view.findViewById(R.id.openDetailsButton)
 
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)
+
         mapButtons()
 
         lifecycleScope.launch { observeLiveMessages() }
 
         return view
-    }
-
-    private fun findUiElements(view: View) {
-        receivingField = view.findViewById(R.id.receivingField)
-        sendingField = view.findViewById(R.id.sendingField)
-        sendButton = view.findViewById(R.id.sendTextButton)
-        openDetailsButton = view.findViewById(R.id.openDetailsButton)
     }
 
     /**
@@ -182,9 +184,9 @@ class Chat : Fragment() {
             val messages = dao.getChatGroupMessages(0)
             messages.forEach {
                 val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
-                else Color.parseColor("#262626")
+                    else Color.parseColor("#262626")
                 val textColor = if (it.isOwnMessage) Color.BLACK
-                else Color.WHITE
+                    else Color.WHITE
                 createMessage(it, messageColor, textColor)
             }
         }
@@ -200,8 +202,6 @@ class Chat : Fragment() {
     private suspend fun canSendMessage(text: String): Boolean {
         return CoroutineScope(Dispatchers.Main).async {
             // Can't send message if there is no connection
-            // TODO: Remove alert since connection is already checked
-            //  when setting a layout?
             if (!broadcastManager.isConnected()) {
                 view?.let {
                     showNeutralAlert(
@@ -234,7 +234,7 @@ class Chat : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment Chat.
+         * @return A new instance of fragment chat.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic

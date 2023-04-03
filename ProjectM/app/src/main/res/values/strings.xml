@@ -16,5 +16,5 @@
     <string name="chat_disconnect_msg">You are not connected to any device. \n Connect to start chatting.</string>
     <string name="network_name">Network name</string>
     <string name="network_description"></string>
-
+    <string name="device_name">Your device</string>
 </resources>
