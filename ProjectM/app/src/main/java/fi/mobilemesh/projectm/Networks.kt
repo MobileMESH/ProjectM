@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import fi.mobilemesh.projectm.network.BroadcastManager
+import java.lang.ref.WeakReference
 import java.net.InetAddress
 
 // TODO: Rename parameter arguments, choose names that match
@@ -58,7 +59,7 @@ class Networks : Fragment() {
         availableView = view.findViewById(R.id.availableView)
         deviceList = view.findViewById(R.id.deviceList)
 
-        INSTANCE = this
+        INSTANCE = WeakReference(this)
 
         return view
     }
@@ -123,18 +124,18 @@ class Networks : Fragment() {
             }
 
         @Volatile
-        private var INSTANCE: Networks? = null
+        private var INSTANCE: WeakReference<Networks>? = null
         private val deviceList: MutableCollection<WifiP2pDevice> = mutableListOf()
         private var connectedDevice: String? = null
 
         fun refreshDeviceList(devices: Collection<WifiP2pDevice>) {
             deviceList.clear()
             deviceList.addAll(devices)
-            INSTANCE?.refreshDeviceCards()
+            INSTANCE?.get()?.refreshDeviceCards()
         }
 
         fun changeTargetAddress(target: InetAddress?) {
-            INSTANCE?.refreshConnectionStatus(target)
+            INSTANCE?.get()?.refreshConnectionStatus(target)
         }
     }
 }
