@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import fi.mobilemesh.projectm.network.Device
 import fi.mobilemesh.projectm.utils.showConfirmationAlert
 
 class ChatNetworkDetails : Fragment() {
@@ -83,26 +85,33 @@ class ChatNetworkDetails : Fragment() {
      * Sets up the RecyclerView for displaying a list of connected devices.
      * For now only populates the list with test devices for demo purposes.
      */
-    // TODO: Should be updated when Device object is ready
     private fun setupConnectedDevicesList() {
 
-        val devices = mutableListOf<DeviceList>()
+        // TODO: Replace this with actual connected devices
 
-        // Note: first device should be the one the app is currently running on so that
-        // they appear on top of the device list
-        devices.add(DeviceList("Own device", true))
+        val devices = mutableListOf<Device>()
 
-        for (i in 0..2) {
-            devices.add(DeviceList("Test device", true))
+        for (i in 0..6) {
+            val device = Device(WifiP2pDevice().apply {
+                // Own device first
+                deviceName = if (i == 0) {
+                    "Own test device"
+                } else {
+                    "Test device $i"
+                }
+            })
+            // set sharing location to true for some devices to test UI
+            // TODO: delete setSharesLocation from Device class when this is updated
+            if (i < 4) {
+                device.setSharesLocation(true)
+            }
+            devices.add(device)
         }
 
-        for (i in 0..2) {
-            devices.add(DeviceList("Test device", false))
-        }
 
         connectedDevicesList.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = DevicesAdapter(devices)
+            adapter = ConnectedDevicesAdapter(devices)
         }
     }
 }
