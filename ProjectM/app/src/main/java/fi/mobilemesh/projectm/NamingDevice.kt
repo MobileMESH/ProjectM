@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
+import fi.mobilemesh.projectm.utils.SharedPreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,6 +30,7 @@ class NamingDevice : Fragment() {
 
     lateinit var continueButton: Button
     lateinit var deviceName: TextInputEditText
+    lateinit var sharedPreferencesManager: SharedPreferencesManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +47,10 @@ class NamingDevice : Fragment() {
             transaction.replace(R.id.fragmentContainerView2, fragment)
             transaction.addToBackStack(null)
             transaction.commit()
+            val name = deviceName.text.toString()
+            sharedPreferencesManager.saveUsername(name)
+            print(sharedPreferencesManager.getUsername())
+
         }
     }
 
