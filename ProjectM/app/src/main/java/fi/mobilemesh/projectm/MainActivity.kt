@@ -204,7 +204,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.chat -> {
-                    switchFragment(Chat::class.java)
+                    switchFragment(ContainerFragmentChat::class.java)
                     true
                 }
                 R.id.networks-> {

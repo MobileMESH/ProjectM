@@ -44,6 +44,7 @@ class Chat : Fragment() {
     lateinit var sendButton: FloatingActionButton
     lateinit var sendingField: EditText
     lateinit var receivingField: LinearLayout
+    lateinit var openDetailsButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +65,11 @@ class Chat : Fragment() {
             sendingField.text.clear()
             CoroutineScope(Dispatchers.IO).launch { sendMessage(text) }
         }
+
+        openDetailsButton.setOnClickListener {
+            // switch to Details
+            (parentFragment as ContainerFragmentChat).switchFragment(ChatNetworkDetails::class.java)
+        }
     }
 
     // This function is used to do all magic
@@ -77,6 +83,7 @@ class Chat : Fragment() {
         receivingField = view.findViewById(R.id.receivingField)
         sendingField = view.findViewById(R.id.sendingField)
         sendButton = view.findViewById(R.id.sendTextButton)
+        openDetailsButton = view.findViewById(R.id.openDetailsButton)
 
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)

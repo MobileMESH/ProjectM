@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="78dp"
     android:background="@drawable/device_list_row_bg"
-    tools:context=".NetworkDetailsActivity">
+    tools:context=".ChatNetworkDetails">
 
     <!-- This will need to be changed when the profile picture can be changed by the user
         Look into AvatarView, that might be an option for that? -->
@@ -16,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:contentDescription="Avatar"
-        android:padding="16dp"
+        android:padding="12dp"
         android:src="@drawable/device_default_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,9 +26,6 @@
         app:layout_constraintVertical_bias="0.0"
         app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full" />
 
-    <!-- For now you can see both the name and the address, might change to only name later.
-        Placement can also be changed-->
-
     <TextView
         android:id="@+id/deviceName"
         android:layout_width="wrap_content"
@@ -36,7 +33,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_toEndOf="@id/icon"
-        android:padding="8dp"
         android:singleLine="true"
         android:text="Device Name"
         android:textColor="@color/white"
@@ -44,23 +40,47 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.028" />
+        app:layout_constraintVertical_bias="0.514" />
 
+    <!-- This is visible and the location button is invisible when shared location is off -->
     <TextView
-        android:id="@+id/deviceAddress"
+        android:id="@+id/locationOff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginEnd="8dp"
         android:layout_toEndOf="@id/icon"
-        android:padding="8dp"
         android:singleLine="true"
-        android:text="Device Address"
-        android:textColor="@color/white"
+        android:paddingStart="8dp"
+        android:text="Location off"
+        android:textColor="@color/devicelist_text"
         android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@+id/icon"
-        app:layout_constraintTop_toBottomOf="@+id/deviceName" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.818"
+        app:layout_constraintStart_toEndOf="@+id/deviceName"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.511" />
 
-    <!-- need to add the location icon for each user at the end of the row -->
+    <!-- This is visible and the text is invisible when shared location is on -->
+    <Button
+        android:id="@+id/locationButton"
+        style="?attr/materialIconButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        android:contentDescription="Button to show the location of this device"
+        app:backgroundTint="@color/background"
+        app:icon="@drawable/location_icon"
+        app:iconTint="@color/buttons"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.94"
+        app:layout_constraintStart_toEndOf="@+id/deviceName"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@color/buttons" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

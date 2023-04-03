@@ -8,7 +8,7 @@
         android:id="@+id/chat"
         android:name="fi.mobilemesh.projectm.Chat"
         android:label="fragment_chat"
-        tools:layout="@layout/fragment_chat" />
+        tools:layout="@layout/fragment_chat_container" />
     <fragment
         android:id="@+id/networks"
         android:name="fi.mobilemesh.projectm.Networks"
