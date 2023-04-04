@@ -69,12 +69,14 @@ class BroadcastManager(
     private var thisDevice: Device? = null
     private var nearbyDevices: MutableLiveData<List<Device>> = MutableLiveData(listOf())
 
+    // For first time data sending, since connectionListener does not always fire
+    // on startup (by design)
     @Volatile
-    private var isConnecting = false
+    private var isConnectionFree = true
 
     private var serverSocket = ServerSocket(PORT)
-    private var connectionLatch = CountDownLatch(1)
-    private var targetAddress: InetAddress? = InetAddress.getByName(null)
+    private var connectionLatch = CountDownLatch(2)
+    private var targetAddress: InetAddress? = null
 
     /**
      * Used to initialize information about the current device, so information can be sent
@@ -145,20 +147,24 @@ class BroadcastManager(
      * Listener for when connection status to another device changes
      */
     private val connectionInfoListener = ConnectionInfoListener { conn ->
-        println(conn)
-        // Prevent trying to establish connection if already doing so or a Wifi group has
-        // not been created.
-        // Also check if a connection has been closed (with targetAddress)
-        if (!conn.groupFormed || isConnecting) {
-            if (targetAddress != null && !isConnecting) {
-                targetAddress = null
+        // Group doesn't exist yet OR disbanded: no way to distinguish from here
+        if (!conn.groupFormed) {
+            // If all data has been sent/received, we probably have disconnected
+            if (connectionLatch.count == 0L) {
+                connectionLatch = CountDownLatch(2)
                 wifiManager.discoverPeers(channel, null)
-                println("CONN FREE")
+                isConnectionFree = true
             }
             return@ConnectionInfoListener
         }
+        // Group has been formed but we are already connecting
+        else if (connectionLatch.count != 2L) {
+            return@ConnectionInfoListener
+        }
 
-        isConnecting = true
+        connectionLatch.countDown()
+        isConnectionFree = false
+
         if (serverSocket.isClosed) serverSocket = ServerSocket(PORT)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -353,9 +359,7 @@ class BroadcastManager(
      * from the connection freeing both devices for further connections
      */
     private fun resetConnection() {
-        connectionLatch = CountDownLatch(1)
-        isConnecting = false
-
+        targetAddress = null
         serverSocket.close()
 
         wifiManager.removeGroup(channel, null)
