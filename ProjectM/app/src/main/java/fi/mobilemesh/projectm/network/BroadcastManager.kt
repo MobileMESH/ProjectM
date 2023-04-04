@@ -168,6 +168,12 @@ class BroadcastManager(
         }
     }
 
+    /**
+     * Checks if the user is currently connected to another device. If the user has just
+     * disconnected, the next data packet will be sent via [queueNextRequest]
+     * @param connInfo connection info from the listener
+     * @return true if currently connected to another device, false in all other cases
+     */
     private fun isConnected(connInfo: WifiP2pInfo): Boolean {
         // Group doesn't exist yet OR disbanded: no way to distinguish from here
         if (!connInfo.groupFormed) {
@@ -181,6 +187,7 @@ class BroadcastManager(
             return false
         }
 
+        // In the middle of connecting
         else if (connectionLatch.count != 2L) {
             return false
         }
@@ -359,6 +366,11 @@ class BroadcastManager(
         println("DISCONNECTED")
     }
 
+    /**
+     * Adds a data sending request to the queue. The queue works on a FIFO basis, and will
+     * send the next request as soon as the previous is complete (after disconnect)
+     * @param data [Data] to send, including target device's address
+     */
     fun addRequestToQueue(data: Data) {
         println("QUEUE ADD ${data.data}")
         requestQueue.addLast(data)
@@ -368,6 +380,11 @@ class BroadcastManager(
         }
     }
 
+    // TODO: Better nearby device detection
+    /**
+     * Sends the next Data packet to the target device, after the previous one has been handled
+     * and only after the target device is nearby.
+     */
     private suspend fun queueNextRequest() {
         withContext(Dispatchers.IO) {
             try {
