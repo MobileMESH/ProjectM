@@ -12,7 +12,7 @@ import android.os.Build
 import androidx.lifecycle.MutableLiveData
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
-import fi.mobilemesh.projectm.database.entities.MessageData
+import fi.mobilemesh.projectm.database.entities.Message
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.ObjectInputStream
@@ -74,7 +74,7 @@ class BroadcastManager(
 
     private var serverSocket = ServerSocket(PORT)
     private var connectionLatch = CountDownLatch(1)
-    private var targetAddress: InetAddress? = null
+    private var targetAddress: InetAddress? = InetAddress.getByName(null)
 
     /**
      * Used to initialize information about the current device, so information can be sent
@@ -146,9 +146,15 @@ class BroadcastManager(
      */
     private val connectionInfoListener = ConnectionInfoListener { conn ->
         println(conn)
+        // Prevent trying to establish connection if already doing so or a Wifi group has
+        // not been created.
+        // Also check if a connection has been closed (with targetAddress)
         if (!conn.groupFormed || isConnecting) {
-            targetAddress = null
-            wifiManager.discoverPeers(channel, null)
+            if (targetAddress != null && !isConnecting) {
+                targetAddress = null
+                wifiManager.discoverPeers(channel, null)
+                println("CONN FREE")
+            }
             return@ConnectionInfoListener
         }
 
@@ -250,6 +256,8 @@ class BroadcastManager(
             val client = try {
                 serverSocket.accept()
             }
+            // This is used as the primary method to stop listening after disconnecting,
+            // by closing the socket
             catch (e: SocketException) {
                 println("RECEIVE/ABORT")
                 return@withContext
@@ -261,15 +269,33 @@ class BroadcastManager(
             }
             catch (e: EOFException) {
                 println("EOFException $e")
-                return@withContext
+                throw(e)
+                //return@withContext
             }
             catch(e: SocketException) {
                 println("SocketException: $e")
-                return@withContext
+                throw(e)
+                //return@withContext
             }
 
-            when (val incoming = istream.readObject()) {
-                is MessageData -> {
+            val incoming = istream.readObject()
+
+            if (incoming !is Data) return@withContext
+
+            when (val data = incoming.data) {
+                is Message -> {
+                    data.isOwnMessage = false
+                    dao.insertMessage(data)
+                }
+
+                is Network -> {
+                    meshManager.joinNetwork(data)
+                }
+            }
+
+            //meshManager.relayForward(incoming.data, incoming.alreadySent)
+
+                /*is MessageData -> {
                     val message = incoming.message
                     val alreadySent = incoming.alreadySent
 
@@ -278,16 +304,16 @@ class BroadcastManager(
                     meshManager.sendGroupMessage(message, alreadySent)
                 }
 
-                /*is Pair<*, *> -> {
+                is Pair<*, *> -> {
                     val other = incoming.first as Device
                     val id = incoming.second as String?
                     meshManager.createNetwork(other, id)
-                }*/
+                }
 
                 is Network -> {
                     meshManager.joinNetwork(incoming)
                 }
-            }
+            }*/
 
             istream.close()
             client.close()
@@ -328,7 +354,6 @@ class BroadcastManager(
      */
     private fun resetConnection() {
         connectionLatch = CountDownLatch(1)
-        targetAddress = null
         isConnecting = false
 
         serverSocket.close()

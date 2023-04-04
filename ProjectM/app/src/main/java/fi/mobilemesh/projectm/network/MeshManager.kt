@@ -2,12 +2,10 @@ package fi.mobilemesh.projectm.network
 
 import android.content.Context
 import fi.mobilemesh.projectm.database.entities.Message
-import fi.mobilemesh.projectm.database.entities.MessageData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 /**
  * handles the management of discovered devices,
@@ -41,80 +39,24 @@ class MeshManager {
     }
 
     /**
-     * Used to initialize a network/chat group between two devices
-     * @param other the other [Device] to create this group with
-     * @param networkId unique id for the network. Should be null (as is by default) when
-     * initiating the creation, and should be set if receiving creation request
+     * Relays given data forward in the network, avoiding sending it to devices it has
+     * (probably) already reached
+     * @param data [Data] to send through the network. Should contain the network id (might
+     * change later)
+     * @param alreadySent [MutableSet] of devices this data has been sent to, to avoid repeatedly
+     * sending it back and forth. If not specified, will create a new set containing this device
      */
-    fun createNetwork(other: Device) {
-        //val newNetworkId = UUID.randomUUID().toString()
-        val newNetworkId = getTestGroupId() // TODO: Test purposes
+    fun relayForward(data: Any,
+                     alreadySent: MutableSet<Device>
+                     = mutableSetOf(broadcastManager.getThisDevice())) {
 
-        if (currentNetworks[newNetworkId] == null) {
-            currentNetworks[newNetworkId] = mutableSetOf()
-        }
-        val own = broadcastManager.getThisDevice()
-        currentNetworks[newNetworkId]?.add(other)
-        currentNetworks[newNetworkId]?.add(own)
-
-        println("CREATE $currentNetworks")
-        currentNetworks[newNetworkId]?.forEach {
-            println("C ${it.getName()}")
+        val networkId = when (data) {
+            is Message -> data.chatGroupId
+            is Network -> data.id
+            else -> getTestGroupId()
         }
 
-        addToNetwork(other, newNetworkId)
-
-        /*CoroutineScope(Dispatchers.IO).launch {
-            broadcastManager.sendData(other.getAddress(), Pair(own, newNetworkId))
-        }
-
-        else {
-            if (currentNetworks[networkId] == null) {
-                currentNetworks[networkId] = mutableSetOf()
-            }
-            currentNetworks[networkId]?.add(other)
-            println("TEST 2 $currentNetworks")
-        }*/
-    }
-
-    fun addToNetwork(other: Device, id: String=getTestGroupId()) {
-        val currentNetwork = currentNetworks[id]!!
-        currentNetwork.add(other)
-        val network = Network(id, currentNetwork)
-        CoroutineScope(Dispatchers.IO).launch {
-            currentNetwork.forEach {
-                if (it != broadcastManager.getThisDevice()) {
-                    broadcastManager.sendData(it.getAddress(), network)
-                    delay(100)
-                }
-            }
-        }
-    }
-
-    fun joinNetwork(network: Network) {
-        val id = network.id
-        val others = network.others
-        if (currentNetworks[id] == null) {
-            currentNetworks[id] = mutableSetOf()
-        }
-        currentNetworks[id]?.addAll(others)
-
-        println("JOIN ${currentNetworks}")
-        currentNetworks[id]?.forEach {
-            println("J ${it.getName()}")
-        }
-    }
-
-    /**
-     * Sends a group-wide message to the network/chat group specified in the networkId
-     * @param message actual [Message] to send to the group
-     * @param alreadySent set of devices the message was already sent to, avoiding repeat
-     */
-    fun sendGroupMessage(message: Message,
-                         alreadySent: MutableSet<Device>
-                         = mutableSetOf(broadcastManager.getThisDevice())) {
-
-        val network = currentNetworks[message.chatGroupId] ?: return
+        val network = currentNetworks[networkId] ?: return
         val availableDevices = broadcastManager.getNearbyDevices()
 
         // Valid devices are both in range (available) and within the selected network,
@@ -126,53 +68,84 @@ class MeshManager {
 
         alreadySent.addAll(validDevices)
 
-        val messageData = MessageData(message, alreadySent)
+        val payload = Data(data, alreadySent)
 
         CoroutineScope(Dispatchers.IO).launch {
             validDevices.forEach {
                 println("SEND TO ${it.getName()}")
-                broadcastManager.sendData(it.getAddress(), messageData)
+                broadcastManager.sendData(it.getAddress(), payload)
                 delay(100)
             }
         }
     }
 
-    /*private val connectedDevices: MutableMap<String, Device> = mutableMapOf()
-    private val deviceGroups: MutableMap<String,MutableList<Device>> = mutableMapOf()
-    private val devicesToJoin: MutableMap<String, Device> = mutableMapOf()
+    /**
+     * Used to initialize a network/chat group between two devices
+     * @param other the other [Device] to create this group with
+     * initiating the creation, and should be set if receiving creation request
+     */
+    fun createNetwork(other: Device) {
+        //val newNetworkId = UUID.randomUUID().toString()
+        val newNetworkId = getTestGroupId() // TODO: Test purposes
 
-
-    fun handleDiscoveredDevice(device: Device){
-        // Check if the device is already connected or wants to join
-        if (connectedDevices.containsKey(device.deviceAddress) || devicesToJoin.containsKey(device.deviceAddress)) {
-            return
+        if (currentNetworks[newNetworkId] == null) {
+            currentNetworks[newNetworkId] = mutableSetOf()
         }
-        broadcastManager.connectToDevice(device.deviceAddress)
+        val own = broadcastManager.getThisDevice()
+        currentNetworks[newNetworkId]?.add(own)
 
+        println("CREATE $currentNetworks")
+        currentNetworks[newNetworkId]?.forEach {
+            println("C ${it.getName()}")
+        }
+
+        addToNetwork(other, newNetworkId)
     }
 
-    fun createGroup(groupName: String) {
-        if (!deviceGroups.containsKey(groupName)) {
-            deviceGroups[groupName] = mutableListOf()
-        }
+    /**
+     * Adds a given device to the network with given id. Networks use sets, so trying to add
+     * devices already in the network doesn't do anything
+     * @param other [Device] to add to the network
+     * @param id unique id of the network to add the device to
+     */
+    fun addToNetwork(other: Device, id: String=getTestGroupId()) {
+        val currentNetwork = currentNetworks[id] ?: return
+        // If the device is already in the network, no need to send information about it again
+        if (!currentNetwork.add(other)) return
+        val network = Network(id, currentNetwork)
+
+        relayForward(network)
     }
 
-    fun joinGroup(groupName: String, deviceAddress: String) {
-        val device = connectedDevices[deviceAddress] ?: return
-        val group = deviceGroups[groupName] ?: mutableListOf()
-
-        if (!group.contains(device)) {
-            group.add(device)
-            deviceGroups[groupName] = group
+    /**
+     * Joins this device to
+     */
+    fun joinNetwork(network: Network) {
+        val id = network.id
+        val devices = network.devices
+        if (currentNetworks[id] == null) {
+            currentNetworks[id] = mutableSetOf()
         }
+        currentNetworks[id]?.addAll(devices)
+        println("JOIN $currentNetworks")
+        currentNetworks[id]?.forEach {println("J ${it.getName()}")}
     }
 
-    fun leaveGroup(groupName: String, deviceAddress: String) {
-        val group = deviceGroups[groupName] ?: return
-        val device = connectedDevices[deviceAddress] ?: return
-
-        if (group.contains(device)) {
-            group.remove(device)
-        }
-    }*/
+    /**
+     * Sends a group-wide message to the network/chat group specified in the networkId
+     * @param message actual [Message] to send to the group
+     */
+    fun sendGroupMessage(message: Message) {
+        relayForward(message)
+    }
 }
+
+/**
+ * Generalized class for data to be sent through the network.
+ * @param data [Message], [Network] or similar data to send
+ * @param alreadySent [MutableSet] of devices the data has already been sent to
+ */
+data class Data(
+    val data: Any,
+    val alreadySent: MutableSet<Device>
+) : java.io.Serializable
