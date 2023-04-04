@@ -4,9 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.WIFI_P2P_SERVICE
 import android.content.Intent
-import android.net.wifi.p2p.WifiP2pConfig
-import android.net.wifi.p2p.WifiP2pDevice
-import android.net.wifi.p2p.WifiP2pManager
+import android.net.wifi.p2p.*
 import android.net.wifi.p2p.WifiP2pManager.*
 import android.os.Build
 import androidx.lifecycle.MutableLiveData
@@ -24,6 +22,7 @@ import java.net.Socket
 import kotlinx.coroutines.*
 import java.io.EOFException
 import java.net.SocketException
+import java.util.LinkedList
 import java.util.concurrent.CountDownLatch
 
 
@@ -67,15 +66,15 @@ class BroadcastManager(
     }
 
     private var thisDevice: Device? = null
-    private var nearbyDevices: MutableLiveData<List<Device>> = MutableLiveData(listOf())
+    private val nearbyDevices: MutableLiveData<List<Device>> = MutableLiveData(listOf())
+    private val requestQueue = LinkedList<Data>()
 
-    // For first time data sending, since connectionListener does not always fire
-    // on startup (by design)
     @Volatile
     private var isConnectionFree = true
 
     private var serverSocket = ServerSocket(PORT)
     private var connectionLatch = CountDownLatch(2)
+    private var peerLatch = CountDownLatch(1)
     private var targetAddress: InetAddress? = null
 
     /**
@@ -134,42 +133,34 @@ class BroadcastManager(
     /**
      * Listens to changes in available devices, updating live lists accordingly
      */
-    private val peerListListener = PeerListListener { peers ->
+    private val peerListListener = PeerListListener { p ->
+        val peers = p.deviceList
         val newDevices: MutableList<Device> = mutableListOf()
-        peers.deviceList.forEach { newDevices.add(Device(it)) }
+        peers.forEach { newDevices.add(Device(it)) }
 
         nearbyDevices.value = newDevices
 
         thisDevice?.setAvailableDevices(getNearbyDevices())
+
+        val next = requestQueue.firstOrNull()
+        if (next == null || peers.any { it.deviceAddress == next.target }) {
+            peerLatch.countDown()
+        }
     }
 
     /**
      * Listener for when connection status to another device changes
      */
-    private val connectionInfoListener = ConnectionInfoListener { conn ->
-        // Group doesn't exist yet OR disbanded: no way to distinguish from here
-        if (!conn.groupFormed) {
-            // If all data has been sent/received, we probably have disconnected
-            if (connectionLatch.count == 0L) {
-                connectionLatch = CountDownLatch(2)
-                wifiManager.discoverPeers(channel, null)
-                isConnectionFree = true
-            }
-            return@ConnectionInfoListener
-        }
-        // Group has been formed but we are already connecting
-        else if (connectionLatch.count != 2L) {
-            return@ConnectionInfoListener
-        }
+    private val connectionInfoListener = ConnectionInfoListener { connInfo ->
+        if (!isConnected(connInfo)) return@ConnectionInfoListener
 
         connectionLatch.countDown()
-        isConnectionFree = false
 
         if (serverSocket.isClosed) serverSocket = ServerSocket(PORT)
 
         CoroutineScope(Dispatchers.IO).launch {
-            if (!conn.isGroupOwner) {
-                targetAddress = conn.groupOwnerAddress
+            if (!connInfo.isGroupOwner) {
+                targetAddress = connInfo.groupOwnerAddress
                 sendHandshake()
             } else {
                 receiveHandshake()
@@ -177,6 +168,26 @@ class BroadcastManager(
         }
     }
 
+    private fun isConnected(connInfo: WifiP2pInfo): Boolean {
+        // Group doesn't exist yet OR disbanded: no way to distinguish from here
+        if (!connInfo.groupFormed) {
+            if (connectionLatch.count == 0L) {
+                // If all data has been sent/received, we probably have disconnected
+                connectionLatch = CountDownLatch(2)
+                wifiManager.discoverPeers(channel, null)
+
+                CoroutineScope(Dispatchers.IO).launch { queueNextRequest() }
+            }
+            return false
+        }
+
+        else if (connectionLatch.count != 2L) {
+            return false
+        }
+
+        isConnectionFree = false
+        return true
+    }
 
     /**
      * Used to detect status changes related to Wi-Fi Direct, such as nearby devices changing
@@ -288,6 +299,8 @@ class BroadcastManager(
 
             if (incoming !is Data) return@withContext
 
+            println("IN ${incoming.data}")
+
             when (val data = incoming.data) {
                 is Message -> {
                     data.isOwnMessage = false
@@ -299,27 +312,7 @@ class BroadcastManager(
                 }
             }
 
-            //meshManager.relayForward(incoming.data, incoming.alreadySent)
-
-                /*is MessageData -> {
-                    val message = incoming.message
-                    val alreadySent = incoming.alreadySent
-
-                    message.isOwnMessage = false
-                    dao.insertMessage(message)
-                    meshManager.sendGroupMessage(message, alreadySent)
-                }
-
-                is Pair<*, *> -> {
-                    val other = incoming.first as Device
-                    val id = incoming.second as String?
-                    meshManager.createNetwork(other, id)
-                }
-
-                is Network -> {
-                    meshManager.joinNetwork(incoming)
-                }
-            }*/
+            meshManager.relayForward(incoming.data, incoming.alreadySent)
 
             istream.close()
             client.close()
@@ -335,8 +328,8 @@ class BroadcastManager(
      * @param address MAC address of the target device to send data to
      * @param data any type of data to send to the target
      */
-    fun sendData(address: String, data: Any) {
-        println("SEND FROM ${getThisDevice().getName()}")
+    private fun sendData(address: String, data: Any) {
+        println("SEND $data")
         connectToDevice(address)
         // Latch is used to wait for connection to be established
         connectionLatch.await()
@@ -364,5 +357,33 @@ class BroadcastManager(
 
         wifiManager.removeGroup(channel, null)
         println("DISCONNECTED")
+    }
+
+    fun addRequestToQueue(data: Data) {
+        println("QUEUE ADD ${data.data}")
+        requestQueue.addLast(data)
+        if (isConnectionFree) {
+            isConnectionFree = false
+            CoroutineScope(Dispatchers.IO).launch { queueNextRequest() }
+        }
+    }
+
+    private suspend fun queueNextRequest() {
+        withContext(Dispatchers.IO) {
+            try {
+                val next = requestQueue.first
+
+                if (!getNearbyDevices().any { it.getAddress() == next.target }) {
+                    peerLatch = CountDownLatch(1)
+                }
+                peerLatch.await()
+
+                requestQueue.removeFirst()
+                sendData(next.target, next)
+            } catch (e: NoSuchElementException) {
+                println(e)
+                isConnectionFree = true
+            }
+        }
     }
 }

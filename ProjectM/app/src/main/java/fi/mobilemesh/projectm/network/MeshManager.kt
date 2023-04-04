@@ -2,10 +2,6 @@ package fi.mobilemesh.projectm.network
 
 import android.content.Context
 import fi.mobilemesh.projectm.database.entities.Message
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
  * handles the management of discovered devices,
@@ -68,14 +64,9 @@ class MeshManager {
 
         alreadySent.addAll(validDevices)
 
-        val payload = Data(data, alreadySent)
-
-        CoroutineScope(Dispatchers.IO).launch {
-            validDevices.forEach {
-                println("SEND TO ${it.getName()}")
-                broadcastManager.sendData(it.getAddress(), payload)
-                delay(100)
-            }
+        validDevices.forEach {
+            val payload = Data(it.getAddress(), data, alreadySent)
+            broadcastManager.addRequestToQueue(payload)
         }
     }
 
@@ -142,10 +133,12 @@ class MeshManager {
 
 /**
  * Generalized class for data to be sent through the network.
+ * @param target MAC address of device to send to
  * @param data [Message], [Network] or similar data to send
  * @param alreadySent [MutableSet] of devices the data has already been sent to
  */
 data class Data(
+    val target: String,
     val data: Any,
     val alreadySent: MutableSet<Device>
 ) : java.io.Serializable
