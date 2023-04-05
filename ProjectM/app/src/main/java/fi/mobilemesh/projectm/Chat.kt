@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -19,6 +20,7 @@ import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.*
 import java.util.*
+import kotlin.time.Duration.Companion.hours
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -131,15 +133,17 @@ class Chat : Fragment() {
      * @param messageType is the drawable for the message
      */
     // TODO: Make the message using proper tools (UI team?)
+    @SuppressLint("SetTextI18n")
     private fun createMessage(message: Message, messageType: Int){
         val txt = TextView(activity)
         // Left/right side of screen depending on whose message this is
         val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
+        txt.setBackgroundResource(messageType)
+        //${message.timestamp.time}
+        txt.text = "${message.sender} ${message.body}"
+        txt.setPadding(20,4,60,10)
 
-        // ${message.timestamp.time.hours}
-        txt.text = "${message.sender} \n ${message.body}"
-
-        txt.maxWidth = (receivingField.width * 0.67).toInt()
+        //txt.maxWidth = (receivingField.width * 0.67).toInt()
 
         txt.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, // Width
@@ -154,13 +158,6 @@ class Chat : Fragment() {
         txt.gravity = Gravity.START
         txt.setTextColor(Color.WHITE)
         txt.isAllCaps = false
-
-        val params: ViewGroup.LayoutParams = txt.getLayoutParams()
-        params.height = ViewGroup.LayoutParams.WRAP_CONTENT
-        txt.layoutParams = params
-
-        txt.setPadding(20, 4, 10, 10)
-        txt.setBackgroundResource(messageType)
 
         receivingField.addView(txt)
     }
