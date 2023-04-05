@@ -1,6 +1,5 @@
 package fi.mobilemesh.projectm
 
-import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,10 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.TableRow
 import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import fi.mobilemesh.projectm.network.BroadcastManager
 import java.lang.ref.WeakReference
 import java.net.InetAddress
@@ -38,7 +34,7 @@ class Networks : Fragment() {
     // UI
     private lateinit var availableView: TextView
     private lateinit var nodeList: LinearLayout
-    private lateinit var createNetworkBtn: Button
+    private lateinit var createNetworkButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +57,8 @@ class Networks : Fragment() {
 
         INSTANCE = WeakReference(this)
 
-        createNetworkBtn = view.findViewById(R.id.button)
-        createNetworkBtn.setOnClickListener {
+        createNetworkButton = view.findViewById(R.id.button)
+        createNetworkButton.setOnClickListener {
             // switch to Create
             (parentFragment as ContainerFragmentNetworks).switchFragment(CreateNetwork::class.java)
         }
