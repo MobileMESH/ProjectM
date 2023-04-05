@@ -140,20 +140,17 @@ class Chat : Fragment() {
         linearLayout.orientation = LinearLayout.VERTICAL
         linearLayout.setBackgroundResource(messageType)
 
-        // Adding message components to the base
+        // Refining message components
         val sender = TextView(activity)
-        sender.text = "${message.sender}"
+        sender.text = if (message.isOwnMessage) "You" else "${message.sender}"
         sender.setTextColor(Color.WHITE)
         sender.typeface = Typeface.DEFAULT_BOLD
-        sender.setPadding(20,4,60,5)
 
         val messageBody = TextView(activity)
         messageBody.text="${message.body}"
         messageBody.setTextColor(Color.WHITE)
-        messageBody.setPadding(20,0,60,5)
 
         val time = TextView(activity)
-
         // Get time
         val date:Date = message.timestamp
         val cal = Calendar.getInstance()
@@ -162,9 +159,13 @@ class Chat : Fragment() {
         val minutes = cal.get(Calendar.MINUTE)
         time.text = "$hours:$minutes"
         time.setTextColor(Color.WHITE)
-        time.gravity=Gravity.RIGHT
-        time.setPadding(0,0,60,10)
+        time.gravity = Gravity.RIGHT
 
+        sender.setPadding(20,7,20,5)
+        messageBody.setPadding(20,0,20,5)
+        time.setPadding(0,0,20,10)
+
+        // Add components
         linearLayout.addView(sender)
         linearLayout.addView(messageBody)
         linearLayout.addView(time)
@@ -172,18 +173,20 @@ class Chat : Fragment() {
         // Left/right side of screen depending on whose message this is
         val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
 
+        // How messages are shown in the parent layout
         linearLayout.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, // Width
             LinearLayout.LayoutParams.WRAP_CONTENT  // Height
         ).apply {
             gravity = alignment
         }.also {
-            it.setMargins(0, 10, 0, 16)
+            it.setMargins(20, 20, 20, 20)
         }
 
         // Text alignment
         linearLayout.gravity = Gravity.START
 
+        // Add everything to parent
         receivingField.addView(linearLayout)
     }
 
