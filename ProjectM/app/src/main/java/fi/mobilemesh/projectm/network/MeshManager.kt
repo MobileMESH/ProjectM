@@ -63,7 +63,7 @@ class MeshManager {
         alreadySent.addAll(validDevices)
 
         validDevices.forEach {
-            val payload = Data(it.getAddress(), data, alreadySent)
+            val payload = Data(it.getName(), data, alreadySent)
             broadcastManager.addRequestToQueue(payload)
         }
     }

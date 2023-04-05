@@ -380,10 +380,9 @@ class BroadcastManager(
      * @param data [Data] to send, including target device's address
      */
     fun addRequestToQueue(data: Data) {
-        println("QUEUE ADD ${data.data}")
+        println("QUEUE ADD $data")
         requestQueue.addLast(data)
         if (isConnectionFree) {
-            isConnectionFree = false
             CoroutineScope(Dispatchers.IO).launch { queueNextRequest() }
         }
     }
@@ -394,17 +393,22 @@ class BroadcastManager(
      * and only after the target device is nearby.
      */
     private suspend fun queueNextRequest() {
+        isConnectionFree = false
         withContext(Dispatchers.IO) {
             try {
                 val next = requestQueue.first
-
-                if (!getNearbyDevices().any { it.getAddress() == next.target }) {
+                println("QUEUE MOV $next")
+                var target = getNearbyDevices().firstOrNull { it.getName() == next.target }
+                if (target == null) {
+                    println("Waiting")
                     peerLatch = CountDownLatch(1)
                 }
                 peerLatch.await()
 
+                target = getNearbyDevices().first { it.getName() == next.target }
+
                 requestQueue.removeFirst()
-                sendData(next.target, next)
+                sendData(target.getAddress(), next)
             } catch (e: NoSuchElementException) {
                 println(e)
                 isConnectionFree = true
