@@ -58,9 +58,7 @@ class MeshManager {
         // Valid devices are both in range (available) and within the selected network,
         // but not in the devices the message has been sent to
 
-        val validDevices = availableDevices
-            .filter { it in network }
-            .filterNot { it in alreadySent }
+        val validDevices = network.filterNot { it in alreadySent }
 
         alreadySent.addAll(validDevices)
 

@@ -235,6 +235,14 @@ class BroadcastManager(
         val config = WifiP2pConfig()
         config.deviceAddress = address
 
+        wifiManager.requestPeers(channel, object : PeerListListener {
+            override fun onPeersAvailable(p0: WifiP2pDeviceList?) {
+                println("PEERS")
+                p0?.deviceList?.forEach {
+                    println("P ${it.deviceName}")
+                }
+            }
+        })
         wifiManager.connect(channel, config, null)
     }
 
