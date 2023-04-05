@@ -38,6 +38,7 @@ class Networks : Fragment() {
     // UI
     private lateinit var availableView: TextView
     private lateinit var nodeList: LinearLayout
+    private lateinit var createNetworkBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +60,12 @@ class Networks : Fragment() {
         nodeList = view.findViewById(R.id.nodeList)
 
         INSTANCE = WeakReference(this)
+
+        createNetworkBtn = view.findViewById(R.id.button)
+        createNetworkBtn.setOnClickListener {
+            // switch to Create
+            (parentFragment as ContainerFragmentNetworks).switchFragment(CreateNetwork::class.java)
+        }
 
         return view
     }

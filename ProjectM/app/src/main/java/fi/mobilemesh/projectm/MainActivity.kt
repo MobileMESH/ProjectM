@@ -102,8 +102,10 @@ class MainActivity : AppCompatActivity() {
             showOnboardingActivity()
             setAppOpenedFlag()
         }
-        
+
+        // Set the default layout to ContainerFragmentNetworks
         setContentView(R.layout.activity_main)
+        switchFragment(ContainerFragmentNetworks::class.java)
 
         // moved this to Onboarding
         //requestPermissions()
@@ -208,7 +210,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.networks-> {
-                    switchFragment(Networks::class.java)
+                    switchFragment(ContainerFragmentNetworks::class.java)
                     true
                 }
                 else -> false
