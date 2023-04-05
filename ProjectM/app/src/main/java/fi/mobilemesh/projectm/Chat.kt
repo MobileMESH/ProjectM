@@ -2,6 +2,7 @@ package fi.mobilemesh.projectm
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -135,17 +136,36 @@ class Chat : Fragment() {
     // TODO: Make the message using proper tools (UI team?)
     @SuppressLint("SetTextI18n")
     private fun createMessage(message: Message, messageType: Int){
-        val txt = TextView(activity)
+        // Creating base for the message
+        val linearLayout = LinearLayout(activity)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setBackgroundResource(messageType)
+
+        // Adding message components to the base
+        val sender = TextView(activity)
+        sender.text = "${message.sender}"
+        sender.setTextColor(Color.parseColor("#273f3a"))
+        sender.typeface = Typeface.DEFAULT_BOLD
+        sender.setPadding(20,4,60,5)
+
+        val messageBody = TextView(activity)
+        messageBody.text="${message.body}"
+        messageBody.setTextColor(Color.WHITE)
+        messageBody.setPadding(20,0,60,10)
+
+        val time = TextView(activity)
+        time.text="${message.timestamp.time.hours}"
+        time.setTextColor(Color.parseColor("#273f3a"))
+        messageBody.setPadding(0,0,60,10)
+
+        linearLayout.addView(sender)
+        linearLayout.addView(messageBody)
+        linearLayout.addView(time)
+
         // Left/right side of screen depending on whose message this is
         val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
-        txt.setBackgroundResource(messageType)
-        //${message.timestamp.time}
-        txt.text = "${message.sender} ${message.body}"
-        txt.setPadding(20,4,60,10)
 
-        //txt.maxWidth = (receivingField.width * 0.67).toInt()
-
-        txt.layoutParams = LinearLayout.LayoutParams(
+        linearLayout.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, // Width
             LinearLayout.LayoutParams.WRAP_CONTENT  // Height
         ).apply {
@@ -155,11 +175,9 @@ class Chat : Fragment() {
         }
 
         // Text alignment
-        txt.gravity = Gravity.START
-        txt.setTextColor(Color.WHITE)
-        txt.isAllCaps = false
+        linearLayout.gravity = Gravity.START
 
-        receivingField.addView(txt)
+        receivingField.addView(linearLayout)
     }
 
     /**
