@@ -293,13 +293,15 @@ class BroadcastManager(
             }
             catch (e: EOFException) {
                 println("EOFException $e")
-                throw(e)
-                //return@withContext
+                println(e.stackTrace)
+                resetConnection()
+                return@withContext
             }
             catch(e: SocketException) {
                 println("SocketException: $e")
-                throw(e)
-                //return@withContext
+                println(e.stackTrace)
+                resetConnection()
+                return@withContext
             }
 
             val incoming = istream.readObject()
