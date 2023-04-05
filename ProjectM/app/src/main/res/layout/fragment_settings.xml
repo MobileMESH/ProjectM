@@ -29,7 +29,8 @@
             android:layout_width="360dp"
             android:layout_height="48sp"
             android:layout_gravity="center"
-            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
 
             android:background="@drawable/text_field"
             android:ems="10"
@@ -40,6 +41,16 @@
             android:textColor="@color/white"
             android:textSize="16sp"
             app:cardCornerRadius="10dp" />
+
+        <Button
+            android:id="@+id/saveNameButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="#018768"
+            android:text="Save" />
+
+
 
         <TextView
             android:layout_width="match_parent"
@@ -74,9 +85,8 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="right"
                 android:layout_marginRight="16dp"
-                app:thumbTint="#F4EFF4"
-                app:trackDecorationTint="#22892F"
-                app:trackTint="#22892F" />
+                android:checked="false"
+                app:trackDecorationTint="#F4EFF4" />
         </androidx.cardview.widget.CardView>
 
         <TextView
@@ -111,9 +121,8 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="right"
                 android:layout_marginRight="16dp"
-                app:thumbTint="#F4EFF4"
-                app:trackDecorationTint="#22892F"
-                app:trackTint="#22892F" />
+                android:checked="false"
+                app:trackDecorationTint="#F4EFF4" />
 
         </androidx.cardview.widget.CardView>
         <TextView
@@ -124,6 +133,7 @@
             android:textColor="#FFFFFF"
             android:textSize="20sp" />
         <androidx.cardview.widget.CardView
+            android:id="@+id/deviceSettings"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -154,10 +164,8 @@
             android:textSize="13sp" />
         </androidx.cardview.widget.CardView>
 
+
     </LinearLayout>
-
-
-    <!-- TODO: Update blank fragment layout -->
 
 
 </RelativeLayout>

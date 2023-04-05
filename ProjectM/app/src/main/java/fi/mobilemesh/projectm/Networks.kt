@@ -14,7 +14,11 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.view.forEach
+import androidx.core.view.isNotEmpty
+import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.utils.SharedPreferencesManager
 import java.lang.ref.WeakReference
 import java.net.InetAddress
 
@@ -55,6 +59,7 @@ class Networks : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_networks, container, false)
         broadcastManager = BroadcastManager.getInstance(view.context)
+        // Initializing handlers and such
 
         availableView = view.findViewById(R.id.availableView)
         deviceList = view.findViewById(R.id.deviceList)
