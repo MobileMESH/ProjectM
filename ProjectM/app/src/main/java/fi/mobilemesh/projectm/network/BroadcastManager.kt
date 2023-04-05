@@ -87,7 +87,7 @@ class BroadcastManager(
     private fun initThisDevice(intent: Intent?) {
         if (Build.VERSION.SDK_INT >= 29) {
             wifiManager.requestDeviceInfo(channel) { dev ->
-                thisDevice = Device(dev ?: WifiP2pDevice())
+                if (dev != null) thisDevice = Device(dev)
             }
         }
 
@@ -143,7 +143,7 @@ class BroadcastManager(
         thisDevice?.setAvailableDevices(getNearbyDevices())
 
         val next = requestQueue.firstOrNull()
-        if (next == null || peers.any { it.deviceAddress == next.target }) {
+        if (next == null || peers.any { it.deviceName == next.target }) {
             peerLatch.countDown()
         }
     }
@@ -235,14 +235,6 @@ class BroadcastManager(
         val config = WifiP2pConfig()
         config.deviceAddress = address
 
-        wifiManager.requestPeers(channel, object : PeerListListener {
-            override fun onPeersAvailable(p0: WifiP2pDeviceList?) {
-                println("PEERS")
-                p0?.deviceList?.forEach {
-                    println("P ${it.deviceName}")
-                }
-            }
-        })
         wifiManager.connect(channel, config, null)
     }
 
@@ -383,6 +375,7 @@ class BroadcastManager(
         println("QUEUE ADD $data")
         requestQueue.addLast(data)
         if (isConnectionFree) {
+            isConnectionFree = false
             CoroutineScope(Dispatchers.IO).launch { queueNextRequest() }
         }
     }
@@ -393,26 +386,26 @@ class BroadcastManager(
      * and only after the target device is nearby.
      */
     private suspend fun queueNextRequest() {
-        isConnectionFree = false
         withContext(Dispatchers.IO) {
-            try {
-                val next = requestQueue.first
-                println("QUEUE MOV $next")
-                var target = getNearbyDevices().firstOrNull { it.getName() == next.target }
-                if (target == null) {
-                    println("Waiting")
-                    peerLatch = CountDownLatch(1)
-                }
-                peerLatch.await()
-
-                target = getNearbyDevices().first { it.getName() == next.target }
-
-                requestQueue.removeFirst()
-                sendData(target.getAddress(), next)
-            } catch (e: NoSuchElementException) {
-                println(e)
+            val next = requestQueue.firstOrNull()
+            if (next == null) {
+                println("QUEUE FREE")
                 isConnectionFree = true
+                return@withContext
             }
+            println("QUEUE MOV $next")
+            var target = getNearbyDevices().firstOrNull { it.getName() == next.target }
+            if (target == null) {
+                println("Waiting")
+                peerLatch = CountDownLatch(1)
+            }
+            peerLatch.await()
+
+            target = getNearbyDevices().first { it.getName() == next.target }
+
+            requestQueue.removeFirst()
+            println("TARGET ${target.getAddress()}")
+            sendData(target.getAddress(), next)
         }
     }
 }
