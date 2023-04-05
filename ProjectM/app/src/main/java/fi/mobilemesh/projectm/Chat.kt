@@ -1,6 +1,6 @@
 package fi.mobilemesh.projectm
 
-import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -43,6 +44,7 @@ class Chat : Fragment() {
     lateinit var sendButton: FloatingActionButton
     lateinit var sendingField: EditText
     lateinit var receivingField: LinearLayout
+    lateinit var openDetailsButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +65,11 @@ class Chat : Fragment() {
             sendingField.text.clear()
             CoroutineScope(Dispatchers.IO).launch { sendMessage(text) }
         }
+
+        openDetailsButton.setOnClickListener {
+            // switch to Details
+            (parentFragment as ContainerFragmentChat).switchFragment(ChatNetworkDetails::class.java)
+        }
     }
 
     // This function is used to do all magic
@@ -72,9 +79,11 @@ class Chat : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_chat, container, false)
+
         receivingField = view.findViewById(R.id.receivingField)
         sendingField = view.findViewById(R.id.sendingField)
         sendButton = view.findViewById(R.id.sendTextButton)
+        openDetailsButton = view.findViewById(R.id.openDetailsButton)
 
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)
@@ -133,7 +142,6 @@ class Chat : Fragment() {
      * @param messageType is the drawable for the message
      */
     // TODO: Make the message using proper tools (UI team?)
-    @SuppressLint("SetTextI18n")
     private fun createMessage(message: Message, messageType: Int){
         // Creating base for the message
         val linearLayout = LinearLayout(activity)

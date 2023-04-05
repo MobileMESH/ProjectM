@@ -4,33 +4,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:backgroundTint="@color/background"
+    android:background="@drawable/layered_peaks_haikei__6_"
     tools:context=".Chat">
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/networkDetails"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/topBar"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:background="@color/secondary_bars_green"
-            android:clickable="true"
-            android:enabled="false"
-            android:gravity="center"
-            android:text="Network name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@color/white"
-            android:textColorHighlight="#FFFFFF"
-            android:textColorLink="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:drawableEndCompat="@drawable/arrow_forward_icon"
-            app:drawableTint="#FFFFFF" />
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/networkDetails"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:background="@color/secondary_bars_green"
+                android:clickable="true"
+                android:enabled="false"
+                android:gravity="center"
+                android:text="@string/network_name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/white"
+                android:textColorHighlight="#FFFFFF"
+                android:textColorLink="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <Button
+                android:id="@+id/openDetailsButton"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:backgroundTint="@color/secondary_bars_green"
+                android:contentDescription="Show details about the network"
+                app:icon="@drawable/arrow_forward_icon"
+                app:iconTint="@color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/networkDetails"
+                app:layout_constraintEnd_toEndOf="@+id/networkDetails"
+                app:layout_constraintTop_toTopOf="@+id/networkDetails" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -91,14 +111,11 @@
                 android:layout_marginBottom="10dp"
                 android:clickable="true"
                 android:tint="#EADDDD"
-                app:backgroundTint="@color/pop_ups"
-                app:backgroundTintMode="src_over"
+                app:backgroundTint="@color/buttons"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
                 app:srcCompat="@drawable/arrow_forward_icon"
                 app:tint="@null"
                 tools:ignore="SpeakableTextPresentCheck" />
-
-
         </LinearLayout>
 
     </LinearLayout>
