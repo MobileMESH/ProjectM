@@ -1,16 +1,21 @@
 package fi.mobilemesh.projectm
 
-import android.content.res.ColorStateList
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.google.android.material.switchmaterial.SwitchMaterial
 import fi.mobilemesh.projectm.utils.SharedPreferencesManager
+import android.provider.Settings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 //import fi.mobilemesh.projectm.OnBoardingActivity
 
 // TODO: Rename parameter arguments, choose names that match
@@ -34,7 +39,7 @@ class Settings : Fragment() {
     private lateinit var notificationsButton: SwitchMaterial
     private lateinit var devicePermissions: CardView
 
-    lateinit var sharedPreferencesManager: SharedPreferencesManager
+    private lateinit var sharedPreferencesManager: SharedPreferencesManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +48,50 @@ class Settings : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
 
+    }
+
+    // Listeners for all UI components, called after assigning UI elements.
+    private fun mapButtons() {
+        //Update user's device name
+        saveNameButton.setOnClickListener{
+            val name = deviceName.text.toString()
+            sharedPreferencesManager.saveUsername(name)
+        }
+
+        // Change SharedPreferences for location and notifications on switch click
+        locationButton.setOnCheckedChangeListener { buttonView, isChecked ->
+            val isEnabled = sharedPreferencesManager.getLocationEnabled()
+            if (!isEnabled) {
+                sharedPreferencesManager.setLocationEnabled(true)
+                // TODO: Changing the switch style should happen here somehow?
+                //buttonView.setStyle(SwitchChecked)
+
+            } else {
+                sharedPreferencesManager.setLocationEnabled(false)
+                locationButton.isChecked = !isChecked
+            }
+
+        }
+
+        notificationsButton.setOnClickListener{
+            /* val status = //TODO: Connect to notifications status?
+            if (status == false) {
+                // TODO: Notifs on
+            } else {
+                // TODO: Notifs off
+            }*/
+        }
+
+        // Going to the device's permission settings
+        devicePermissions.setOnClickListener{
+            val packageName = context?.packageName
+            val intent = Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", packageName, null)
+            )
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
     }
 
     override fun onCreateView(
@@ -56,50 +105,9 @@ class Settings : Fragment() {
         notificationsButton = view.findViewById(R.id.notificationsSwitch)
         devicePermissions = view.findViewById(R.id.deviceSettings)
 
+        mapButtons()
         // Inflate the layout for this fragment
         return view
-    }
-
-    //Update user's device name
-    private fun changeDeviceName () {
-        saveNameButton.setOnClickListener{
-            val name = deviceName.text.toString()
-            sharedPreferencesManager.saveUsername(name)
-        }
-    }
-
-
-    // Change SharedPreferences for location and notifications on switch click
-    private fun shareLocation () {
-        locationButton.setOnCheckedChangeListener { buttonView, isChecked ->
-            val isEnabled = sharedPreferencesManager.getLocationEnabled()
-            if (!isEnabled) {
-                sharedPreferencesManager.setLocationEnabled(true)
-                //buttonView.setStyle(SwitchChecked)
-
-            } else {
-                sharedPreferencesManager.setLocationEnabled(false)
-                locationButton.isChecked = !isChecked
-            }
-
-        }
-    }
-
-    private fun shareNotifications () {
-        notificationsButton.setOnClickListener{
-            /* val status = //TODO: Connect to notifications status
-            if (status == false) {
-                // TODO: Notifs on
-            } else {
-                // TODO: Notifs off
-            }*/
-        }
-    }
-
-    private fun goToDeviceSettings () {
-        devicePermissions.setOnClickListener{
-            //TODO: Handle going to the device settings
-        }
     }
 
     companion object {
