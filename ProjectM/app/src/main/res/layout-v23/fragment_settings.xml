@@ -85,8 +85,7 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="right"
                 android:layout_marginRight="16dp"
-                app:trackDecorationTint="#F4EFF4"
-                android:trackTint="@color/switch_style"/>
+                app:trackDecorationTint="#F4EFF4" />
         </androidx.cardview.widget.CardView>
 
         <TextView
@@ -109,7 +108,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="15sp"
-                android:text="Notifications"
+                android:text="Notifications on"
                 android:textAlignment="center"
                 android:textColor="@color/design_default_color_on_primary"
                 android:textSize="16sp" />

@@ -63,12 +63,10 @@ class Settings : Fragment() {
             val isEnabled = sharedPreferencesManager.getLocationEnabled()
             if (!isEnabled) {
                 sharedPreferencesManager.setLocationEnabled(true)
-                // TODO: Changing the switch style should happen here somehow?
-                //buttonView.setStyle(SwitchChecked)
 
             } else {
                 sharedPreferencesManager.setLocationEnabled(false)
-                locationButton.isChecked = !isChecked
+                locationButton.isChecked = false
             }
 
         }

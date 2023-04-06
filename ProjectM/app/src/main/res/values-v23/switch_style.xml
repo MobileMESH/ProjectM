@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="SwitchChecked" parent="Widget.Material3.CompoundButton.Switch">
-        <item name="android:thumbTint">@color/switchneutral</item>
-        <item name="android:trackTint">@color/switches</item>
-        <item name="app:trackDecorationTint">@color/switches</item>
-    </style>
-</resources>
