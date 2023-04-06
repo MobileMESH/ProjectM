@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -102,7 +103,6 @@ class Chat : Fragment() {
     // TODO: Don't reload all messages...
     private fun observeLiveMessages() {
         dao.getLiveChatGroupMessages(0).observe(viewLifecycleOwner) {
-            //createMessage(it.last(), Color.parseColor("#262626"), Color.WHITE)
             receivingField.removeAllViews()
             loadAllMessages()
         }
@@ -144,58 +144,80 @@ class Chat : Fragment() {
     // TODO: Make the message using proper tools (UI team?)
     private fun createMessage(message: Message, messageType: Int){
         // Creating base for the message
-        val linearLayout = LinearLayout(activity)
-        linearLayout.orientation = LinearLayout.VERTICAL
-        linearLayout.setBackgroundResource(messageType)
+        val base = LinearLayout(activity)
+        base.orientation = LinearLayout.VERTICAL
+        base.setBackgroundResource(messageType)
 
-        // Refining message components
-        val sender = TextView(activity)
-        sender.text = if (message.isOwnMessage) "You" else "${message.sender}"
-        sender.setTextColor(Color.WHITE)
-        sender.typeface = Typeface.DEFAULT_BOLD
-
-        val messageBody = TextView(activity)
-        messageBody.text="${message.body}"
-        messageBody.setTextColor(Color.WHITE)
-
-        val time = TextView(activity)
-        // Get time
-        val date:Date = message.timestamp
-        val cal = Calendar.getInstance()
-        cal.time = date
-        val hours = cal.get(Calendar.HOUR_OF_DAY)
-        val minutes = cal.get(Calendar.MINUTE)
-        time.text = "$hours:$minutes"
-        time.setTextColor(Color.WHITE)
-        time.gravity = Gravity.RIGHT
-
-        sender.setPadding(20,7,20,5)
-        messageBody.setPadding(20,0,20,5)
-        time.setPadding(0,0,20,10)
-
-        // Add components
-        linearLayout.addView(sender)
-        linearLayout.addView(messageBody)
-        linearLayout.addView(time)
+        createMessageComponents(message, base)
 
         // Left/right side of screen depending on whose message this is
         val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
 
         // How messages are shown in the parent layout
-        linearLayout.layoutParams = LinearLayout.LayoutParams(
+        base.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, // Width
             LinearLayout.LayoutParams.WRAP_CONTENT  // Height
         ).apply {
             gravity = alignment
         }.also {
-            it.setMargins(20, 20, 20, 20)
+            it.setMargins(20, 20, 20, 0)
         }
-
         // Text alignment
-        linearLayout.gravity = Gravity.START
-
+        base.gravity = Gravity.START
         // Add everything to parent
-        receivingField.addView(linearLayout)
+        receivingField.addView(base)
+    }
+
+    /**
+     * Creates visual components for the contents of the message (sender,
+     * message itself and time)
+     * @param message a [Message] instance from which to create the visual message in the chat
+     * area
+     * @param base to put all components in
+     */
+    private fun createMessageComponents(message: Message, base: LinearLayout) {
+        // Creating TextView for the sender
+        val sender = TextView(activity)
+         if (message.isOwnMessage) {
+             sender.text ="You"
+             sender.setTextColor(Color.parseColor("#dff0e9"))
+         }
+         else {
+             sender.text="${message.sender}"
+             sender.setTextColor(Color.parseColor("#8bc9b1"))
+         }
+        sender.typeface = Typeface.DEFAULT_BOLD
+
+        // Creating TextView for message contents
+        val messageBody = TextView(activity)
+        messageBody.text="${message.body}"
+        messageBody.setTextColor(Color.WHITE)
+
+        //Create visual timestamp to the message
+        val time = TextView(activity)
+        val date:Date = message.timestamp
+        val cal = Calendar.getInstance()
+        cal.time = date
+        val hours = cal.get(Calendar.HOUR_OF_DAY)
+        val minutes = cal.get(Calendar.MINUTE)
+
+        if (minutes < 10) {
+            time.text = "$hours:0$minutes"
+        }
+        else {
+            time.text = "$hours:$minutes"
+        }
+        time.setTextColor(Color.parseColor("#c9c7c7"))
+        time.gravity = Gravity.RIGHT
+        time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+
+        // Place components to the base
+        sender.setPadding(20,7,20,5)
+        messageBody.setPadding(20,0,20,5)
+        time.setPadding(0,0,20,10)
+        base.addView(sender)
+        base.addView(messageBody)
+        base.addView(time)
     }
 
     /**
