@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity() {
         navigationBar.setOnItemSelectedListener{ item ->
             when(item.itemId) {
                 R.id.settings -> {
-                    switchFragment(Settings::class.java)
+                    switchFragment(Device_settings::class.java)
                     true
                 }
                 R.id.chat -> {
