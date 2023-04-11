@@ -24,6 +24,7 @@ import java.io.EOFException
 import java.net.SocketException
 import java.util.LinkedList
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 
 private const val PORT = 8888
@@ -341,7 +342,15 @@ class BroadcastManager(
         println("SEND $data")
         connectToDevice(address)
         // Latch is used to wait for connection to be established
-        connectionLatch.await()
+        // Returns false when the timeout has passed
+        val success = connectionLatch.await(TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
+
+        if (!success) {
+            wifiManager.cancelConnect(channel, null)
+            resetConnection()
+            isConnectionFree = true
+            return
+        }
 
         val socket = Socket()
         socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
