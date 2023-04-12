@@ -18,7 +18,6 @@ class ChatNetworkDetails : Fragment() {
     //TODO: implement feature to add and edit network desc
     //private val isDescriptionPresent = false
 
-    lateinit var menuButton: Button
     lateinit var networkDetails: TextView
     lateinit var networkDescription: TextView
     lateinit var connectedDevicesHeader: TextView
@@ -35,11 +34,6 @@ class ChatNetworkDetails : Fragment() {
             // switch to Chat
             (parentFragment as ContainerFragmentChat).switchFragment(Chat::class.java)
         }
-
-        menuButton.setOnClickListener {
-            // TODO: create menu to edit network name and desc
-        }
-
         leaveNetworkButton.setOnClickListener {
             showConfirmationAlert(
                 "Leave Network",
@@ -79,7 +73,6 @@ class ChatNetworkDetails : Fragment() {
         networkDescription = view.findViewById(R.id.networkDescription)
         openChatButton = view.findViewById(R.id.openChatButton)
         leaveNetworkButton = view.findViewById(R.id.leaveNetworkButton)
-        menuButton = view.findViewById(R.id.menuButton)
     }
 
     /**

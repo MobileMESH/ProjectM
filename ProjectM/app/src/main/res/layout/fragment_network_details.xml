@@ -30,7 +30,7 @@
                 android:clickable="true"
                 android:enabled="false"
                 android:gravity="center"
-                android:text="@string/network_name"
+                android:text="@string/back_to_chat"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/white"
                 android:textColorHighlight="#FFFFFF"
@@ -52,22 +52,6 @@
                 app:layout_constraintBottom_toBottomOf="@+id/networkDetails"
                 app:layout_constraintStart_toStartOf="@+id/networkDetails"
                 app:layout_constraintTop_toTopOf="@+id/networkDetails" />
-
-            <Button
-                android:id="@+id/menuButton"
-                style="?attr/materialIconButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:contentDescription="Show menu"
-                app:icon="@drawable/more_vert_icon"
-                app:iconTint="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.94"
-                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
