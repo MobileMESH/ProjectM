@@ -98,8 +98,6 @@ class MainActivity : AppCompatActivity() {
         SharedPreferencesManager.getInstance(applicationContext)
         addIntentFilters()
 
-        val isOnboardingCompleted = isOnboardingCompleted()
-
         // Show the onboarding activity if it hasn't been completed
         if (!isOnboardingCompleted()) {
             showOnboardingActivity()
