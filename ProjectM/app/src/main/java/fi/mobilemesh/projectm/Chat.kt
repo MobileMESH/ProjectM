@@ -2,17 +2,18 @@ package fi.mobilemesh.projectm
 
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.core.view.marginBottom
-import androidx.core.view.setMargins
+import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -44,6 +45,7 @@ class Chat : Fragment() {
     lateinit var sendButton: FloatingActionButton
     lateinit var sendingField: EditText
     lateinit var receivingField: LinearLayout
+    lateinit var openDetailsButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +66,11 @@ class Chat : Fragment() {
             sendingField.text.clear()
             CoroutineScope(Dispatchers.IO).launch { sendMessage(text) }
         }
+
+        openDetailsButton.setOnClickListener {
+            // switch to Details
+            (parentFragment as ContainerFragmentChat).switchFragment(ChatNetworkDetails::class.java)
+        }
     }
 
     // This function is used to do all magic
@@ -77,6 +84,7 @@ class Chat : Fragment() {
         receivingField = view.findViewById(R.id.receivingField)
         sendingField = view.findViewById(R.id.sendingField)
         sendButton = view.findViewById(R.id.sendTextButton)
+        openDetailsButton = view.findViewById(R.id.openDetailsButton)
 
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)
@@ -95,7 +103,6 @@ class Chat : Fragment() {
     // TODO: Don't reload all messages...
     private fun observeLiveMessages() {
         dao.getLiveChatGroupMessages(0).observe(viewLifecycleOwner) {
-            //createMessage(it.last(), Color.parseColor("#262626"), Color.WHITE)
             receivingField.removeAllViews()
             loadAllMessages()
         }
@@ -122,11 +129,9 @@ class Chat : Fragment() {
         message.isOwnMessage = true
         dao.insertMessage(message)
 
-        // TODO: Set color properly (UI team?)
-        val messageColor = Color.parseColor("#017f61")
-        val textColor = Color.BLACK
+        val messageType = R.drawable.outgoing_bubble
 
-        withContext(Dispatchers.Main) { createMessage(message, messageColor, textColor) }
+        withContext(Dispatchers.Main) { createMessage(message, messageType) }
     }
 
     /**
@@ -134,36 +139,85 @@ class Chat : Fragment() {
      * Make sure to call this in the main thread
      * @param message a [Message] instance from which to create the visual message in the chat
      * area
-     * @param messageColor background color for the message
-     * @param textColor color of the messages text
+     * @param messageType is the drawable for the message
      */
     // TODO: Make the message using proper tools (UI team?)
-    private fun createMessage(message: Message, messageColor: Int, textColor: Int) {
-        val btn = Button(activity)
+    private fun createMessage(message: Message, messageType: Int){
+        // Creating base for the message
+        val base = LinearLayout(activity)
+        base.orientation = LinearLayout.VERTICAL
+        base.setBackgroundResource(messageType)
+
+        createMessageComponents(message, base)
+
         // Left/right side of screen depending on whose message this is
         val alignment = if (message.isOwnMessage) Gravity.END else Gravity.START
 
-        btn.isClickable = false
-        btn.text = "[${message.timestamp}] [${message.sender}] ${message.body}"
-
-        btn.maxWidth = (receivingField.width * 0.67).toInt()
-
-        btn.layoutParams = LinearLayout.LayoutParams(
+        // How messages are shown in the parent layout
+        base.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, // Width
             LinearLayout.LayoutParams.WRAP_CONTENT  // Height
         ).apply {
             gravity = alignment
         }.also {
-            it.setMargins(0, 0, 0, 16)
+            it.setMargins(20, 20, 20, 0)
         }
-
         // Text alignment
-        btn.gravity = Gravity.START
-        btn.isAllCaps = false
-        btn.setBackgroundColor(messageColor)
-        btn.setTextColor(textColor)
+        base.gravity = Gravity.START
+        // Add everything to parent
+        receivingField.addView(base)
+    }
 
-        receivingField.addView(btn)
+    /**
+     * Creates visual components for the contents of the message (sender,
+     * message itself and time)
+     * @param message a [Message] instance from which to create the visual message in the chat
+     * area
+     * @param base to put all components in
+     */
+    private fun createMessageComponents(message: Message, base: LinearLayout) {
+        // Creating TextView for the sender
+        val sender = TextView(activity)
+         if (message.isOwnMessage) {
+             sender.text ="You"
+             sender.setTextColor(Color.parseColor("#dff0e9"))
+         }
+         else {
+             sender.text="${message.sender}"
+             sender.setTextColor(Color.parseColor("#8bc9b1"))
+         }
+        sender.typeface = Typeface.DEFAULT_BOLD
+
+        // Creating TextView for message contents
+        val messageBody = TextView(activity)
+        messageBody.text="${message.body}"
+        messageBody.setTextColor(Color.WHITE)
+
+        //Create visual timestamp to the message
+        val time = TextView(activity)
+        val date:Date = message.timestamp
+        val cal = Calendar.getInstance()
+        cal.time = date
+        val hours = cal.get(Calendar.HOUR_OF_DAY)
+        val minutes = cal.get(Calendar.MINUTE)
+
+        if (minutes < 10) {
+            time.text = "$hours:0$minutes"
+        }
+        else {
+            time.text = "$hours:$minutes"
+        }
+        time.setTextColor(Color.parseColor("#c9c7c7"))
+        time.gravity = Gravity.RIGHT
+        time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+
+        // Place components to the base
+        sender.setPadding(20,7,20,5)
+        messageBody.setPadding(20,0,20,5)
+        time.setPadding(0,0,20,10)
+        base.addView(sender)
+        base.addView(messageBody)
+        base.addView(time)
     }
 
     /**
@@ -176,11 +230,9 @@ class Chat : Fragment() {
         CoroutineScope(Dispatchers.Main).launch {
             val messages = dao.getChatGroupMessages(0)
             messages.forEach {
-                val messageColor = if (it.isOwnMessage) Color.parseColor("#017f61")
-                    else Color.parseColor("#262626")
-                val textColor = if (it.isOwnMessage) Color.BLACK
-                    else Color.WHITE
-                createMessage(it, messageColor, textColor)
+                val messageType = if (it.isOwnMessage) R.drawable.outgoing_bubble
+                    else R.drawable.incoming_bubble
+                createMessage(it, messageType)
             }
         }
     }

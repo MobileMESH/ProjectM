@@ -192,8 +192,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun findUiElements() {
-        // deviceList = findViewById(R.id.deviceList)
-        // statusField = findViewById(R.id.statusField)
         navigationBar = findViewById(R.id.navigationBar)
         //networkDetails = findViewById(R.id.networkDetails)
     }
@@ -205,11 +203,11 @@ class MainActivity : AppCompatActivity() {
         navigationBar.setOnItemSelectedListener{ item ->
             when(item.itemId) {
                 R.id.settings -> {
-                    switchFragment(Settings::class.java)
+                    switchFragment(DeviceSettings::class.java)
                     true
                 }
                 R.id.chat -> {
-                    switchFragment(Chat::class.java)
+                    switchFragment(ContainerFragmentChat::class.java)
                     true
                 }
                 R.id.networks-> {
