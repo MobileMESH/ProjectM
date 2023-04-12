@@ -31,7 +31,7 @@ class DeviceSettings : Fragment() {
     private var param2: String? = null
 
     private lateinit var deviceName: EditText
-    private lateinit var saveNameButton: Button
+    private lateinit var saveName: Button
     private lateinit var locationButton: MaterialSwitch
     private lateinit var notificationsButton: MaterialSwitch
     private lateinit var devicePermissions: CardView
@@ -44,12 +44,13 @@ class DeviceSettings : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        sharedPreferencesManager = SharedPreferencesManager.getInstance(requireContext())
     }
 
     // Listeners for all UI components, called after assigning UI elements.
     private fun mapButtons() {
         //Update user's device name
-        saveNameButton.setOnClickListener {
+        saveName.setOnClickListener {
             val name = deviceName.text.toString()
             sharedPreferencesManager.saveUsername(name)
         }
@@ -98,7 +99,11 @@ class DeviceSettings : Fragment() {
         locationButton = view.findViewById(R.id.locationSwitch)
         notificationsButton = view.findViewById(R.id.notificationsSwitch)
         devicePermissions = view.findViewById(R.id.deviceSettings)
-
+        saveName = view.findViewById(R.id.saveName)
+        deviceName.setText(sharedPreferencesManager.getUsername())
+        locationButton.isChecked = sharedPreferencesManager.getLocationEnabled()
+        // TODO: check notifs to get the state
+        //notificationsButton.isChecked =
         mapButtons()
         // Inflate the layout for this fragment
         return view

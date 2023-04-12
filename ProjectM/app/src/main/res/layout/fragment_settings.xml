@@ -1,57 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/layered_peaks_haikei__6_"
     tools:context=".DeviceSettings">
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
         android:layout_gravity="center"
+        android:divider="@drawable/space_divider"
         android:orientation="vertical"
-        android:showDividers="middle"
-        android:divider="@drawable/space_divider">
+        android:showDividers="middle">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Device name"
+            android:layout_marginEnd="16dp"
+            android:text="   Device name"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:layout_marginEnd="16dp"/>
+            android:textSize="20sp" />
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/settingsDeviceName"
             android:layout_width="360dp"
             android:layout_height="48sp"
             android:layout_gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-
             android:background="@drawable/text_field"
+            android:clickable="true"
             android:ems="10"
+            android:focusable="true"
+            android:textColor="@color/white"
             android:inputType="textPersonName"
             android:paddingStart="8sp"
             android:paddingEnd="8sp"
-            android:text="Device name here"
-            android:textColor="@color/white"
             android:textSize="16sp"
             app:cardCornerRadius="10dp" />
-
         <Button
-            android:id="@+id/saveNameButton"
+            android:id="@+id/saveName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:backgroundTint="#018768"
-            android:text="Save" />
-
-
-
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/white"
+            android:text="Save name" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -75,6 +79,7 @@
                 android:paddingTop="15sp"
                 android:text="Sharing location"
                 android:textAlignment="center"
+                android:background="@color/card_background"
                 android:textColor="@color/design_default_color_on_primary"
                 android:textSize="16sp" />
 
@@ -85,8 +90,8 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="right"
                 android:layout_marginRight="16dp"
-                app:trackDecorationTint="#F4EFF4"
-                android:trackTint="@color/switch_style"/>
+                android:trackTint="@color/switch_style"
+                app:trackDecorationTint="#F4EFF4" />
         </androidx.cardview.widget.CardView>
 
         <TextView
@@ -96,12 +101,13 @@
             android:textAlignment="center"
             android:textColor="#FFFFFF"
             android:textSize="20sp" />
+
         <androidx.cardview.widget.CardView
             android:layout_width="360dp"
             android:layout_height="50dp"
+            android:background="@color/card_background"
             android:layout_gravity="center"
             android:clickable="true"
-            app:cardBackgroundColor="@color/network_inactive"
             app:cardCornerRadius="10dp"
             tools:ignore="ExtraText">
 
@@ -110,6 +116,7 @@
                 android:layout_height="match_parent"
                 android:paddingTop="15sp"
                 android:text="Notifications"
+                android:background="@color/card_background"
                 android:textAlignment="center"
                 android:textColor="@color/design_default_color_on_primary"
                 android:textSize="16sp" />
@@ -125,6 +132,7 @@
                 app:trackDecorationTint="#F4EFF4" />
 
         </androidx.cardview.widget.CardView>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -132,40 +140,39 @@
             android:textAlignment="center"
             android:textColor="#FFFFFF"
             android:textSize="20sp" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/deviceSettings"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:clickable="true"
-            app:cardBackgroundColor="@color/network_inactive"
+            app:cardBackgroundColor="@color/card_background"
             app:cardCornerRadius="10dp"
             tools:ignore="ExtraText">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10sp"
-            android:text="Manage permissions"
-            android:textAlignment="center"
-            android:textColor="@color/design_default_color_on_primary"
-            android:textSize="16sp"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10sp"
+                android:text="       Manage permissions"
+                android:textAlignment="center"
+                android:textColor="@color/design_default_color_on_primary"
+                android:textSize="16sp"
 
-            app:drawableEndCompat="@drawable/arrow_forward_icon"
-            app:drawableTint="#FFFFFF"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="30sp"
-            android:layout_marginBottom="10sp"
-            android:text="This will open device settings"
-            android:textAlignment="center"
-            android:textColor="@color/design_default_color_on_primary"
-            android:textSize="13sp" />
+                app:drawableEndCompat="@drawable/arrow_forward_icon"
+                app:drawableTint="#FFFFFF" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="34sp"
+                android:layout_marginBottom="10sp"
+                android:text="This will open device settings"
+                android:textAlignment="center"
+                android:textColor="@color/design_default_color_on_primary"
+                android:textSize="12sp" />
         </androidx.cardview.widget.CardView>
-
-
     </LinearLayout>
-
-
+    </LinearLayout>
 </RelativeLayout>
