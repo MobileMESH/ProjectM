@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import com.google.android.material.switchmaterial.SwitchMaterial
 import fi.mobilemesh.projectm.utils.SharedPreferencesManager
 import android.provider.Settings
+import com.google.android.material.materialswitch.MaterialSwitch
 
 //import fi.mobilemesh.projectm.OnBoardingActivity
 
@@ -25,15 +25,15 @@ private const val ARG_PARAM2 = "param2"
  * Use the [Device_settings.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Device_settings : Fragment() {
+class DeviceSettings : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
     private lateinit var deviceName: EditText
     private lateinit var saveNameButton: Button
-    private lateinit var locationButton: SwitchMaterial
-    private lateinit var notificationsButton: SwitchMaterial
+    private lateinit var locationButton: MaterialSwitch
+    private lateinit var notificationsButton: MaterialSwitch
     private lateinit var devicePermissions: CardView
 
     private lateinit var sharedPreferencesManager: SharedPreferencesManager
@@ -44,13 +44,12 @@ class Device_settings : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
     }
 
     // Listeners for all UI components, called after assigning UI elements.
     private fun mapButtons() {
         //Update user's device name
-        saveNameButton.setOnClickListener{
+        saveNameButton.setOnClickListener {
             val name = deviceName.text.toString()
             sharedPreferencesManager.saveUsername(name)
         }
@@ -68,7 +67,7 @@ class Device_settings : Fragment() {
 
         }
 
-        notificationsButton.setOnClickListener{
+        notificationsButton.setOnClickListener {
             /* val status = //TODO: Connect to notifications status?
             if (status == false) {
                 // TODO: Notifs on
@@ -78,7 +77,7 @@ class Device_settings : Fragment() {
         }
 
         // Going to the device's permission settings
-        devicePermissions.setOnClickListener{
+        devicePermissions.setOnClickListener {
             val packageName = context?.packageName
             val intent = Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -94,7 +93,7 @@ class Device_settings : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // UI
-        val view =  inflater.inflate(R.layout.fragment_settings, container, false)
+        val view = inflater.inflate(R.layout.fragment_settings, container, false)
         deviceName = view.findViewById(R.id.settingsDeviceName)
         locationButton = view.findViewById(R.id.locationSwitch)
         notificationsButton = view.findViewById(R.id.notificationsSwitch)
@@ -112,12 +111,12 @@ class Device_settings : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment Settings.
+         * @return A new instance of fragment chat.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            Device_settings().apply {
+            DeviceSettings().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
