@@ -16,7 +16,7 @@
         tools:layout="@layout/fragment_networks" />
     <fragment
         android:id="@+id/settings"
-        android:name="fi.mobilemesh.projectm.Settings"
+        android:name="fi.mobilemesh.projectm.Device_settings"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
     <fragment
