@@ -98,10 +98,11 @@ class MainActivity : AppCompatActivity() {
         SharedPreferencesManager.getInstance(applicationContext)
         addIntentFilters()
 
-        // Show the onboarding activity
-        if (isFirstTimeOpeningApp()) {
+        val isOnboardingCompleted = isOnboardingCompleted()
+
+        // Show the onboarding activity if it hasn't been completed
+        if (!isOnboardingCompleted()) {
             showOnboardingActivity()
-            setAppOpenedFlag()
         }
 
         setContentView(R.layout.activity_main)
@@ -179,18 +180,15 @@ class MainActivity : AppCompatActivity() {
         unregisterReceiver(broadcastManager)
     }
 
-    private fun isFirstTimeOpeningApp(): Boolean {
+    private fun isOnboardingCompleted(): Boolean {
         val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
-        return prefs.getBoolean("is_first_time", true)
+        return prefs.getBoolean("is_onboarding_completed", false)
     }
 
     private fun showOnboardingActivity() {
-        startActivity(Intent(this, OnboardingActivity::class.java))
-    }
-
-    private fun setAppOpenedFlag() {
-        val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("is_first_time", false).apply()
+        if (!isOnboardingCompleted()) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+        }
     }
 
     private fun findUiElements() {

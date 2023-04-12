@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -36,7 +37,11 @@ class GettingStarted : Fragment() {
 
     private fun mapButtons() {
         continueButton.setOnClickListener {
-            // Go to the main activity and finish the current activity
+            // Set the onboarding completed flag
+            val prefs = activity?.getSharedPreferences("my_app", Context.MODE_PRIVATE)
+            prefs?.edit()?.putBoolean("is_onboarding_completed", true)?.apply()
+
+            // Go to the main activity and finish the current activity and clear the back stack
             val intent = Intent(activity, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
