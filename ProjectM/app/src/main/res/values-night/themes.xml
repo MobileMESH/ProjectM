@@ -1,17 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.ProjectM" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/main_bars_green</item>
-        <item name="colorPrimaryVariant">@color/background</item>
-        <item name="colorOnPrimary">@color/buttons</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/buttons</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-
-        <!-- Customize your theme here. -->
     </style>
-
+    <style name="Theme.ProjectM.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.ProjectM.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.ProjectM.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

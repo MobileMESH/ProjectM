@@ -40,5 +40,10 @@ class Device (device: WifiP2pDevice) : java.io.Serializable {
     fun getAvailableDevices(): Collection<Device> {
         return availableDevices
     }
+
+    // added to test device list, will be deleted later
+    fun setSharesLocation(sharesLocation: Boolean) {
+        this.sharesLocation = sharesLocation
+    }
 }
 
