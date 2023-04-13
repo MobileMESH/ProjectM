@@ -19,8 +19,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Available"
-            android:textColor="#FFFFFF"
-            android:textColorHighlight="#FFFFFF"
+            android:textColor="@color/white"
+            android:textColorHighlight="@color/white"
             android:textAlignment="center"
             android:padding="10dp"
             android:textSize="20sp" />

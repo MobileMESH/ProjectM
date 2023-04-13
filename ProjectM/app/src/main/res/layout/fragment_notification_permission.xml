@@ -29,7 +29,7 @@
             android:gravity="center"
             android:text="Allow notifications"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#aec2bd"
+            android:textColor="@color/textHint"
             android:textSize="27dp"
             android:textStyle="bold" />
 

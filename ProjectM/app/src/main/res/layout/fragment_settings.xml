@@ -28,9 +28,11 @@
             android:layout_marginEnd="16dp"
             android:text="   Device name"
             android:textAlignment="center"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="20sp" />
 
+        <!-- The text in this component should normally be the device name by default,
+        but added to avoid accessibility issue when there's no existing device name-->
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/settingsDeviceName"
             android:layout_width="360dp"
@@ -40,6 +42,7 @@
             android:clickable="true"
             android:ems="10"
             android:focusable="true"
+            android:text="Enter device name"
             android:textColor="@color/white"
             android:inputType="textPersonName"
             android:paddingStart="8sp"
@@ -61,7 +64,7 @@
             android:layout_height="match_parent"
             android:text="Location"
             android:textAlignment="center"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="20sp" />
 
         <androidx.cardview.widget.CardView
@@ -99,7 +102,7 @@
             android:layout_height="match_parent"
             android:text="Notifications"
             android:textAlignment="center"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="20sp" />
 
         <androidx.cardview.widget.CardView
@@ -138,7 +141,7 @@
             android:layout_height="match_parent"
             android:text="Device permissions"
             android:textAlignment="center"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="20sp" />
 
         <androidx.cardview.widget.CardView
@@ -157,11 +160,10 @@
                 android:layout_marginTop="10sp"
                 android:text="       Manage permissions"
                 android:textAlignment="center"
-                android:textColor="@color/design_default_color_on_primary"
+                android:textColor="@color/white"
                 android:textSize="16sp"
-
                 app:drawableEndCompat="@drawable/arrow_forward_icon"
-                app:drawableTint="#FFFFFF" />
+                app:drawableTint="@color/white" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -170,7 +172,7 @@
                 android:layout_marginBottom="10sp"
                 android:text="This will open device settings"
                 android:textAlignment="center"
-                android:textColor="@color/design_default_color_on_primary"
+                android:textColor="@color/white"
                 android:textSize="12sp" />
         </androidx.cardview.widget.CardView>
     </LinearLayout>

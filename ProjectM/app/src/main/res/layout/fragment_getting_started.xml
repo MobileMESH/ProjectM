@@ -30,7 +30,7 @@
             android:gravity="center"
             android:text="Getting started"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#aec2bd"
+            android:textColor="@color/textHint"
             android:textSize="27dp"
             android:textStyle="bold" />
 
@@ -51,7 +51,7 @@
                 android:gravity="center"
                 android:text="In this application, you can either join a pre-existing network or create a new network to communicate with other users. Joining and creating a network can be done in the network tab opening up next."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="#aec2bd"
+                android:textColor="@color/textHint"
                 android:textSize="18dp" />
 
             <LinearLayout
