@@ -12,7 +12,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:divider="@drawable/space_divider"
+        android:showDividers="middle|beginning">
         <TextView
             android:id="@+id/availableView"
             android:layout_width="wrap_content"
@@ -30,6 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:divider="@drawable/space_divider"
+            android:showDividers="middle"
             android:orientation="vertical"
             android:padding="16sp" />
 
