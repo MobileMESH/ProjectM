@@ -68,7 +68,10 @@
                 android:outlineProvider="bounds"
                 android:paddingStart="20dp"
                 android:shadowColor="#1B1B1B"
-                android:textColorHint="#aec2bd" />
+                android:textColorHint="#aec2bd"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

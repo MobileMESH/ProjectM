@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Allow notifications"
+            android:text="Notifications"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="@color/textHint"
             android:textSize="27dp"
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:gravity="center"
-                android:text="This enables you to receive alerts when you receive messages from other users. You can change this at any time in the settings."
+                android:text="Notifications will allow you to receive alerts when you receive messages from other users. You can adjust your notification preferences anytime in the settings."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="#aec2bd"
                 android:textSize="18dp" />

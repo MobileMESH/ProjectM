@@ -74,23 +74,4 @@ class NotificationPermission : Fragment() {
             )
         }
     }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            OnboardingActivity.NOTIFICATION_REQUEST_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission granted
-                } else {
-                    // Permission denied
-                }
-            }
-            else -> {
-                // Ignore all other requests
-            }
-        }
-    }
 }

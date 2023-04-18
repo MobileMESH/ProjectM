@@ -9,12 +9,13 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
-import fi.mobilemesh.projectm.network.BroadcastManager
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.utils.SharedPreferencesManager
+import fi.mobilemesh.projectm.utils.MakeNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -97,12 +98,11 @@ class MainActivity : AppCompatActivity() {
         SharedPreferencesManager.getInstance(applicationContext)
         addIntentFilters()
 
-        // Show the onboarding activity
-        if (isFirstTimeOpeningApp()) {
+        // Show the onboarding activity if it hasn't been completed
+        if (!isOnboardingCompleted()) {
             showOnboardingActivity()
-            setAppOpenedFlag()
         }
-        
+
         setContentView(R.layout.activity_main)
 
         // moved this to Onboarding
@@ -113,7 +113,6 @@ class MainActivity : AppCompatActivity() {
         //mapButtons()
         listenNavigation()
 
-
         // Message database (Data Access Object)
         val dao = MessageDatabase.getInstance(this).dao
         CoroutineScope(Dispatchers.Main).launch {
@@ -121,6 +120,13 @@ class MainActivity : AppCompatActivity() {
             //  implemented
             dao.insertChatGroup(ChatGroup(0))
         }
+
+
+        //Notification
+        val notificationHelper = MakeNotification(this)
+        val intent = Intent(this, MainActivity::class.java)
+        notificationHelper.showNotification("Anything", "You got it!", intent)
+
 
     }
 
@@ -172,18 +178,15 @@ class MainActivity : AppCompatActivity() {
         unregisterReceiver(broadcastManager)
     }
 
-    private fun isFirstTimeOpeningApp(): Boolean {
+    private fun isOnboardingCompleted(): Boolean {
         val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
-        return prefs.getBoolean("is_first_time", true)
+        return prefs.getBoolean("is_onboarding_completed", false)
     }
 
     private fun showOnboardingActivity() {
-        startActivity(Intent(this, OnboardingActivity::class.java))
-    }
-
-    private fun setAppOpenedFlag() {
-        val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("is_first_time", false).apply()
+        if (!isOnboardingCompleted()) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+        }
     }
 
     private fun findUiElements() {
@@ -213,6 +216,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun switchFragment(target: Class<*>) {
         val f: Fragment = target.newInstance() as Fragment
         val fm = supportFragmentManager
@@ -220,7 +224,6 @@ class MainActivity : AppCompatActivity() {
         transaction.replace(R.id.fragmentContainerView, f)
         transaction.commit()
     }
-
 
     private fun addIntentFilters() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION)
