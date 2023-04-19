@@ -8,11 +8,13 @@
     android:orientation="vertical"
     tools:context=".Networks">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="25dp"
+        android:paddingRight="25dp">
 
         <TextView
             android:id="@+id/availableView"
@@ -20,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:padding="10dp"
-            android:text="Create a network"
+            android:text="Name the network"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="20sp" />
@@ -32,34 +34,41 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:textSize="17sp"
-            android:text="Select one device to create a network with.  After creating the network, others can join it."
+            android:text="Select a name for the network. This cannot be changed later."
             android:textColor="#FFFFFF"
             android:textColorHighlight="#FFFFFF"
             android:textColorLink="#FFFFFF" />
 
-        <LinearLayout
-            android:id="@+id/deviceList"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/deviceName"
+            style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:padding="16sp" >
-        </LinearLayout>
+            android:layout_height="70dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/borders"
+            android:clickable="true"
+            android:gravity="center|start"
+            android:hint="@string/network_name"
+            android:textColor="@color/white"
+            android:outlineProvider="bounds"
+            android:paddingStart="20dp"
+            android:shadowColor="#1B1B1B"
+            android:textColorHint="#aec2bd" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:paddingTop="20dp">
+            android:paddingTop="30dp">
 
             <Button
-                android:id="@+id/cancelButton"
+                android:id="@+id/backButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginStart="10dp"
                 android:backgroundTint="@color/buttons"
-                android:text="Cancel"
+                android:text="Back"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -69,13 +78,13 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
-                android:id="@+id/createButton"
+                android:id="@+id/finishButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginEnd="10dp"
                 android:backgroundTint="@color/buttons"
-                android:text="Create"
+                android:text="Finish"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -86,5 +95,4 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
-
 </RelativeLayout>
