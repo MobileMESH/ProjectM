@@ -13,16 +13,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/availableView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Available"
-            android:textColor="@color/white"
-            android:textAlignment="center"
             android:padding="10dp"
+            android:text="Create a network"
+            android:textAlignment="center"
+            android:textColor="@color/white"
             android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Select one device to create a network with.  After creating a network, others can join it."
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="#FFFFFF"
+            android:textColorLink="#FFFFFF" />
 
         <LinearLayout
             android:id="@+id/deviceList"
@@ -30,7 +42,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical"
-            android:padding="16sp" />
+            android:padding="16sp" >
+        </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
