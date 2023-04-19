@@ -116,12 +116,12 @@ class MainActivity : AppCompatActivity() {
         addIntentFilters()
 
         // Message database (Data Access Object)
-        val dao = MessageDatabase.getInstance(this).dao
+        /*val dao = MessageDatabase.getInstance(this).dao
         CoroutineScope(Dispatchers.Main).launch {
             // TODO: Placeholder chat group for tests. Should be replaced when chat groups are
             //  implemented
             dao.insertChatGroup(ChatGroup(meshManager.getTestGroupId()))
-        }
+        }*/
 
         //Notification
         /*val notificationHelper = MakeNotification(this)

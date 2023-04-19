@@ -1,6 +1,5 @@
 package fi.mobilemesh.projectm
 
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -12,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
-
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -106,7 +104,8 @@ class Chat : Fragment() {
      */
     // TODO: Don't reload all messages...
     private fun observeLiveMessages() {
-        dao.getLiveChatGroupMessages(meshManager.getTestGroupId()).observe(viewLifecycleOwner) {
+        val id = MeshManager.activeNetworkId ?: return
+        dao.getLiveChatGroupMessages(id).observe(viewLifecycleOwner) {
             receivingField.removeAllViews()
             loadAllMessages()
         }
@@ -120,7 +119,7 @@ class Chat : Fragment() {
     private suspend fun sendMessage(text: String) {
         if (!isMessageValid(text)) return
 
-        val networkId = meshManager.getTestGroupId()
+        val networkId = MeshManager.activeNetworkId ?: return
         // TODO: Get chat group id, this just gets a random one for testing
         val sender = broadcastManager.getThisDevice().getName()
         val time = Date(System.currentTimeMillis())
@@ -228,8 +227,9 @@ class Chat : Fragment() {
     // TODO: Implement loading messages of particular chat group (pretty much
     //  only one extra parameter needed)
     private fun loadAllMessages() {
+        val id = MeshManager.activeNetworkId ?: return
         CoroutineScope(Dispatchers.Main).launch {
-            val messages = dao.getChatGroupMessages(meshManager.getTestGroupId())
+            val messages = dao.getChatGroupMessages(id)
             messages.forEach {
                 val messageType = if (it.isOwnMessage) R.drawable.outgoing_bubble
                     else R.drawable.incoming_bubble

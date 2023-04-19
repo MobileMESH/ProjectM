@@ -1,7 +1,14 @@
 package fi.mobilemesh.projectm.network
 
 import android.content.Context
+import fi.mobilemesh.projectm.database.MessageDatabase
+import fi.mobilemesh.projectm.database.MessageQueries
+import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.database.entities.Message
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.*
 
 /**
  * handles the management of discovered devices,
@@ -10,6 +17,8 @@ import fi.mobilemesh.projectm.database.entities.Message
 class MeshManager {
     companion object {
         private var INSTANCE: MeshManager? = null
+        private lateinit var dao: MessageQueries
+        var activeNetworkId: String? = null
 
         fun getInstance(context: Context): MeshManager {
             synchronized(this) {
@@ -17,6 +26,7 @@ class MeshManager {
                     .also {
                         INSTANCE = it
                         it.broadcastManager = BroadcastManager.getInstance(context)
+                        dao = MessageDatabase.getInstance(context).dao
                     }
             }
         }
@@ -30,9 +40,9 @@ class MeshManager {
      * Returns the first network/chat group id available for us. Testing only
      * @return id of the first network we have available
      */
-    fun getTestGroupId(): String {
+    /*fun getTestGroupId(): String {
         return "TEST_GROUP"
-    }
+    }*/
 
     /**
      * Relays given data forward in the network, avoiding sending it to devices it has
@@ -49,7 +59,7 @@ class MeshManager {
         val networkId = when (data) {
             is Message -> data.chatGroupId
             is Network -> data.id
-            else -> getTestGroupId()
+            else -> null
         }
 
         val network = currentNetworks[networkId] ?: return
@@ -74,8 +84,12 @@ class MeshManager {
      * initiating the creation, and should be set if receiving creation request
      */
     fun createNetwork(other: Device) {
-        //val newNetworkId = UUID.randomUUID().toString()
-        val newNetworkId = getTestGroupId() // TODO: Test purposes
+        val newNetworkId = UUID.randomUUID().toString()
+        //val newNetworkId = getTestGroupId() // TODO: Test purposes
+
+        CoroutineScope(Dispatchers.IO).launch {
+            dao.insertChatGroup(ChatGroup(newNetworkId))
+        }
 
         if (currentNetworks[newNetworkId] == null) {
             currentNetworks[newNetworkId] = mutableSetOf()
@@ -88,6 +102,7 @@ class MeshManager {
             println("C ${it.getName()}")
         }
 
+        activeNetworkId = newNetworkId
         addToNetwork(other, newNetworkId)
     }
 
@@ -97,7 +112,8 @@ class MeshManager {
      * @param other [Device] to add to the network
      * @param id unique id of the network to add the device to
      */
-    fun addToNetwork(other: Device, id: String=getTestGroupId()) {
+    fun addToNetwork(other: Device, id: String?) {
+        if (id == null) return
         val currentNetwork = currentNetworks[id] ?: return
         // If the device is already in the network, no need to send information about it again
         if (!currentNetwork.add(other)) return
@@ -107,7 +123,7 @@ class MeshManager {
     }
 
     /**
-     * Joins this device to
+     * Joins this device to the given network
      */
     fun joinNetwork(network: Network) {
         val id = network.id
@@ -118,6 +134,12 @@ class MeshManager {
         currentNetworks[id]?.addAll(devices)
         println("JOIN $currentNetworks")
         currentNetworks[id]?.forEach {println("J ${it.getName()}")}
+
+        CoroutineScope(Dispatchers.IO).launch {
+            dao.insertChatGroup(ChatGroup(id))
+        }
+
+        activeNetworkId = id
     }
 
     /**

@@ -94,7 +94,7 @@ class Networks : Fragment() {
         }
         addButton.setOnClickListener {
             if (selectedDevice != null) {
-                meshManager.addToNetwork(selectedDevice!!)
+                meshManager.addToNetwork(selectedDevice!!, MeshManager.activeNetworkId)
             }
         }
     }
