@@ -29,6 +29,7 @@ class MeshManager {
                         ins.broadcastManager = BroadcastManager.getInstance(context)
                         dao = MessageDatabase.getInstance(context).dao
 
+                        // Loads networks/chat groups from the database
                         CoroutineScope(Dispatchers.IO).launch {
                             ins.currentNetworks = dao.getChatGroups()
                                 .associateBy({it.chatGroupId}, {it})
@@ -40,15 +41,7 @@ class MeshManager {
     }
 
     private lateinit var broadcastManager: BroadcastManager
-    private lateinit var currentNetworks: MutableMap<String, ChatGroup>
-
-    /**
-     * Returns the first network/chat group id available for us. Testing only
-     * @return id of the first network we have available
-     */
-    /*fun getTestGroupId(): String {
-        return "TEST_GROUP"
-    }*/
+    lateinit var currentNetworks: MutableMap<String, ChatGroup>
 
     /**
      * Relays given data forward in the network, avoiding sending it to devices it has

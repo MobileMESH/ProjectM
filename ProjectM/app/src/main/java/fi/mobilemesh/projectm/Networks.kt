@@ -1,7 +1,6 @@
 package fi.mobilemesh.projectm
 
 import android.graphics.Color
-import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,10 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.network.Device
 import fi.mobilemesh.projectm.network.MeshManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.ref.WeakReference
 
 // TODO: Rename parameter arguments, choose names that match
 //  the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -42,9 +38,10 @@ class Networks : Fragment() {
 
     // UI
     private lateinit var availableView: TextView
-    //private lateinit var networkList: LinearLayout
+    private lateinit var networkList: LinearLayout
     private lateinit var nodeList: LinearLayout
     private lateinit var createNetworkButton: Button
+    private lateinit var selectNetworkButton: Button
 
     private lateinit var addButton: Button
 
@@ -69,7 +66,7 @@ class Networks : Fragment() {
         //networkList = view.findViewById(R.id.networkList)
         nodeList = view.findViewById(R.id.nodeList)
         createNetworkButton = view.findViewById(R.id.button)
-        addButton = view.findViewById(R.id.addButton)
+        addButton = view.findViewById(R.id.selectNetworkButton)
 
         mapButtons()
 
@@ -83,6 +80,16 @@ class Networks : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //TODO: TMP
+        meshManager.currentNetworks.forEach {
+            val btn = Button(view.context)
+            btn.text = it.value.groupName
+            btn.setOnClickListener {_ ->
+                MeshManager.activeNetworkId = it.key
+            }
+        }
+
         refreshDeviceCards()
     }
 
@@ -97,6 +104,7 @@ class Networks : Fragment() {
                 meshManager.addToNetwork(selectedDevice!!, MeshManager.activeNetworkId)
             }
         }
+
     }
 
     private fun observeNearbyDevices() {
