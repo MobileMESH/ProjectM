@@ -24,18 +24,23 @@ class MeshManager {
         fun getInstance(context: Context): MeshManager {
             synchronized(this) {
                 return INSTANCE ?: MeshManager()
-                    .also {
-                        INSTANCE = it
-                        it.broadcastManager = BroadcastManager.getInstance(context)
+                    .also { ins ->
+                        INSTANCE = ins
+                        ins.broadcastManager = BroadcastManager.getInstance(context)
                         dao = MessageDatabase.getInstance(context).dao
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            ins.currentNetworks = dao.getChatGroups()
+                                .associateBy({it.chatGroupId}, {it})
+                                    as MutableMap<String, ChatGroup>
+                        }
                     }
             }
         }
     }
 
     private lateinit var broadcastManager: BroadcastManager
-    // Networks we have joined (TODO: Save somewhere, currently runtime only)
-    private val currentNetworks: MutableMap<String, ChatGroup> = mutableMapOf()
+    private lateinit var currentNetworks: MutableMap<String, ChatGroup>
 
     /**
      * Returns the first network/chat group id available for us. Testing only

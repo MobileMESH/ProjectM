@@ -18,6 +18,12 @@ interface MessageQueries {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChatGroup(chatGroup: ChatGroup)
 
+    @Transaction
+    @Query("""
+        SELECT * FROM chatgroup
+        """)
+    suspend fun getChatGroups(): List<ChatGroup>
+
     /**
      * Inserts a single message into the database, replacing existing one in case of conflicts
      * @param message Message object to insert
@@ -32,13 +38,17 @@ interface MessageQueries {
      * @return list of messages within chat group table
      */
     @Transaction
-    @Query("""SELECT m.chatGroupId, sender, timestamp, body, isOwnMessage 
+    @Query("""
+        SELECT m.chatGroupId, sender, timestamp, body, isOwnMessage 
         FROM chatgroup AS c JOIN message AS m ON c.chatGroupId = m.chatGroupId 
-        WHERE m.chatGroupId = :chatGroupId""")
+        WHERE m.chatGroupId = :chatGroupId
+        """)
     suspend fun getChatGroupMessages(chatGroupId: String): List<Message>
 
-    @Query("""SELECT m.chatGroupId, sender, timestamp, body, isOwnMessage 
+    @Query("""
+        SELECT m.chatGroupId, sender, timestamp, body, isOwnMessage 
         FROM chatgroup AS c JOIN message AS m ON c.chatGroupId = m.chatGroupId 
-        WHERE m.chatGroupId = :chatGroupId""")
+        WHERE m.chatGroupId = :chatGroupId
+        """)
     fun getLiveChatGroupMessages(chatGroupId: String): LiveData<List<Message>>
 }
