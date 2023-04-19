@@ -32,7 +32,6 @@ class DeviceSettings : Fragment() {
 
     private lateinit var deviceName: EditText
     private lateinit var saveName: Button
-    private lateinit var locationButton: MaterialSwitch
     private lateinit var notificationsButton: MaterialSwitch
     private lateinit var devicePermissions: CardView
 
@@ -53,19 +52,6 @@ class DeviceSettings : Fragment() {
         saveName.setOnClickListener {
             val name = deviceName.text.toString()
             sharedPreferencesManager.saveUsername(name)
-        }
-
-        // Change SharedPreferences for location and notifications on switch click
-        locationButton.setOnCheckedChangeListener { buttonView, isChecked ->
-            val isEnabled = sharedPreferencesManager.getLocationEnabled()
-            if (!isEnabled) {
-                sharedPreferencesManager.setLocationEnabled(true)
-
-            } else {
-                sharedPreferencesManager.setLocationEnabled(false)
-                locationButton.isChecked = false
-            }
-
         }
 
         notificationsButton.setOnClickListener {
@@ -96,12 +82,10 @@ class DeviceSettings : Fragment() {
         // UI
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
         deviceName = view.findViewById(R.id.settingsDeviceName)
-        locationButton = view.findViewById(R.id.locationSwitch)
         notificationsButton = view.findViewById(R.id.notificationsSwitch)
         devicePermissions = view.findViewById(R.id.deviceSettings)
         saveName = view.findViewById(R.id.saveName)
         deviceName.setText(sharedPreferencesManager.getUsername())
-        locationButton.isChecked = sharedPreferencesManager.getLocationEnabled()
         // TODO: check notifs to get the state
         //notificationsButton.isChecked =
         mapButtons()
