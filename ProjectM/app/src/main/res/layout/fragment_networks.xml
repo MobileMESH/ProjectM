@@ -63,6 +63,8 @@
                 android:text="Create a new network"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
+
         </LinearLayout>
     </LinearLayout>
+
 </RelativeLayout>

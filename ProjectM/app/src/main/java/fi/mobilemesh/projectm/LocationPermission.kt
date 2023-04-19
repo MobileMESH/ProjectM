@@ -64,7 +64,7 @@ class LocationPermission : Fragment() {
     }
 
     private fun nextFragment() {
-        val fragment = LocationSharing()
+        val fragment = NotificationPermission()
         val transaction = parentFragmentManager.beginTransaction()
         transaction.replace(R.id.fragmentContainerView2, fragment)
         transaction.addToBackStack(null)

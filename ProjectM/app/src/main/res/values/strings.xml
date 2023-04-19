@@ -13,8 +13,10 @@
     <string name="previous">Previous</string>
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="chat_disconnect_msg">You are not connected to any device. \n Connect to start chatting.</string>
-    <string name="network_name">Network name</string>
+    <string name="chat_disconnect_msg">You are not connected to any network. \n Connect to start chatting.</string>
+    <string name="to_details">View network details</string>
+    <string name="back_to_chat">Back to chat</string>
     <string name="network_description"></string>
     <string name="device_name">Your device</string>
+    <string name="device_name_here">Device name here</string>
 </resources>

@@ -11,5 +11,5 @@ import androidx.room.PrimaryKey
 @Entity
 data class ChatGroup(
     @PrimaryKey(autoGenerate = false)
-    val chatGroupId: Int
+    val chatGroupId: String
 )

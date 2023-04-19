@@ -27,7 +27,7 @@
                 android:clickable="true"
                 android:enabled="false"
                 android:gravity="center"
-                android:text="@string/network_name"
+                android:text="@string/to_details"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/white"
                 android:textColorHighlight="#FFFFFF"
