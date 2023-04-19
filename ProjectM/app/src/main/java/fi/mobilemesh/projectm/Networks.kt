@@ -73,12 +73,7 @@ class Networks : Fragment() {
 
         mapButtons()
 
-        lifecycleScope.launch { observeNearbyDevices() }
-
-        createNetworkButton.setOnClickListener {
-            // switch to Create
-            (parentFragment as ContainerFragmentNetworks).switchFragment(CreateNetwork::class.java)
-        }
+        // lifecycleScope.launch { observeNearbyDevices() }
 
         return view
     }
@@ -88,22 +83,23 @@ class Networks : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        refreshDeviceCards()
+        //refreshDeviceCards()
     }
 
     private fun mapButtons() {
         createNetworkButton.setOnClickListener {
-            if (selectedDevice != null) {
-                meshManager.createNetwork(selectedDevice!!)
-            }
+            // switch to Create
+            (parentFragment as ContainerFragmentNetworks).switchFragment(CreateNetwork::class.java)
         }
-        addButton.setOnClickListener {
+        // TODO: add join button
+        /*addButton.setOnClickListener {
             if (selectedDevice != null) {
                 meshManager.addToNetwork(selectedDevice!!, MeshManager.activeNetworkId)
             }
-        }
+        }*/
     }
 
+    /*
     private fun observeNearbyDevices() {
         broadcastManager.getLiveNearbyDevices().observe(viewLifecycleOwner) { list ->
             if (!list.any { it == selectedDevice }) selectedDevice = null
@@ -137,7 +133,7 @@ class Networks : Fragment() {
         }
 
         nodeList.addView(btn)
-    }
+    }*/
 
     companion object {
         /**
@@ -158,4 +154,5 @@ class Networks : Fragment() {
                 }
             }
     }
+
 }

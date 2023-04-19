@@ -213,7 +213,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.networks-> {
-                    switchFragment(Networks::class.java)
+                    switchFragment(ContainerFragmentNetworks::class.java)
                     true
                 }
                 else -> false
