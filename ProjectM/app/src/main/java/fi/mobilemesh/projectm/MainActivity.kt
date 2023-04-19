@@ -1,5 +1,7 @@
 package fi.mobilemesh.projectm
 
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.wifi.p2p.WifiP2pManager
 import androidx.appcompat.app.AppCompatActivity
@@ -7,13 +9,14 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
-import fi.mobilemesh.projectm.network.BroadcastManager
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.network.MeshManager
 import fi.mobilemesh.projectm.utils.SharedPreferencesManager
+import fi.mobilemesh.projectm.utils.MakeNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,9 +93,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initializing handlers and such
+        MessageDatabase.getInstance(applicationContext)
+        broadcastManager = BroadcastManager.getInstance(applicationContext)
+        SharedPreferencesManager.getInstance(applicationContext)
+        addIntentFilters()
+
+        // Show the onboarding activity if it hasn't been completed
+        if (!isOnboardingCompleted()) {
+            showOnboardingActivity()
+        }
+
         setContentView(R.layout.activity_main)
 
-        requestPermissions()
+        // moved this to Onboarding
+        //requestPermissions()
 
         //UI
         findUiElements()
@@ -114,7 +130,16 @@ class MainActivity : AppCompatActivity() {
             dao.insertChatGroup(ChatGroup(meshManager.getTestGroupId()))
         }
 
+
+        //Notification
+        val notificationHelper = MakeNotification(this)
+        val intent = Intent(this, MainActivity::class.java)
+        notificationHelper.showNotification("Anything", "You got it!", intent)
+
+
     }
+
+    /*
     private fun requestPermissions() {
 
         val permissionsToRequest = mutableListOf<String>()
@@ -150,6 +175,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    */
 
     override fun onResume() {
         super.onResume()
@@ -161,9 +187,18 @@ class MainActivity : AppCompatActivity() {
         unregisterReceiver(broadcastManager)
     }
 
+    private fun isOnboardingCompleted(): Boolean {
+        val prefs = getSharedPreferences("my_app", Context.MODE_PRIVATE)
+        return prefs.getBoolean("is_onboarding_completed", false)
+    }
+
+    private fun showOnboardingActivity() {
+        if (!isOnboardingCompleted()) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+        }
+    }
+
     private fun findUiElements() {
-        // deviceList = findViewById(R.id.deviceList)
-        // statusField = findViewById(R.id.statusField)
         navigationBar = findViewById(R.id.navigationBar)
         //networkDetails = findViewById(R.id.networkDetails)
     }
@@ -175,11 +210,11 @@ class MainActivity : AppCompatActivity() {
         navigationBar.setOnItemSelectedListener{ item ->
             when(item.itemId) {
                 R.id.settings -> {
-                    switchFragment(Settings::class.java)
+                    switchFragment(DeviceSettings::class.java)
                     true
                 }
                 R.id.chat -> {
-                    switchFragment(Chat::class.java)
+                    switchFragment(ContainerFragmentChat::class.java)
                     true
                 }
                 R.id.networks-> {

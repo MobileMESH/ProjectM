@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/settings"
+        android:id="@+id/networks"
         android:enabled="true"
-        android:icon="@drawable/settings_icon"
-        android:title="@string/text_label_1"/>
-
+        android:icon="@drawable/networks_icon"
+        android:title="@string/text_label_3"/>
     <item
         android:id="@+id/chat"
         android:enabled="true"
         android:icon="@drawable/message_icon"
         android:title="@string/text_label_2"/>
     <item
-        android:id="@+id/networks"
+        android:id="@+id/settings"
         android:enabled="true"
-        android:icon="@drawable/networks_icon"
-        android:title="@string/text_label_3"/>
+        android:icon="@drawable/settings_icon"
+        android:title="@string/text_label_1"/>
 </menu>

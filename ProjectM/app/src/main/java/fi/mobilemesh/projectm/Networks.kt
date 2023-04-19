@@ -42,11 +42,11 @@ class Networks : Fragment() {
 
     // UI
     private lateinit var availableView: TextView
-    private lateinit var networkList: LinearLayout
+    //private lateinit var networkList: LinearLayout
     private lateinit var nodeList: LinearLayout
     private lateinit var createNetworkButton: Button
 
-    private lateinit var addButton: Button
+    //private lateinit var addButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,10 +66,10 @@ class Networks : Fragment() {
         meshManager = MeshManager.getInstance(view.context)
 
         availableView = view.findViewById(R.id.availableView)
-        networkList = view.findViewById(R.id.networkList)
-        nodeList = view.findViewById(R.id.deviceList)
+        //networkList = view.findViewById(R.id.networkList)
+        nodeList = view.findViewById(R.id.nodeList)
         createNetworkButton = view.findViewById(R.id.button)
-        addButton = view.findViewById(R.id.addButton)
+        //addButton = view.findViewById(R.id.addButton)
 
         mapButtons()
 
@@ -92,11 +92,11 @@ class Networks : Fragment() {
                 meshManager.createNetwork(selectedDevice!!)
             }
         }
-        addButton.setOnClickListener {
+        /*addButton.setOnClickListener {
             if (selectedDevice != null) {
                 meshManager.addToNetwork(selectedDevice!!)
             }
-        }
+        }*/
     }
 
     private fun observeNearbyDevices() {
@@ -111,7 +111,7 @@ class Networks : Fragment() {
      */
     private fun refreshDeviceCards() {
         if (view?.context != null) {
-            networkList.removeAllViews()
+            nodeList.removeAllViews()
             broadcastManager.getNearbyDevices().forEach { createCardViewLayout(it) }
         }
     }
@@ -131,7 +131,7 @@ class Networks : Fragment() {
             selectedDevice = device
         }
 
-        networkList.addView(btn)
+        nodeList.addView(btn)
     }
 
     companion object {

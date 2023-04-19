@@ -1,10 +1,13 @@
 package fi.mobilemesh.projectm
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -13,13 +16,16 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [Settings.newInstance] factory method to
+ * Use the [GettingStarted.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Settings : Fragment() {
+class GettingStarted : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    lateinit var continueButton: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +35,32 @@ class Settings : Fragment() {
         }
     }
 
+    private fun mapButtons() {
+        continueButton.setOnClickListener {
+            // Set the onboarding completed flag
+            val prefs = activity?.getSharedPreferences("my_app", Context.MODE_PRIVATE)
+            prefs?.edit()?.putBoolean("is_onboarding_completed", true)?.apply()
+
+            // Go to the main activity and finish the current activity and clear the back stack
+            val intent = Intent(activity, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+            activity?.finish()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+        val view = inflater.inflate(R.layout.fragment_getting_started, container, false)
+
+        continueButton = view.findViewById(R.id.continueButton)
+
+        mapButtons()
+
+        return view
     }
 
     companion object {
@@ -44,12 +70,12 @@ class Settings : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment Settings.
+         * @return A new instance of fragment ask_creating.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            Settings().apply {
+            GettingStarted().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
