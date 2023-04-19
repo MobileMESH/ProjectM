@@ -10,6 +10,7 @@ import android.os.Build
 import androidx.lifecycle.MutableLiveData
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
+import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.database.entities.Message
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
@@ -317,7 +318,7 @@ class BroadcastManager(
                     dao.insertMessage(data)
                 }
 
-                is Network -> {
+                is ChatGroup -> {
                     meshManager.joinNetwork(data)
                 }
             }

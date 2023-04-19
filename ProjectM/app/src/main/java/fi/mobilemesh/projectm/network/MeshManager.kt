@@ -4,6 +4,7 @@ import android.content.Context
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.ChatGroup
+import fi.mobilemesh.projectm.database.entities.DeviceSet
 import fi.mobilemesh.projectm.database.entities.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,7 @@ class MeshManager {
 
     private lateinit var broadcastManager: BroadcastManager
     // Networks we have joined (TODO: Save somewhere, currently runtime only)
-    private val currentNetworks: MutableMap<String, MutableSet<Device>> = mutableMapOf()
+    private val currentNetworks: MutableMap<String, ChatGroup> = mutableMapOf()
 
     /**
      * Returns the first network/chat group id available for us. Testing only
@@ -58,7 +59,7 @@ class MeshManager {
 
         val networkId = when (data) {
             is Message -> data.chatGroupId
-            is Network -> data.id
+            is ChatGroup -> data.chatGroupId
             else -> null
         }
 
@@ -68,7 +69,7 @@ class MeshManager {
         // Valid devices are both in range (available) and within the selected network,
         // but not in the devices the message has been sent to
 
-        val validDevices = network.filterNot { it in alreadySent }
+        val validDevices = network.deviceSet.devices.filterNot { it in alreadySent }
 
         alreadySent.addAll(validDevices)
 
@@ -83,22 +84,24 @@ class MeshManager {
      * @param other the other [Device] to create this group with
      * initiating the creation, and should be set if receiving creation request
      */
-    fun createNetwork(other: Device) {
+    fun createNetwork(other: Device, name: String="Test Group Name") {
         val newNetworkId = UUID.randomUUID().toString()
         //val newNetworkId = getTestGroupId() // TODO: Test purposes
 
+        val network = ChatGroup(newNetworkId, name, DeviceSet(mutableSetOf()))
+
         CoroutineScope(Dispatchers.IO).launch {
-            dao.insertChatGroup(ChatGroup(newNetworkId))
+            dao.insertChatGroup(network)
         }
 
         if (currentNetworks[newNetworkId] == null) {
-            currentNetworks[newNetworkId] = mutableSetOf()
+            currentNetworks[newNetworkId] = network
         }
         val own = broadcastManager.getThisDevice()
-        currentNetworks[newNetworkId]?.add(own)
+        currentNetworks[newNetworkId]?.deviceSet?.devices?.add(own)
 
         println("CREATE $currentNetworks")
-        currentNetworks[newNetworkId]?.forEach {
+        currentNetworks[newNetworkId]?.deviceSet?.devices?.forEach {
             println("C ${it.getName()}")
         }
 
@@ -116,27 +119,26 @@ class MeshManager {
         if (id == null) return
         val currentNetwork = currentNetworks[id] ?: return
         // If the device is already in the network, no need to send information about it again
-        if (!currentNetwork.add(other)) return
-        val network = Network(id, currentNetwork)
+        if (!currentNetwork.deviceSet.devices.add(other)) return
 
-        relayForward(network)
+        relayForward(currentNetwork)
     }
 
     /**
      * Joins this device to the given network
      */
-    fun joinNetwork(network: Network) {
-        val id = network.id
-        val devices = network.devices
+    fun joinNetwork(network: ChatGroup) {
+        val id = network.chatGroupId
+        val devices = network.deviceSet.devices
         if (currentNetworks[id] == null) {
-            currentNetworks[id] = mutableSetOf()
+            currentNetworks[id] = network
         }
-        currentNetworks[id]?.addAll(devices)
+        currentNetworks[id]?.deviceSet?.devices?.addAll(devices)
         println("JOIN $currentNetworks")
-        currentNetworks[id]?.forEach {println("J ${it.getName()}")}
+        currentNetworks[id]?.deviceSet?.devices?.forEach {println("J ${it.getName()}")}
 
         CoroutineScope(Dispatchers.IO).launch {
-            dao.insertChatGroup(ChatGroup(id))
+            dao.insertChatGroup(network)
         }
 
         activeNetworkId = id
