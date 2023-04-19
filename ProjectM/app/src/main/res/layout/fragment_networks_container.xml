@@ -5,4 +5,8 @@
     android:layout_height="match_parent"
     android:id="@+id/NetworksContainerFragment"
     tools:context=".ContainerFragmentNetworks">
+
+    <include layout="@layout/fragment_create_network" />
+    <include layout="@layout/fragment_name_network" />
+
 </FrameLayout>

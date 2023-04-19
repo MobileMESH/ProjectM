@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Available networks"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/white"
         android:textAlignment="center"
         android:padding="10dp"
         android:textSize="20sp" />

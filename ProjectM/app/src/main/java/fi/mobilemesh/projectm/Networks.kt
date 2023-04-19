@@ -74,10 +74,6 @@ class Networks : Fragment() {
 
         createNetworkButton = view.findViewById(R.id.createNetworkButton)
         joinButton = view.findViewById(R.id.joinButton)
-        createNetworkButton.setOnClickListener {
-            // switch to Create
-            (parentFragment as ContainerFragmentNetworks).switchFragment(CreateNetwork::class.java)
-        }
 
         mapButtons()
 

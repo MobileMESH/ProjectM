@@ -40,7 +40,7 @@
             android:textColorLink="#FFFFFF" />
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/deviceName"
+            android:id="@+id/networkName"
             style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="70dp"
