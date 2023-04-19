@@ -19,4 +19,5 @@
     <color name="card_background">#404040</color>
     <color name="white">#FFFFFFFF</color>
     <color name="devicelist_text">#BCBCBC</color>
+    <color name="textHint">#aec2bd</color>
 </resources>

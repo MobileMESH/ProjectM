@@ -29,7 +29,7 @@
             android:gravity="center"
             android:text="Allow access to location"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#aec2bd"
+            android:textColor="@color/textHint"
             android:textSize="27dp"
             android:textStyle="bold" />
 
@@ -50,7 +50,7 @@
                 android:gravity="center"
                 android:text="This enables features like sharing your location and finding others in your network. Tap continue to grant location permissions."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="#aec2bd"
+                android:textColor="@color/textHint"
                 android:textSize="18dp" />
 
             <LinearLayout

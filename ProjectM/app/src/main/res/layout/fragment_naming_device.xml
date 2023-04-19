@@ -30,7 +30,7 @@
             android:gravity="center"
             android:text="Name your device"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#aec2bd"
+            android:textColor="@color/textHint"
             android:textSize="27dp"
             android:textStyle="bold" />
 
@@ -51,7 +51,7 @@
                 android:gravity="center"
                 android:text="Enter a name for your device. The name can be changed later in the settings."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="#aec2bd"
+                android:textColor="@color/textHint"
                 android:textSize="18dp" />
 
             <com.google.android.material.textfield.TextInputEditText

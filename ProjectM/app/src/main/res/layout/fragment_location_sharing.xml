@@ -30,7 +30,7 @@
             android:gravity="center"
             android:text="Share your location"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#aec2bd"
+            android:textColor="@color/textHint"
             android:textSize="27dp"
             android:textStyle="bold" />
 
@@ -51,7 +51,7 @@
                 android:gravity="center"
                 android:text="Sharing your location will allow other members in the same network to see where you are. You can change this at any time in the settings."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="#aec2bd"
+                android:textColor="@color/textHint"
                 android:textSize="18dp" />
 
             <LinearLayout
