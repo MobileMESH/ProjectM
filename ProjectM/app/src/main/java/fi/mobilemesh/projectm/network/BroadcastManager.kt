@@ -346,6 +346,14 @@ class BroadcastManager(
         val success = connectionLatch.await(TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
 
         if (!success) {
+            connectionLatch = CountDownLatch(0)
+
+            val first = requestQueue.removeFirstOrNull()
+            if (first != null) {
+                println("QUEUE DELAY ${first.data}")
+                requestQueue.addLast(first)
+            }
+
             wifiManager.cancelConnect(channel, null)
             resetConnection()
             isConnectionFree = true
