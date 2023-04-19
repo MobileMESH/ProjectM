@@ -11,9 +11,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.forEach
 import androidx.lifecycle.lifecycleScope
+import fi.mobilemesh.projectm.database.MessageDatabase
+import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.network.Device
 import fi.mobilemesh.projectm.network.MeshManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
@@ -35,6 +39,9 @@ class Networks : Fragment() {
     private lateinit var broadcastManager: BroadcastManager
     private lateinit var meshManager: MeshManager
     private var selectedDevice: Device? = null
+
+    // Database
+    private lateinit var dao: MessageQueries
 
     // UI
     private lateinit var availableView: TextView
@@ -61,9 +68,10 @@ class Networks : Fragment() {
         val view = inflater.inflate(R.layout.fragment_networks, container, false)
         broadcastManager = BroadcastManager.getInstance(view.context)
         meshManager = MeshManager.getInstance(view.context)
+        dao = MessageDatabase.getInstance(view.context).dao
 
         availableView = view.findViewById(R.id.availableView)
-        //networkList = view.findViewById(R.id.networkList)
+        networkList = view.findViewById(R.id.networkList)
         nodeList = view.findViewById(R.id.nodeList)
         createNetworkButton = view.findViewById(R.id.button)
         addButton = view.findViewById(R.id.selectNetworkButton)
@@ -81,15 +89,16 @@ class Networks : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //TODO: TMP
-        meshManager.currentNetworks.forEach {
-            val btn = Button(view.context)
-            btn.text = it.value.groupName
-            btn.setOnClickListener {_ ->
-                MeshManager.activeNetworkId = it.key
+        CoroutineScope(Dispatchers.Main).launch {
+            dao.getChatGroups().forEach {
+                val btn = Button(view.context)
+                btn.text = it.groupName
+                btn.setOnClickListener {_ ->
+                    MeshManager.activeNetworkId = it.chatGroupId
+                }
+                networkList.addView(btn)
             }
         }
-
         refreshDeviceCards()
     }
 

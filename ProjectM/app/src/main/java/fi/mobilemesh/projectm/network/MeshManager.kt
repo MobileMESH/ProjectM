@@ -41,7 +41,7 @@ class MeshManager {
     }
 
     private lateinit var broadcastManager: BroadcastManager
-    lateinit var currentNetworks: MutableMap<String, ChatGroup>
+    private lateinit var currentNetworks: MutableMap<String, ChatGroup>
 
     /**
      * Relays given data forward in the network, avoiding sending it to devices it has
