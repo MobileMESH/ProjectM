@@ -46,7 +46,7 @@ class Networks : Fragment() {
     private lateinit var nodeList: LinearLayout
     private lateinit var createNetworkButton: Button
 
-    //private lateinit var addButton: Button
+    private lateinit var addButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +69,7 @@ class Networks : Fragment() {
         //networkList = view.findViewById(R.id.networkList)
         nodeList = view.findViewById(R.id.nodeList)
         createNetworkButton = view.findViewById(R.id.button)
-        //addButton = view.findViewById(R.id.addButton)
+        addButton = view.findViewById(R.id.addButton)
 
         mapButtons()
 
@@ -92,11 +92,11 @@ class Networks : Fragment() {
                 meshManager.createNetwork(selectedDevice!!)
             }
         }
-        /*addButton.setOnClickListener {
+        addButton.setOnClickListener {
             if (selectedDevice != null) {
                 meshManager.addToNetwork(selectedDevice!!)
             }
-        }*/
+        }
     }
 
     private fun observeNearbyDevices() {
