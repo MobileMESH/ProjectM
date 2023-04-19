@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.network.MeshManager
 
 class ContainerFragmentChat : Fragment() {
 
@@ -30,10 +31,11 @@ class ContainerFragmentChat : Fragment() {
      */
     override fun onResume() {
         super.onResume()
-        if (broadcastManager.isConnected()) {
-            switchFragment(Chat::class.java)
-        } else {
+        switchFragment(Chat::class.java)
+        if (MeshManager.activeNetworkId == null) {
             switchFragment(ChatDisconnected::class.java)
+        } else {
+            switchFragment(Chat::class.java)
         }
     }
 
