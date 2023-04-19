@@ -26,28 +26,15 @@ class ConnectedDevicesAdapter(private val devices: MutableList<Device>) : Recycl
         // own device first, doesn't show location info
         val device = devices[position]
         if (position == FIRST_ROW) {
+            // TODO: use sharedpreferences instead?
             holder.deviceName.text = device.getName()
-            holder.locationButton.visibility = View.GONE
-            holder.locationUnavailable.visibility = View.GONE
         } else {
-            // Location button visible if location is shared
-            if (device.getHasSharedLocation()) {
-                holder.deviceName.text = device.getName()
-                holder.locationButton.visibility = View.VISIBLE
-                holder.locationUnavailable.visibility = View.GONE
-            }
-            else {
-                holder.deviceName.text = device.getName()
-                holder.locationButton.visibility = View.GONE
-                holder.locationUnavailable.visibility = View.VISIBLE
-            }
+            holder.deviceName.text = device.getName()
         }
     }
 
     // this represents a single row in the RecyclerView
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val deviceName: TextView = itemView.findViewById(R.id.deviceName)
-        val locationUnavailable: TextView = itemView.findViewById(R.id.locationOff)
-        val locationButton: Button = itemView.findViewById(R.id.locationButton)
     }
 }
