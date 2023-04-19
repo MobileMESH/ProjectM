@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="vertical"
-                android:padding="16sp" />
+                android:padding="16sp"/>
         </ScrollView>
 
         <LinearLayout
@@ -42,7 +42,7 @@
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="16sp" >
+            android:padding="10sp" >
 
             <Button
                 android:id="@+id/joinButton"

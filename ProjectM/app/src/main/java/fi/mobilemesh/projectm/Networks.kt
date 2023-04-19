@@ -1,7 +1,9 @@
 package fi.mobilemesh.projectm
 
+import android.graphics.Color
 import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -57,7 +59,7 @@ class Networks : Fragment() {
 
         INSTANCE = WeakReference(this)
 
-        createNetworkButton = view.findViewById(R.id.button)
+        createNetworkButton = view.findViewById(R.id.createNetworkButton)
         createNetworkButton.setOnClickListener {
             // switch to Create
             (parentFragment as ContainerFragmentNetworks).switchFragment(CreateNetwork::class.java)
@@ -71,7 +73,17 @@ class Networks : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (deviceList.isNotEmpty()) refreshDeviceCards()
+        if (deviceList.isNotEmpty()) {
+            refreshDeviceCards()
+        }
+        else {
+            val txt = TextView(view?.context)
+            txt.gravity = Gravity.CENTER_HORIZONTAL
+            txt.text = "No devices available currently. You can try creating a new network."
+            txt.setPadding(10,0,10,0)
+            txt.setTextColor(Color.parseColor("#aec2bd"))
+            nodeList.addView(txt)
+        }
     }
 
     /**
@@ -97,7 +109,6 @@ class Networks : Fragment() {
             broadcastManager.connectToDevice(device.deviceAddress)
             connectedDevice = device.deviceName
         }
-
         nodeList.addView(btn)
     }
 
