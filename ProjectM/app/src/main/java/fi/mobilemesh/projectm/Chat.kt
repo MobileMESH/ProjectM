@@ -121,12 +121,11 @@ class Chat : Fragment() {
         if (!isMessageValid(text)) return
 
         val networkId = meshManager.getTestGroupId()
-        val messageId = dao.getNextMessageId(networkId)
         // TODO: Get chat group id, this just gets a random one for testing
         val sender = broadcastManager.getThisDevice().getName()
         val time = Date(System.currentTimeMillis())
 
-        val message = Message(messageId, networkId, sender, time, text)
+        val message = Message(networkId, sender, time, text)
 
         meshManager.sendGroupMessage(message)
         dao.insertMessage(message)

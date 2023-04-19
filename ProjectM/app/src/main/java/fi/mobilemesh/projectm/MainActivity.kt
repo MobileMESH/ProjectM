@@ -93,13 +93,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Initializing handlers and such
-        MessageDatabase.getInstance(applicationContext)
-        broadcastManager = BroadcastManager.getInstance(applicationContext)
-        SharedPreferencesManager.getInstance(applicationContext)
-        addIntentFilters()
-
         // Show the onboarding activity if it hasn't been completed
         if (!isOnboardingCompleted()) {
             showOnboardingActivity()
@@ -130,11 +123,10 @@ class MainActivity : AppCompatActivity() {
             dao.insertChatGroup(ChatGroup(meshManager.getTestGroupId()))
         }
 
-
         //Notification
-        val notificationHelper = MakeNotification(this)
+        /*val notificationHelper = MakeNotification(this)
         val intent = Intent(this, MainActivity::class.java)
-        notificationHelper.showNotification("Anything", "You got it!", intent)
+        notificationHelper.showNotification("Anything", "You got it!", intent)*/
 
 
     }

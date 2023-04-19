@@ -21,13 +21,11 @@ import java.util.*
  */
 @Entity
 data class Message(
-    @PrimaryKey(autoGenerate = false)
-    val messageId: Int,
-
     val chatGroupId: String,
 
     val sender: String,
 
+    @PrimaryKey(autoGenerate = false)
     @TypeConverters(DateConverter::class)
     val timestamp: Date,
 
