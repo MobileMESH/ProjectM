@@ -134,13 +134,6 @@
                     android:src="@android:drawable/radiobutton_off_background"
                     app:tint="@color/tertiary_bars" />
 
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/tertiary_bars" />
             </LinearLayout>
 
         </LinearLayout>
