@@ -120,14 +120,6 @@ class MainActivity : AppCompatActivity() {
             //  implemented
             dao.insertChatGroup(ChatGroup(0))
         }
-
-
-        //Notification
-        val notificationHelper = MakeNotification(this)
-        val intent = Intent(this, MainActivity::class.java)
-        notificationHelper.showNotification("Anything", "You got it!", intent)
-
-
     }
 
     /*

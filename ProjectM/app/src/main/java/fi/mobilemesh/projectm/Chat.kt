@@ -20,6 +20,7 @@ import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.utils.MakeNotification
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.*
 import java.util.*
@@ -92,7 +93,6 @@ class Chat : Fragment() {
         mapButtons()
 
         lifecycleScope.launch { observeLiveMessages() }
-
         return view
     }
 
@@ -167,7 +167,21 @@ class Chat : Fragment() {
         // Add everything to parent
         receivingField.addView(base)
     }
-
+    /**
+     *
+     * Creates a notification from a message if notifications are allowed.
+     * @param message a [Message] instance from which to create the notification
+     */
+    private fun createMessageNotification(message: Message) {
+        if (!message.isOwnMessage) {
+            val notificationHelper = MakeNotification(requireContext())
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            notificationHelper.showNotification(
+                message.sender,
+                message.body, intent
+            )
+        }
+    }
     /**
      * Creates visual components for the contents of the message (sender,
      * message itself and time)
@@ -183,14 +197,14 @@ class Chat : Fragment() {
              sender.setTextColor(Color.parseColor("#dff0e9"))
          }
          else {
-             sender.text="${message.sender}"
+             sender.text= message.sender
              sender.setTextColor(Color.parseColor("#8bc9b1"))
          }
         sender.typeface = Typeface.DEFAULT_BOLD
 
         // Creating TextView for message contents
         val messageBody = TextView(activity)
-        messageBody.text="${message.body}"
+        messageBody.text= message.body
         messageBody.setTextColor(Color.WHITE)
 
         //Create visual timestamp to the message
@@ -232,7 +246,7 @@ class Chat : Fragment() {
             messages.forEach {
                 val messageType = if (it.isOwnMessage) R.drawable.outgoing_bubble
                     else R.drawable.incoming_bubble
-                createMessage(it, messageType)
+                    createMessage(it, messageType)
             }
         }
     }
