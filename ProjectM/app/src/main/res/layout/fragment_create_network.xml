@@ -33,9 +33,7 @@
             android:gravity="center"
             android:textSize="17sp"
             android:text="Select one device to create a network with.  After creating the network, others can join it."
-            android:textColor="@color/white"
-            android:textColorHighlight="@color/white"
-            android:textColorLink="@color/white" />
+            android:textColor="#aec2bd" />
 
         <LinearLayout
             android:id="@+id/deviceList"
