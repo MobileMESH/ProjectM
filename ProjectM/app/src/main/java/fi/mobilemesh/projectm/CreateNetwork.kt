@@ -168,7 +168,6 @@ class CreateNetwork : Fragment() {
             switchLayout(nameNetworkLayout, chooseDeviceLayout)
         }
 
-        // TODO: change the color of disabled buttons
         // disable initially
         finishButton.isEnabled = false
 

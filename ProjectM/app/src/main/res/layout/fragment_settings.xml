@@ -92,7 +92,6 @@
                 android:theme="@style/Theme.SwitchTheme"
                 android:layout_gravity="right"
                 android:layout_marginRight="16dp"
-                android:trackTint="@color/switch_style"
                 app:trackDecorationTint="#F4EFF4" />
         </androidx.cardview.widget.CardView>
 
@@ -131,7 +130,6 @@
                 android:theme="@style/Theme.SwitchTheme"
                 android:layout_gravity="right"
                 android:layout_marginRight="16dp"
-                android:trackTint="@color/switch_style"
                 app:trackDecorationTint="#F4EFF4" />
 
         </androidx.cardview.widget.CardView>

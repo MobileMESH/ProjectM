@@ -48,7 +48,7 @@
                 android:id="@+id/joinButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/buttons"
+                android:backgroundTint="@color/button_style"
                 android:text="Join network"
                 android:textColor="@color/white"
                 android:textSize="16sp"/>
