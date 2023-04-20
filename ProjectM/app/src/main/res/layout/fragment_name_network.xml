@@ -35,7 +35,7 @@
             android:gravity="center"
             android:textSize="17sp"
             android:text="Select a name for the network. This cannot be changed later."
-            android:textColor="#FFFFFF"
+            android:textColor="#aec2bd"
             android:textColorHighlight="#FFFFFF"
             android:textColorLink="#FFFFFF" />
 
