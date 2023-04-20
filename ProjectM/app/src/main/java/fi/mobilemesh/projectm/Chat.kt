@@ -97,7 +97,7 @@ class Chat : Fragment() {
     }
 
     /**
-     * Updates the chat every time a new message is added to the database (a message is receive).
+     * Updates the chat every time a new message is added to the database (a message is received).
      * WIP
      */
     // TODO: Don't reload all messages...
@@ -141,7 +141,6 @@ class Chat : Fragment() {
      * area
      * @param messageType is the drawable for the message
      */
-    // TODO: Make the message using proper tools (UI team?)
     private fun createMessage(message: Message, messageType: Int){
         // Creating base for the message
         val base = LinearLayout(activity)
@@ -168,7 +167,6 @@ class Chat : Fragment() {
         receivingField.addView(base)
     }
     /**
-     *
      * Creates a notification from a message if notifications are allowed.
      * @param message a [Message] instance from which to create the notification
      */
