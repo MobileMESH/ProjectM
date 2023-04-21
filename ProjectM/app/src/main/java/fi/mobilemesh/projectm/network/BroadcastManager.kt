@@ -92,6 +92,7 @@ class BroadcastManager(
         if (Build.VERSION.SDK_INT >= 29) {
             wifiManager.requestDeviceInfo(channel) { dev ->
                 if (dev != null) thisDevice = Device(dev)
+                else initThisDevice(intent)
             }
         }
 
