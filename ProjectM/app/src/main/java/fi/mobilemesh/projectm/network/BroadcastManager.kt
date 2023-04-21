@@ -73,6 +73,7 @@ class BroadcastManager(
 
     @Volatile
     private var isConnectionFree = true
+    private var isSender = false
 
     private var serverSocket = ServerSocket(PORT)
     private var connectionLatch = CountDownLatch(2)
@@ -158,8 +159,6 @@ class BroadcastManager(
         if (!isConnected(connInfo)) return@ConnectionInfoListener
 
         connectionLatch.countDown()
-
-        if (serverSocket.isClosed) serverSocket = ServerSocket(PORT)
 
         CoroutineScope(Dispatchers.IO).launch {
             if (!connInfo.isGroupOwner) {
@@ -276,6 +275,8 @@ class BroadcastManager(
      * data and shuts down after reading
      */
     private suspend fun receiveData() {
+        if (isSender) return
+
         connectionLatch.countDown()
         println("RECEIVE/START")
 
@@ -348,18 +349,7 @@ class BroadcastManager(
         val success = connectionLatch.await(TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
 
         if (!success) {
-            connectionLatch = CountDownLatch(0)
-
-            val first = requestQueue.removeFirstOrNull()
-            if (first != null) {
-                println("QUEUE DELAY ${first.data}")
-                requestQueue.addLast(first)
-            }
-
-            wifiManager.cancelConnect(channel, null)
-            resetConnection()
-            isConnectionFree = true
-            return
+            timeoutConnection()
         }
 
         val socket = Socket()
@@ -376,12 +366,30 @@ class BroadcastManager(
     }
 
     /**
+     * Times out a connection attempt
+     */
+    private fun timeoutConnection() {
+        connectionLatch = CountDownLatch(0)
+
+        val first = requestQueue.removeFirstOrNull()
+        if (first != null) {
+            println("QUEUE DELAY ${first.data}")
+            requestQueue.addLast(first)
+        }
+
+        wifiManager.cancelConnect(channel, null)
+        resetConnection()
+        isConnectionFree = true
+        return
+    }
+
+    /**
      * Resets the connection after all data has been transferred, effectively disconnecting
      * from the connection freeing both devices for further connections
      */
     private fun resetConnection() {
         targetAddress = null
-        serverSocket.close()
+        isSender = false
 
         wifiManager.removeGroup(channel, null)
         println("DISCONNECTED")
@@ -426,6 +434,7 @@ class BroadcastManager(
 
             requestQueue.removeFirst()
             println("TARGET ${target.getAddress()}")
+            isSender = true
             sendData(target.getAddress(), next)
         }
     }
