@@ -428,7 +428,10 @@ class BroadcastManager(
                 println("Waiting")
                 peerLatch = CountDownLatch(1)
             }
-            peerLatch.await()
+            val success = peerLatch.await(TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
+            if (!success) {
+                timeoutConnection()
+            }
 
             target = getNearbyDevices().first { it.getName() == next.target }
 
