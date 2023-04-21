@@ -87,6 +87,8 @@ class BroadcastManager(
      * no Intent is needed
      */
     private fun initThisDevice(intent: Intent?) {
+        if (thisDevice != null) return
+
         if (Build.VERSION.SDK_INT >= 29) {
             wifiManager.requestDeviceInfo(channel) { dev ->
                 if (dev != null) thisDevice = Device(dev)
@@ -99,10 +101,8 @@ class BroadcastManager(
         // getParcelableExtra deprecated from API >= 33, which is already
         // handled when api >= 29 above
         @Suppress("DEPRECATION")
-        if (thisDevice == null) {
-            val device: WifiP2pDevice? = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)
-            if (device != null) thisDevice = Device(device)
-        }
+        val device: WifiP2pDevice? = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)
+        if (device != null) thisDevice = Device(device)
     }
 
     /**

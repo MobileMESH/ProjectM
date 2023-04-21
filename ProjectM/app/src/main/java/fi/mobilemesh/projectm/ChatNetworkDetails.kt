@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fi.mobilemesh.projectm.network.Device
+import fi.mobilemesh.projectm.network.MeshManager
 import fi.mobilemesh.projectm.utils.showConfirmationAlert
 
 class ChatNetworkDetails : Fragment() {
@@ -35,6 +36,9 @@ class ChatNetworkDetails : Fragment() {
             (parentFragment as ContainerFragmentChat).switchFragment(Chat::class.java)
         }
         leaveNetworkButton.setOnClickListener {
+            // TODO: This only sets the current network as "unselected", needs to disconnect
+            MeshManager.activeNetworkId = null
+
             showConfirmationAlert(
                 "Leave Network",
                 "Are you sure you want to leave the network?",
