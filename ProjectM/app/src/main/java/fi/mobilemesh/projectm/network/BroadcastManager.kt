@@ -9,20 +9,22 @@ import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
 import android.util.Log
-import android.widget.Button
+import fi.mobilemesh.projectm.MainActivity
+import fi.mobilemesh.projectm.Networks
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
+import fi.mobilemesh.projectm.utils.MakeNotification
+import kotlinx.coroutines.*
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import java.lang.ref.WeakReference
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.ServerSocket
 import java.net.Socket
-import fi.mobilemesh.projectm.Networks
-import kotlinx.coroutines.*
 
 
 private const val PORT = 8888
@@ -35,14 +37,14 @@ class BroadcastManager(
     /**
      * Used to get the BroadcastManager from any fragment/class
      */
-
     private lateinit var thisDevice: Device
     private val devices = mutableListOf<Device>()
-
     companion object {
         @Volatile
         private var INSTANCE: BroadcastManager? = null
         private lateinit var dao: MessageQueries
+        private lateinit var weakContext: WeakReference<Context>
+
 
         /**
          * Gets the common/static BroadcastManager from any fragment/activity
@@ -54,7 +56,7 @@ class BroadcastManager(
             synchronized(this) {
                 val wifiManager = context.getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
                 val channel = wifiManager.initialize(context, context.mainLooper, null)
-
+                weakContext = WeakReference(context)
                 return INSTANCE ?: BroadcastManager(wifiManager, channel)
                     .also {
                         INSTANCE = it
@@ -139,7 +141,6 @@ class BroadcastManager(
             WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 wifiManager.requestConnectionInfo(channel, connectionInfoListener)
             }
-
             WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
                 val device: WifiP2pDevice = intent.getParcelableExtra(EXTRA_WIFI_P2P_DEVICE)!!
                 thisDevice = Device(device)
@@ -194,7 +195,6 @@ class BroadcastManager(
             val client = serverSocket.accept()
             targetAddress = client.inetAddress
             client.close()
-
             receiveText()
         }
     }
@@ -225,11 +225,10 @@ class BroadcastManager(
             val istream = ObjectInputStream(BufferedInputStream(client.getInputStream()))
 
             val message: Message = istream.readObject() as Message
-            println(message.isOwnMessage)
-
+            createMessageNotification(message)
+            
             istream.close()
             client.close()
-
             // Insert message to database via Data Access Object
             dao.insertMessage(message)
 
@@ -237,6 +236,19 @@ class BroadcastManager(
         }
     }
 
+    /**
+     * Creates a notification from a message if notifications are allowed.
+     * @param message a [Message] instance from which to create the notification
+     */
+    private fun createMessageNotification(message: Message) {
+        Log.d("TAG", "TÄÄLLÄ OLLAAN")
+            val notificationHelper = weakContext.get()?.let { MakeNotification(it) }
+            val intent = Intent(weakContext.get(), MainActivity::class.java)
+            notificationHelper?.showNotification(
+                message.sender,
+                message.body, intent
+            )
+    }
     /**
      * Transfers text to the other device with a [Message].
      * @param message [Message] to transfer to the other device
@@ -251,7 +263,6 @@ class BroadcastManager(
         if (message.body == "") {
             return
         }
-
         val socket = Socket()
         socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
         val ostream = ObjectOutputStream(BufferedOutputStream(socket.getOutputStream()))
@@ -269,4 +280,5 @@ class BroadcastManager(
     fun isConnected(): Boolean {
         return targetAddress != null
     }
+
 }

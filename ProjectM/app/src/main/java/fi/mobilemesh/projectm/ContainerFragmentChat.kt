@@ -30,11 +30,12 @@ class ContainerFragmentChat : Fragment() {
      */
     override fun onResume() {
         super.onResume()
-        if (broadcastManager.isConnected()) {
+       // if (broadcastManager.isConnected()) {
             switchFragment(Chat::class.java)
-        } else {
-            switchFragment(ChatDisconnected::class.java)
-        }
+        //}//
+        //        )) else {
+       //     switchFragment(ChatDisconnected::class.java)
+       // }
     }
 
     fun switchFragment(target: Class<*>) {
