@@ -1,9 +1,11 @@
 package fi.mobilemesh.projectm
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -67,7 +69,6 @@ class Chat : Fragment() {
             sendingField.text.clear()
             CoroutineScope(Dispatchers.IO).launch { sendMessage(text) }
         }
-
         openDetailsButton.setOnClickListener {
             // switch to Details
             (parentFragment as ContainerFragmentChat).switchFragment(ChatNetworkDetails::class.java)
@@ -131,7 +132,9 @@ class Chat : Fragment() {
 
         val messageType = R.drawable.outgoing_bubble
 
-        withContext(Dispatchers.Main) { createMessage(message, messageType) }
+        withContext(Dispatchers.Main) {
+            createMessage(message, messageType)
+        }
     }
 
     /**
@@ -159,27 +162,14 @@ class Chat : Fragment() {
         ).apply {
             gravity = alignment
         }.also {
-            it.setMargins(20, 20, 20, 0)
+            it.setMargins(20, 15, 20, 20)
         }
         // Text alignment
         base.gravity = Gravity.START
         // Add everything to parent
         receivingField.addView(base)
     }
-    /**
-     * Creates a notification from a message if notifications are allowed.
-     * @param message a [Message] instance from which to create the notification
-     */
-    private fun createMessageNotification(message: Message) {
-        if (!message.isOwnMessage) {
-            val notificationHelper = MakeNotification(requireContext())
-            val intent = Intent(requireContext(), MainActivity::class.java)
-            notificationHelper.showNotification(
-                message.sender,
-                message.body, intent
-            )
-        }
-    }
+
     /**
      * Creates visual components for the contents of the message (sender,
      * message itself and time)
@@ -243,8 +233,8 @@ class Chat : Fragment() {
             val messages = dao.getChatGroupMessages(0)
             messages.forEach {
                 val messageType = if (it.isOwnMessage) R.drawable.outgoing_bubble
-                    else R.drawable.incoming_bubble
-                    createMessage(it, messageType)
+                else R.drawable.incoming_bubble
+                createMessage(it, messageType)
             }
         }
     }

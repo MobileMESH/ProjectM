@@ -8,7 +8,7 @@ import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.*
-import android.util.Log
+import fi.mobilemesh.projectm.Chat
 import fi.mobilemesh.projectm.MainActivity
 import fi.mobilemesh.projectm.Networks
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -226,7 +226,7 @@ class BroadcastManager(
 
             val message: Message = istream.readObject() as Message
             createMessageNotification(message)
-            
+
             istream.close()
             client.close()
             // Insert message to database via Data Access Object
@@ -241,9 +241,10 @@ class BroadcastManager(
      * @param message a [Message] instance from which to create the notification
      */
     private fun createMessageNotification(message: Message) {
-        Log.d("TAG", "TÄÄLLÄ OLLAAN")
             val notificationHelper = weakContext.get()?.let { MakeNotification(it) }
             val intent = Intent(weakContext.get(), MainActivity::class.java)
+            // TODO: replace value 0 with actual chat group number, should work that way
+            intent.putExtra("chat_id", 0)
             notificationHelper?.showNotification(
                 message.sender,
                 message.body, intent
