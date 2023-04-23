@@ -52,4 +52,8 @@ class MakeNotification(private val context: Context) {
         // Show the notification
         notificationManager.notify(0, notificationBuilder.build())
     }
+
+    fun getNotificationManager(): NotificationManager {
+        return notificationManager
+    }
 }

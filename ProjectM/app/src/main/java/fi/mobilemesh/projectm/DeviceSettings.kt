@@ -1,7 +1,9 @@
 package fi.mobilemesh.projectm
 
+import android.app.NotificationManager
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +13,10 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import fi.mobilemesh.projectm.utils.SharedPreferencesManager
 import android.provider.Settings
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.materialswitch.MaterialSwitch
+import fi.mobilemesh.projectm.utils.MakeNotification
 
 //import fi.mobilemesh.projectm.OnBoardingActivity
 
@@ -38,6 +43,7 @@ class DeviceSettings : Fragment() {
 
     private lateinit var sharedPreferencesManager: SharedPreferencesManager
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -48,6 +54,8 @@ class DeviceSettings : Fragment() {
     }
 
     // Listeners for all UI components, called after assigning UI elements.
+
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun mapButtons() {
         //Update user's device name
         saveName.setOnClickListener {
@@ -55,8 +63,8 @@ class DeviceSettings : Fragment() {
             sharedPreferencesManager.saveUsername(name)
         }
 
-        // Change SharedPreferences for location and notifications on switch click
-        locationButton.setOnCheckedChangeListener { buttonView, isChecked ->
+        // Change SharedPreferences for on switch click
+        locationButton.setOnCheckedChangeListener { _, _ ->
             val isEnabled = sharedPreferencesManager.getLocationEnabled()
             if (!isEnabled) {
                 sharedPreferencesManager.setLocationEnabled(true)
@@ -65,21 +73,18 @@ class DeviceSettings : Fragment() {
                 sharedPreferencesManager.setLocationEnabled(false)
                 locationButton.isChecked = false
             }
-
         }
 
-        notificationsButton.setOnClickListener {
-            /* val status = //TODO: Connect to notifications status?
-            if (status == false) {
-                // TODO: Notifs on
-            } else {
-                // TODO: Notifs off
-            }*/
+        // Open settings for the user to alter notifications on switch click
+        notificationsButton.setOnClickListener{
+            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
+            startActivity(intent)
         }
 
         // Going to the device's permission settings
         devicePermissions.setOnClickListener {
-            val packageName = context?.packageName
+            val packageName = requireContext().packageName
             val intent = Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                 Uri.fromParts("package", packageName, null)
@@ -89,12 +94,14 @@ class DeviceSettings : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // UI
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
+
         deviceName = view.findViewById(R.id.settingsDeviceName)
         locationButton = view.findViewById(R.id.locationSwitch)
         notificationsButton = view.findViewById(R.id.notificationsSwitch)
@@ -102,11 +109,18 @@ class DeviceSettings : Fragment() {
         saveName = view.findViewById(R.id.saveName)
         deviceName.setText(sharedPreferencesManager.getUsername())
         locationButton.isChecked = sharedPreferencesManager.getLocationEnabled()
-        // TODO: check notifs to get the state
-        //notificationsButton.isChecked =
+        notificationsButton.isChecked = MakeNotification(requireContext()).getNotificationManager()
+                              .areNotificationsEnabled()
         mapButtons()
         // Inflate the layout for this fragment
         return view
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun onResume() {
+        super.onResume()
+        notificationsButton.isChecked = MakeNotification(requireContext()).getNotificationManager()
+            .areNotificationsEnabled()
     }
 
     companion object {
