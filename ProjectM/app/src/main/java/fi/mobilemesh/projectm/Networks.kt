@@ -63,13 +63,6 @@ class Networks : Fragment() {
         return view
     }
 
-    /**
-     * Called after onCreateView() has finished, so view is not null
-     */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        if (deviceList.isNotEmpty()) refreshDeviceCards()
-    }
 
     /**
      * Reloads the device list onto view
@@ -86,10 +79,17 @@ class Networks : Fragment() {
      * BroadcastManager when a new nearby device is detected
      * @param device device for which to create the interactable card
      */
-    // TODO: Styles for buttons
     private fun createCardViewLayout(device: WifiP2pDevice) {
         val btn = Button(view?.context)
+
+        // Styles for buttons
         btn.text = device.deviceName
+        btn.setTextColor(Color.WHITE)
+        btn.setBackgroundColor(Color.DKGRAY)
+
+        // This drawable doesn't work either, but there could be a way
+        // btn.setBackgroundResource(R.drawable.network_card)
+
         btn.setOnClickListener {
             broadcastManager.connectToDevice(device.deviceAddress)
             connectedDevice = device.deviceName
@@ -129,7 +129,6 @@ class Networks : Fragment() {
         fun refreshDeviceList(devices: Collection<WifiP2pDevice>) {
             deviceList.clear()
             deviceList.addAll(devices)
-            INSTANCE?.get()?.refreshDeviceCards()
         }
 
         fun changeTargetAddress(target: InetAddress?) {
