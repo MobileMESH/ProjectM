@@ -6,17 +6,19 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import fi.mobilemesh.projectm.R
+import android.provider.Settings
 
 class MakeNotification(private val context: Context) {
 
     private val notificationManager: NotificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    private val channelId = "my_channel_id"
-    private val channelName = "My Channel"
-    private val channelDescription = "My Channel Description"
+    private val channelId = "app_notifs"
+    private val channelName = "App Notifications"
+    private val channelDescription = "Handled notifications inside the application"
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -49,5 +51,9 @@ class MakeNotification(private val context: Context) {
 
         // Show the notification
         notificationManager.notify(0, notificationBuilder.build())
+    }
+
+    fun getNotificationManager(): NotificationManager {
+        return notificationManager
     }
 }

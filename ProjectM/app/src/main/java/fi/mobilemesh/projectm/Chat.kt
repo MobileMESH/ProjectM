@@ -1,9 +1,11 @@
 package fi.mobilemesh.projectm
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -20,6 +22,7 @@ import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.utils.MakeNotification
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.*
 import java.util.*
@@ -66,7 +69,6 @@ class Chat : Fragment() {
             sendingField.text.clear()
             CoroutineScope(Dispatchers.IO).launch { sendMessage(text) }
         }
-
         openDetailsButton.setOnClickListener {
             // switch to Details
             (parentFragment as ContainerFragmentChat).switchFragment(ChatNetworkDetails::class.java)
@@ -92,12 +94,11 @@ class Chat : Fragment() {
         mapButtons()
 
         lifecycleScope.launch { observeLiveMessages() }
-
         return view
     }
 
     /**
-     * Updates the chat every time a new message is added to the database (a message is receive).
+     * Updates the chat every time a new message is added to the database (a message is received).
      * WIP
      */
     // TODO: Don't reload all messages...
@@ -131,7 +132,9 @@ class Chat : Fragment() {
 
         val messageType = R.drawable.outgoing_bubble
 
-        withContext(Dispatchers.Main) { createMessage(message, messageType) }
+        withContext(Dispatchers.Main) {
+            createMessage(message, messageType)
+        }
     }
 
     /**
@@ -141,7 +144,6 @@ class Chat : Fragment() {
      * area
      * @param messageType is the drawable for the message
      */
-    // TODO: Make the message using proper tools (UI team?)
     private fun createMessage(message: Message, messageType: Int){
         // Creating base for the message
         val base = LinearLayout(activity)
@@ -160,7 +162,7 @@ class Chat : Fragment() {
         ).apply {
             gravity = alignment
         }.also {
-            it.setMargins(20, 20, 20, 0)
+            it.setMargins(20, 15, 20, 20)
         }
         // Text alignment
         base.gravity = Gravity.START
@@ -183,14 +185,14 @@ class Chat : Fragment() {
              sender.setTextColor(Color.parseColor("#dff0e9"))
          }
          else {
-             sender.text="${message.sender}"
+             sender.text= message.sender
              sender.setTextColor(Color.parseColor("#8bc9b1"))
          }
         sender.typeface = Typeface.DEFAULT_BOLD
 
         // Creating TextView for message contents
         val messageBody = TextView(activity)
-        messageBody.text="${message.body}"
+        messageBody.text= message.body
         messageBody.setTextColor(Color.WHITE)
 
         //Create visual timestamp to the message
@@ -231,7 +233,7 @@ class Chat : Fragment() {
             val messages = dao.getChatGroupMessages(0)
             messages.forEach {
                 val messageType = if (it.isOwnMessage) R.drawable.outgoing_bubble
-                    else R.drawable.incoming_bubble
+                else R.drawable.incoming_bubble
                 createMessage(it, messageType)
             }
         }

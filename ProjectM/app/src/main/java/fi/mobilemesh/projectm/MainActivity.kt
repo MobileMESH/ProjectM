@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.IntentFilter
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.database.MessageDatabase
@@ -113,6 +114,8 @@ class MainActivity : AppCompatActivity() {
         //mapButtons()
         listenNavigation()
 
+        handleNotificationClick()
+
         // Message database (Data Access Object)
         val dao = MessageDatabase.getInstance(this).dao
         CoroutineScope(Dispatchers.Main).launch {
@@ -120,53 +123,7 @@ class MainActivity : AppCompatActivity() {
             //  implemented
             dao.insertChatGroup(ChatGroup(0))
         }
-
-
-        //Notification
-        val notificationHelper = MakeNotification(this)
-        val intent = Intent(this, MainActivity::class.java)
-        notificationHelper.showNotification("Anything", "You got it!", intent)
-
-
     }
-
-    /*
-    private fun requestPermissions() {
-
-        val permissionsToRequest = mutableListOf<String>()
-        for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED)
-            {
-                permissionsToRequest.add(permission)
-            }
-        }
-        if (permissionsToRequest.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray() , REQUEST_CODE)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE) {
-            var allGranted = true
-            for (grantResult in grantResults) {
-                if (grantResult != PERMISSION_GRANTED) {
-                    allGranted = false
-                    break
-                }
-            }
-            if (allGranted) {
-                return
-            } else {
-                //finish()
-            }
-        }
-    }
-    */
 
     override fun onResume() {
         super.onResume()
@@ -176,6 +133,16 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(broadcastManager)
+    }
+
+    private fun handleNotificationClick() {
+        // Necessary for notification handling. Switches to correct fragment when chat
+        // nofitication is clicked.
+        val chatId = intent.getIntExtra("chat_id", -1)
+        if (chatId != -1) {
+            switchFragment(ContainerFragmentChat::class.java)
+            navigationBar.selectedItemId = R.id.chat
+        }
     }
 
     private fun isOnboardingCompleted(): Boolean {
@@ -194,8 +161,6 @@ class MainActivity : AppCompatActivity() {
         //networkDetails = findViewById(R.id.networkDetails)
     }
 
-    // Not sure if this is how it's done but something like this was shown in the
-    // material design guide for the nav bar
     private fun listenNavigation() {
 
         navigationBar.setOnItemSelectedListener{ item ->
