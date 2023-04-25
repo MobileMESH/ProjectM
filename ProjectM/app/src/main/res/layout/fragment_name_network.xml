@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/layered_peaks_haikei__6_"
     android:orientation="vertical"
-    tools:context=".Networks">
+    tools:context=".Networks"
+    android:visibility="gone">
 
     <LinearLayout
         android:layout_width="match_parent"
