@@ -8,7 +8,6 @@
     android:orientation="vertical"
     tools:context=".Networks">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -61,6 +60,39 @@
                 android:backgroundTint="@color/secondary_bars_green"
                 android:drawableLeft="@drawable/plus"
                 android:text="Create a new network"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/currentView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Current networks"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:paddingTop="30dp"
+                android:textSize="20sp" />
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/selectList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16sp"/>
+            </ScrollView>
+
+            <Button
+                android:id="@+id/selectButton"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/buttons"
+                android:text="Select network to chat"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 

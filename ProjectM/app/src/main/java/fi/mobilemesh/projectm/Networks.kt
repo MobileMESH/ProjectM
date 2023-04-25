@@ -46,8 +46,10 @@ class Networks : Fragment() {
     //private lateinit var networkList: LinearLayout
     private lateinit var nodeList: LinearLayout
     private lateinit var createNetworkButton: Button
-
     private lateinit var joinButton: Button
+    private lateinit var selectButton: Button
+    private lateinit var selectList: LinearLayout
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,6 +76,9 @@ class Networks : Fragment() {
 
         createNetworkButton = view.findViewById(R.id.createNetworkButton)
         joinButton = view.findViewById(R.id.joinButton)
+
+        selectButton = view.findViewById(R.id.selectButton)
+        selectList = view.findViewById(R.id.selectList)
 
         mapButtons()
 
@@ -120,7 +125,6 @@ class Networks : Fragment() {
             if (!list.any { it == selectedDevice }) selectedDevice = null
             refreshDeviceCards()
         }
->>>>>>> d1ef28d08ddcc02fcc0b87ef857c670c10a80fc5
     }
 
     /**
