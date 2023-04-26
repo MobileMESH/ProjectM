@@ -13,6 +13,8 @@
     <color name="switchneutral">#F4EFF4</color>
     <color name="messages_own">#666666</color>
     <color name="messages_others"> #424242</color>
+    <color name="messages_own_new">#003730</color>
+    <color name="messages_others_new">#1C3530</color>
     <color name="pop_ups">#018768</color>
     <color name="text"></color>
     <color name="black">#FF000000</color>
