@@ -142,6 +142,30 @@ class MeshManager {
         activeNetworkId = id
     }
 
+    fun leaveNetwork() {
+        if (activeNetworkId == null) return
+        val currentNetworkId = activeNetworkId!!
+        activeNetworkId = null
+
+        val deviceName = broadcastManager.getThisDevice().getName()
+
+        currentNetworks.remove(currentNetworkId)
+
+        val payload = Pair(currentNetworkId, deviceName)
+        relayForward(payload)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            dao.deleteChatGroupMessages(currentNetworkId)
+            dao.deleteChatGroup(currentNetworkId)
+        }
+    }
+
+    fun removeFromNetwork(networkId: String, deviceId: String) {
+        val currentNetwork = currentNetworks[networkId] ?: return
+        val removedDevice = currentNetwork.deviceSet.devices.firstOrNull { it.getName() == deviceId }
+        currentNetwork.deviceSet.devices.remove(removedDevice)
+    }
+
     /**
      * Sends a group-wide message to the network/chat group specified in the networkId
      * @param message actual [Message] to send to the group

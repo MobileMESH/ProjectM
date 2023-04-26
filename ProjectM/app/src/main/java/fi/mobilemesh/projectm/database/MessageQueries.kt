@@ -2,7 +2,6 @@ package fi.mobilemesh.projectm.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import androidx.room.util.query
 import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.database.entities.Message
 
@@ -17,6 +16,14 @@ interface MessageQueries {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChatGroup(chatGroup: ChatGroup)
+
+    /**
+     * Deletes chat group (network) with given id and all associated messages
+     */
+    @Query("""
+        DELETE FROM chatgroup WHERE chatGroupId = :networkId
+        """)
+    suspend fun deleteChatGroup(networkId: String)
 
     @Transaction
     @Query("""
@@ -51,4 +58,9 @@ interface MessageQueries {
         WHERE m.chatGroupId = :chatGroupId
         """)
     fun getLiveChatGroupMessages(chatGroupId: String): LiveData<List<Message>>
+
+    @Query("""
+        DELETE FROM message WHERE chatGroupId = :networkId
+        """)
+    suspend fun deleteChatGroupMessages(networkId: String)
 }

@@ -329,6 +329,12 @@ class BroadcastManager(
                 is ChatGroup -> {
                     meshManager.joinNetwork(data)
                 }
+
+                is Pair<*, *> -> {
+                    val networkId = data.first as String
+                    val deviceId = data.second as String
+                    meshManager.removeFromNetwork(networkId, deviceId)
+                }
             }
 
             meshManager.relayForward(incoming.data, incoming.alreadySent)
@@ -342,16 +348,10 @@ class BroadcastManager(
     }
 
     /**
-<<<<<<< HEAD
-     * Used to send any type of data to another device. Connects to given address automatically
-     * before sending data
-     * @param address MAC address of the target device to send data to
-     * @param data any type of data to send to the target
-=======
      * Creates a notification from a message if notifications are allowed.
      * @param message a [Message] instance from which to create the notification
      */
-    private fun createMessageNotification(message: Message) {
+    /*private fun createMessageNotification(message: Message) {
             val notificationHelper = weakContext.get()?.let { MakeNotification(it) }
             val intent = Intent(weakContext.get(), MainActivity::class.java)
             // TODO: replace value 0 with actual chat group number, should work that way
@@ -360,11 +360,12 @@ class BroadcastManager(
                 message.sender,
                 message.body, intent
             )
-    }
+    }*/
     /**
-     * Transfers text to the other device with a [Message].
-     * @param message [Message] to transfer to the other device
->>>>>>> cd99d4be0366e998697f83e7db74cb5054d484c1
+     * Used to send any type of data to another device. Connects to given address automatically
+     * before sending data
+     * @param address MAC address of the target device to send data to
+     * @param data any type of data to send to the target
      */
     private fun sendData(address: String, data: Any) {
         println("SEND $data")

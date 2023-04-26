@@ -15,6 +15,7 @@ import fi.mobilemesh.projectm.network.MeshManager
 import fi.mobilemesh.projectm.utils.showConfirmationAlert
 
 class ChatNetworkDetails : Fragment() {
+    private lateinit var meshManager: MeshManager
 
     //TODO: implement feature to add and edit network desc
     //private val isDescriptionPresent = false
@@ -37,7 +38,6 @@ class ChatNetworkDetails : Fragment() {
         }
         leaveNetworkButton.setOnClickListener {
             // TODO: This only sets the current network as "unselected", needs to disconnect
-            MeshManager.activeNetworkId = null
 
             showConfirmationAlert(
                 "Leave Network",
@@ -46,7 +46,7 @@ class ChatNetworkDetails : Fragment() {
                 "No",
                 requireContext(),
                 {
-                    // TODO: Disconnect device from network
+                    meshManager.leaveNetwork()
                     (parentFragment as ContainerFragmentChat).switchFragment(ChatDisconnected::class.java)
                 },
                 {
@@ -62,6 +62,8 @@ class ChatNetworkDetails : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_network_details, container, false)
+
+        meshManager = MeshManager.getInstance(view.context)
 
         findUiElements(view)
         mapButtons()
