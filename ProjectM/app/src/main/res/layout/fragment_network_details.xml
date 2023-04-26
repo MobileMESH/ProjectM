@@ -24,8 +24,9 @@
 
             <TextView
                 android:id="@+id/backToChat"
-                android:layout_width="0dp"
-                android:layout_height="70dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="23dp"
                 android:background="@color/secondary_bars_green"
                 android:clickable="true"
                 android:enabled="false"
@@ -104,7 +105,7 @@
         <LinearLayout
             android:id="@+id/bottomLayout"
             android:layout_width="match_parent"
-            android:layout_height="91dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -117,6 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
 
