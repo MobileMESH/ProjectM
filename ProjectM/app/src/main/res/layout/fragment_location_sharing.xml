@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/layered_peaks_haikei__2_"
-    tools:context=".LocationPermission">
+    tools:context=".LocationSharing">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,17 +21,17 @@
             android:layout_height="234dp"
             android:layout_gravity="center"
             android:layout_marginBottom="20dp"
-            android:src="@drawable/location" />
+            android:src="@drawable/tent" />
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Allow access to location"
+            android:text="Share your location"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#aec2bd"
-            android:textSize="27sp"
+            android:textColor="@color/textHint"
+            android:textSize="27dp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -48,10 +49,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:gravity="center"
-                android:text="This enables features like sharing your location and finding others in your network. Tap continue to grant location permissions."
+                android:text="Sharing your location will allow other members in the same network to see where you are. You can change this at any time in the settings."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="#aec2bd"
-                android:textSize="18sp" />
+                android:textColor="@color/textHint"
+                android:textSize="18dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -61,15 +62,28 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/continueButton"
-                    android:layout_width="0dp"
+                    android:id="@+id/notNowButton"
+                    android:layout_width="130dp"
                     android:layout_height="55dp"
+                    android:layout_marginEnd="20dp"
                     android:backgroundTint="@color/buttons"
-                    android:text="Continue"
+                    android:text="Not now"
                     android:layout_weight="1"
                     android:textColor="@color/white"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/shareButton"
+                    android:layout_width="130dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/buttons"
+                    android:text="Share"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -86,7 +100,7 @@
                     android:layout_weight="1"
                     android:background="#00D89393"
                     android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/state_indicator_other" />
+                    app:tint="@color/tertiary_bars" />
 
                 <ImageView
                     android:id="@+id/imageView3"
@@ -94,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/state_indicator_current" />
+                    app:tint="@color/tertiary_bars" />
 
                 <ImageView
                     android:id="@+id/imageView7"
@@ -102,7 +116,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/state_indicator_other"  />
+                    app:tint="@color/buttons" />
 
                 <ImageView
                     android:id="@+id/imageView5"
@@ -110,8 +124,18 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/state_indicator_other"  />
+                    app:tint="@color/tertiary_bars" />
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/radiobutton_off_background"
+                    app:tint="@color/tertiary_bars" />
             </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
 </RelativeLayout>
