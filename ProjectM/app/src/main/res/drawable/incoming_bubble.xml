@@ -6,7 +6,7 @@
                 android:centerY="0.2"
                 android:startColor="@color/messages_others_new"
                 android:centerColor="@color/messages_others_new"
-                android:endColor="@color/network_inactive"
+                android:endColor="@color/messages_others"
                 android:angle="270"
                 />
             <corners
