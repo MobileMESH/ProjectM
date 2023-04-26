@@ -20,9 +20,11 @@
     <string name="device_name">Your device</string>
     <string name="device_name_here">Device name here</string>
     <string name="network_name">Network name</string>
-    <string name="current_networks">Current networks</string>
+    <string name="current_networks">List of current networks</string>
+    <string name="current_networks_header">Current networks</string>
     <string name="create_a_new_network">Create a new network</string>
     <string name="join_network">Join network</string>
-    <string name="available_networks">Available networks</string>
+    <string name="available_networks">List of available networks</string>
+    <string name="available_networks_header">Available networks</string>
     <string name="select_network_to_chat">Select network to chat</string>
 </resources>
