@@ -31,6 +31,7 @@ class ContainerFragmentChat : Fragment() {
      */
     override fun onResume() {
         super.onResume()
+
         switchFragment(Chat::class.java)
         if (MeshManager.activeNetworkId == null) {
             switchFragment(ChatDisconnected::class.java)

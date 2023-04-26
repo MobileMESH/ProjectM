@@ -93,7 +93,7 @@ class Networks : Fragment() {
             dao.getChatGroups().forEach {
                 val btn = Button(view.context)
                 btn.text = it.groupName
-                btn.setOnClickListener {_ ->
+                btn.setOnClickListener { _ ->
                     MeshManager.activeNetworkId = it.chatGroupId
                 }
                 networkList.addView(btn)
@@ -138,10 +138,17 @@ class Networks : Fragment() {
      * BroadcastManager when a new nearby device is detected
      * @param device device for which to create the interactable card
      */
-    // TODO: Styles for buttons
     private fun createCardViewLayout(device: Device) {
         val btn = Button(view?.context)
+
+        // Styles for buttons
         btn.text = device.getName()
+        btn.setTextColor(Color.WHITE)
+        btn.setBackgroundColor(Color.DKGRAY)
+
+        // This drawable doesn't work either, but there could be a way
+        // btn.setBackgroundResource(R.drawable.network_card)
+
         btn.setOnClickListener {
             nodeList.forEach { it.setBackgroundColor(Color.WHITE) }
             btn.setBackgroundColor(Color.GRAY)

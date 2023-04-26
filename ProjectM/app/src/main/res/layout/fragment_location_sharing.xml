@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/layered_peaks_haikei__2_"
-    tools:context=".LocationPermission">
+    tools:context=".LocationSharing">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,14 +21,14 @@
             android:layout_height="234dp"
             android:layout_gravity="center"
             android:layout_marginBottom="20dp"
-            android:src="@drawable/location" />
+            android:src="@drawable/tent" />
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Allow access to location"
+            android:text="Share your location"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="@color/textHint"
             android:textSize="27dp"
@@ -48,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:gravity="center"
-                android:text="This enables features like sharing your location and finding others in your network. Tap continue to grant location permissions."
+                android:text="Sharing your location will allow other members in the same network to see where you are. You can change this at any time in the settings."
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/textHint"
                 android:textSize="18dp" />
@@ -61,16 +62,27 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/continueButton"
+                    android:id="@+id/notNowButton"
                     android:layout_width="130dp"
                     android:layout_height="55dp"
+                    android:layout_marginEnd="20dp"
                     android:backgroundTint="@color/buttons"
-                    android:text="Continue"
+                    android:text="Not now"
                     android:layout_weight="1"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
-            </LinearLayout>
 
+                <Button
+                    android:id="@+id/shareButton"
+                    android:layout_width="130dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/buttons"
+                    android:text="Share"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -96,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/buttons" />
+                    app:tint="@color/tertiary_bars" />
 
                 <ImageView
                     android:id="@+id/imageView7"
@@ -104,7 +116,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:src="@android:drawable/radiobutton_off_background"
-                    app:tint="@color/tertiary_bars" />
+                    app:tint="@color/buttons" />
 
                 <ImageView
                     android:id="@+id/imageView5"
@@ -113,7 +125,14 @@
                     android:layout_weight="1"
                     android:src="@android:drawable/radiobutton_off_background"
                     app:tint="@color/tertiary_bars" />
-                
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/radiobutton_off_background"
+                    app:tint="@color/tertiary_bars" />
             </LinearLayout>
 
         </LinearLayout>
