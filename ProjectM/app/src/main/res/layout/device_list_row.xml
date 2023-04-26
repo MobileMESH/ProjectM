@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="78dp"
+    android:layout_height="wrap_content"
     android:background="@drawable/device_list_row_bg"
     tools:context=".ChatNetworkDetails">
 
@@ -41,46 +41,6 @@
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.514" />
-
-    <!-- This is visible and the location button is invisible when shared location is off -->
-    <TextView
-        android:id="@+id/locationOff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="8dp"
-        android:layout_toEndOf="@id/icon"
-        android:singleLine="true"
-        android:paddingStart="8dp"
-        android:text="Location off"
-        android:textColor="@color/devicelist_text"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.818"
-        app:layout_constraintStart_toEndOf="@+id/deviceName"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.511" />
-
-    <!-- This is visible and the text is invisible when shared location is on -->
-    <Button
-        android:id="@+id/locationButton"
-        style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:clickable="true"
-        android:contentDescription="Button to show the location of this device"
-        app:backgroundTint="@color/background"
-        app:icon="@drawable/location_icon"
-        app:iconTint="@color/buttons"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.94"
-        app:layout_constraintStart_toEndOf="@+id/deviceName"
-        app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="@color/buttons" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
