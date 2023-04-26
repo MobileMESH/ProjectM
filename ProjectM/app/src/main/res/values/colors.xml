@@ -13,7 +13,7 @@
     <color name="switches">#22892F</color>
     <color name="switchneutral">#F4EFF4</color>
     <color name="messages_own">#666666</color>
-    <color name="messages_others"> #333333</color>
+    <color name="messages_others"> #424242</color>
     <color name="pop_ups">#018768</color>
     <color name="text"></color>
     <color name="black">#FF000000</color>
@@ -22,4 +22,5 @@
     <color name="devicelist_text">#BCBCBC</color>
     <color name="state_indicator_current">#31ad90</color>
     <color name="state_indicator_other">#1a1a1a</color>
+    <color name="textHint">#aec2bd</color>
 </resources>

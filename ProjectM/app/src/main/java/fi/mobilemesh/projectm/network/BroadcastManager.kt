@@ -8,9 +8,11 @@ import android.net.wifi.p2p.*
 import android.net.wifi.p2p.WifiP2pManager.*
 import android.os.Build
 import androidx.lifecycle.MutableLiveData
+import fi.mobilemesh.projectm.MainActivity
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
+import fi.mobilemesh.projectm.utils.MakeNotification
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.ObjectInputStream
@@ -21,6 +23,7 @@ import java.net.ServerSocket
 import java.net.Socket
 import kotlinx.coroutines.*
 import java.io.EOFException
+import java.lang.ref.WeakReference
 import java.net.SocketException
 import java.util.LinkedList
 import java.util.concurrent.CountDownLatch
@@ -43,6 +46,8 @@ class BroadcastManager(
         private var INSTANCE: BroadcastManager? = null
         private lateinit var dao: MessageQueries
         private lateinit var meshManager: MeshManager
+        private lateinit var weakContext: WeakReference<Context>
+
 
         /**
          * Gets the common/static BroadcastManager from any fragment/activity
@@ -54,7 +59,7 @@ class BroadcastManager(
             synchronized(this) {
                 val wifiManager = context.getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager
                 val channel = wifiManager.initialize(context, context.mainLooper, null)
-
+                weakContext = WeakReference(context)
                 return INSTANCE ?: BroadcastManager(wifiManager, channel)
                     .also {
                         INSTANCE = it
@@ -314,6 +319,8 @@ class BroadcastManager(
             when (val data = incoming.data) {
                 is Message -> {
                     data.isOwnMessage = false
+                    val message: Message = istream.readObject() as Message
+                    createMessageNotification(message)
                     dao.insertMessage(data)
                 }
 
@@ -332,6 +339,20 @@ class BroadcastManager(
         }
     }
 
+    /**
+     * Creates a notification from a message if notifications are allowed.
+     * @param message a [Message] instance from which to create the notification
+     */
+    private fun createMessageNotification(message: Message) {
+        val notificationHelper = weakContext.get()?.let { MakeNotification(it) }
+        val intent = Intent(weakContext.get(), MainActivity::class.java)
+        // TODO: replace value 0 with actual chat group number, should work that way
+        intent.putExtra("chat_id", 0)
+        notificationHelper?.showNotification(
+            message.sender,
+            message.body, intent
+        )
+    }
     /**
      * Used to send any type of data to another device. Connects to given address automatically
      * before sending data

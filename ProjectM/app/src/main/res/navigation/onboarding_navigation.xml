@@ -25,9 +25,4 @@
         android:name="fi.mobilemesh.projectm.NotificationPermission"
         android:label="fragment_notifications_permission"
         tools:layout="@layout/fragment_notification_permission" />
-    <fragment
-        android:id="@+id/locationSharing"
-        android:name="fi.mobilemesh.projectm.LocationSharing"
-        android:label="fragment_location_sharing"
-        tools:layout="@layout/fragment_location_sharing" />
 </navigation>

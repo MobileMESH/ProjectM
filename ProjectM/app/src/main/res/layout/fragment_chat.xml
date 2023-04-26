@@ -30,8 +30,8 @@
                 android:text="@string/to_details"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/white"
-                android:textColorHighlight="#FFFFFF"
-                android:textColorLink="#FFFFFF"
+                android:textColorHighlight="@color/white"
+                android:textColorLink="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -97,7 +97,7 @@
                 android:paddingStart="8sp"
                 android:paddingEnd="8sp"
                 android:textColor="@color/white"
-                android:textColorHint="#808080"
+                android:textColorHint="@color/textHint"
                 android:textSize="16sp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -110,7 +110,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginBottom="10dp"
                 android:clickable="true"
-                android:tint="#EADDDD"
+                android:tint="@color/white"
                 app:backgroundTint="@color/buttons"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
                 app:srcCompat="@drawable/arrow_forward_icon"

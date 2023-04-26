@@ -25,10 +25,12 @@
         <activity
             android:name=".Chat"
             android:exported="false"
+            android:launchMode="singleTop"
             android:label="@string/title_activity_chat"
             android:theme="@style/Theme.ProjectM.NoActionBar" />
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTop"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

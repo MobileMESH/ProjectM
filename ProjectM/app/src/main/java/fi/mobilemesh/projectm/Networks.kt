@@ -93,16 +93,16 @@ class Networks : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //if (deviceList.isNotEmpty()) {
-       //     refreshDeviceCards()
+        //     refreshDeviceCards()
         //}
         //else {
-       //     val txt = TextView(view?.context)
+        //     val txt = TextView(view?.context)
         //    txt.gravity = Gravity.CENTER_HORIZONTAL
-         //   txt.text = "No devices available currently. You can try creating a new network."
+        //   txt.text = "No devices available currently. You can try creating a new network."
         //    txt.setPadding(10,0,10,0)
-          //  txt.setTextColor(Color.parseColor("#aec2bd"))
-           // nodeList.addView(txt)
-      //  }
+        //  txt.setTextColor(Color.parseColor("#aec2bd"))
+        // nodeList.addView(txt)
+        //  }
         //refreshDeviceCards()
     }
 
