@@ -68,10 +68,8 @@
                     android:text="Continue"
                     android:layout_weight="1"
                     android:textColor="@color/white"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"/>
             </LinearLayout>
-
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -113,10 +111,7 @@
                     android:layout_weight="1"
                     android:src="@android:drawable/radiobutton_off_background"
                     app:tint="@color/state_indicator_other"  />
-                
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
 </RelativeLayout>

@@ -48,7 +48,6 @@ class CreateNetwork : Fragment() {
     private lateinit var frameCreateNetwork: FrameLayout
 
     // UI for chooseDeviceLayout (fragment_create_network)
-    private lateinit var availableView: TextView
     private lateinit var deviceList: LinearLayout
     private lateinit var createButton: Button
     private lateinit var cancelButton: Button
@@ -119,7 +118,6 @@ class CreateNetwork : Fragment() {
 
     private fun findUiElements() {
         // available devices
-        availableView = chooseDeviceLayout.findViewById(R.id.availableView)
         deviceList = chooseDeviceLayout.findViewById(R.id.deviceList)
         cancelButton = chooseDeviceLayout.findViewById(R.id.cancelButton)
         createButton = chooseDeviceLayout.findViewById(R.id.createButton)

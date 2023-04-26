@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Available networks"
+        android:text="@string/available_networks"
         android:textColor="@color/white"
         android:textAlignment="center"
         android:padding="10sp"
@@ -35,7 +34,7 @@
                 android:layout_gravity="center"
                 android:orientation="vertical"
                 android:padding="16sp"
-                android:contentDescription="Available networks"/>
+                android:contentDescription="@string/available_networks"/>
         </ScrollView>
 
         <LinearLayout
@@ -50,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/button_style"
-                android:text="Join network"
+                android:text="@string/join_network"
                 android:textColor="@color/white"
                 android:textSize="16sp"/>
 
@@ -61,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/secondary_bars_green"
                 android:drawableLeft="@drawable/plus"
-                android:text="Create a new network"
+                android:text="@string/create_a_new_network"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
@@ -70,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Current networks"
+                android:text="@string/current_networks"
                 android:textColor="@color/white"
                 android:textAlignment="center"
                 android:paddingTop="30sp"
@@ -88,7 +87,7 @@
                     android:layout_gravity="center"
                     android:orientation="vertical"
                     android:padding="16sp"
-                    android:contentDescription="Current networks"/>
+                    android:contentDescription="@string/current_networks"/>
             </ScrollView>
 
             <Button
@@ -97,7 +96,7 @@
                 android:layout_marginTop="8sp"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/buttons"
-                android:text="Select network to chat"
+                android:text="@string/select_network_to_chat"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
