@@ -6,63 +6,98 @@
     android:layout_height="match_parent"
     android:background="@drawable/layered_peaks_haikei__6_"
     android:orientation="vertical"
-    tools:context=".MainActivity">
-
+    tools:context=".Networks">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:divider="@drawable/space_divider"
-        android:showDividers="middle|beginning">
-        <TextView
-            android:id="@+id/availableView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Available"
-            android:textColor="@color/white"
-            android:textColorHighlight="@color/white"
-            android:textAlignment="center"
-            android:padding="10dp"
-            android:textSize="20sp" />
+        android:orientation="vertical">
+    <TextView
+        android:id="@+id/availableView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Available networks"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:padding="10sp"
+        android:textSize="20sp" />
+
+        <ScrollView
+            android:id="@+id/scrollView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/networkList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:padding="16sp"
+                android:contentDescription="Available networks"/>
+        </ScrollView>
 
         <LinearLayout
-            android:id="@+id/networkList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"></LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/nodeList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:divider="@drawable/space_divider"
-            android:showDividers="middle"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="16sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end">
+            android:padding="10sp" >
 
             <Button
-                android:id="@+id/selectNetworkButton"
+                android:id="@+id/joinButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Add" />
+                android:backgroundTint="@color/button_style"
+                android:text="Join network"
+                android:textColor="@color/white"
+                android:textSize="16sp"/>
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/createNetworkButton"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/secondary_bars_green"
+                android:drawableLeft="@drawable/plus"
+                android:text="Create a new network"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
+            <TextView
+                android:id="@+id/currentView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
+                android:layout_gravity="center"
+                android:text="Current networks"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:paddingTop="30sp"
+                android:textSize="20sp" />
+
+            <ScrollView
+                android:id="@+id/scrollView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/selectList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16sp"
+                    android:contentDescription="Current networks"/>
+            </ScrollView>
+
+            <Button
+                android:id="@+id/selectButton"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="8sp"
+                android:layout_height="wrap_content"
                 android:backgroundTint="@color/buttons"
-                android:text="Create a network"
+                android:text="Select network to chat"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 

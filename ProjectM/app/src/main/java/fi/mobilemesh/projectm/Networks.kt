@@ -1,6 +1,5 @@
 package fi.mobilemesh.projectm
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,8 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.view.forEach
-import androidx.lifecycle.lifecycleScope
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.network.BroadcastManager
@@ -49,8 +46,10 @@ class Networks : Fragment() {
     private lateinit var nodeList: LinearLayout
     private lateinit var createNetworkButton: Button
     private lateinit var selectNetworkButton: Button
+    private lateinit var joinButton: Button
+    private lateinit var selectButton: Button
+    private lateinit var selectList: LinearLayout
 
-    private lateinit var addButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,13 +71,18 @@ class Networks : Fragment() {
 
         availableView = view.findViewById(R.id.availableView)
         networkList = view.findViewById(R.id.networkList)
-        nodeList = view.findViewById(R.id.nodeList)
-        createNetworkButton = view.findViewById(R.id.button)
-        addButton = view.findViewById(R.id.selectNetworkButton)
+
+        //INSTANCE = WeakReference(this)
+
+        createNetworkButton = view.findViewById(R.id.createNetworkButton)
+        joinButton = view.findViewById(R.id.joinButton)
+
+        selectButton = view.findViewById(R.id.selectButton)
+        selectList = view.findViewById(R.id.selectList)
 
         mapButtons()
 
-        lifecycleScope.launch { observeNearbyDevices() }
+        // lifecycleScope.launch { observeNearbyDevices() }
 
         return view
     }
@@ -99,23 +103,35 @@ class Networks : Fragment() {
                 networkList.addView(btn)
             }
         }
-        refreshDeviceCards()
+        //refreshDeviceCards()
+
+        //if (deviceList.isNotEmpty()) {
+       //     refreshDeviceCards()
+        //}
+        //else {
+       //     val txt = TextView(view?.context)
+        //    txt.gravity = Gravity.CENTER_HORIZONTAL
+         //   txt.text = "No devices available currently. You can try creating a new network."
+        //    txt.setPadding(10,0,10,0)
+          //  txt.setTextColor(Color.parseColor("#aec2bd"))
+           // nodeList.addView(txt)
+      //  }
+        //refreshDeviceCards()
     }
 
     private fun mapButtons() {
         createNetworkButton.setOnClickListener {
-            if (selectedDevice != null) {
-                meshManager.createNetwork(selectedDevice!!)
-            }
+            // switch to Create
+            (parentFragment as ContainerFragmentNetworks).switchFragment(CreateNetwork::class.java)
         }
-        addButton.setOnClickListener {
+        // TODO: add join button
+        /*addButton.setOnClickListener {
             if (selectedDevice != null) {
                 meshManager.addToNetwork(selectedDevice!!, MeshManager.activeNetworkId)
-            }
-        }
-
+            }*/
     }
 
+    /*
     private fun observeNearbyDevices() {
         broadcastManager.getLiveNearbyDevices().observe(viewLifecycleOwner) { list ->
             if (!list.any { it == selectedDevice }) selectedDevice = null
@@ -154,9 +170,8 @@ class Networks : Fragment() {
             btn.setBackgroundColor(Color.GRAY)
             selectedDevice = device
         }
-
         nodeList.addView(btn)
-    }
+    }*/
 
     companion object {
         /**
@@ -177,4 +192,5 @@ class Networks : Fragment() {
                 }
             }
     }
+
 }
