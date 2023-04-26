@@ -209,7 +209,7 @@ class Chat : Fragment() {
         else {
             time.text = "$hours:$minutes"
         }
-        time.setTextColor(Color.parseColor("#c9c7c7"))
+        time.setTextColor(Color.parseColor("#FFFFFF"))
         time.gravity = Gravity.RIGHT
         time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
 
