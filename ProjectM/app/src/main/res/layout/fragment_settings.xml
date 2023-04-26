@@ -33,8 +33,8 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/settingsDeviceName"
-            android:layout_width="360dp"
-            android:layout_height="48sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@drawable/text_field"
             android:clickable="true"

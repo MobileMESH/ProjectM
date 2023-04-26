@@ -20,4 +20,6 @@
     <color name="card_background">#404040</color>
     <color name="white">#FFFFFFFF</color>
     <color name="devicelist_text">#BCBCBC</color>
+    <color name="state_indicator_current">#31ad90</color>
+    <color name="state_indicator_other">#1a1a1a</color>
 </resources>
