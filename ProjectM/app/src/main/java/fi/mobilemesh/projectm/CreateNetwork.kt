@@ -15,6 +15,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.forEach
+import androidx.core.view.setPadding
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
 import fi.mobilemesh.projectm.network.BroadcastManager
@@ -147,16 +148,13 @@ class CreateNetwork : Fragment() {
             // switch back to Networks fragment
             (parentFragment as ContainerFragmentNetworks).switchFragment(Networks::class.java)
         }
+        createButton.isEnabled = false
+        addButton.isEnabled = false
 
         // disable initially
-        //createButton.isEnabled = false
+
 
         createButton.setOnClickListener {
-            // TODO: enable when a device has been selected
-
-            if (selectedDevice == null) {
-                return@setOnClickListener
-            }
             // go to nameNetworkLayout
             switchLayout(chooseDeviceLayout, nameNetworkLayout)
         }
@@ -199,6 +197,8 @@ class CreateNetwork : Fragment() {
     private fun observeNearbyDevices() {
         broadcastManager.getLiveNearbyDevices().observe(viewLifecycleOwner) { list ->
             if (!list.any { it == selectedDevice }) selectedDevice = null
+            createButton.isEnabled = false
+            addButton.isEnabled = false
             refreshDeviceCards()
         }
     }
@@ -222,12 +222,14 @@ class CreateNetwork : Fragment() {
     private fun createCardViewLayout(device: Device) {
         val btn = Button(view?.context)
         btn.text = device.getName()
+        btn.setPadding(10,10,10,10)
         btn.setOnClickListener {
             deviceList.forEach { it.setBackgroundColor(Color.WHITE) }
             btn.setBackgroundColor(Color.GRAY)
             selectedDevice = device
+                createButton.isEnabled = true
+                addButton.isEnabled = true
         }
-
         deviceList.addView(btn)
     }
 

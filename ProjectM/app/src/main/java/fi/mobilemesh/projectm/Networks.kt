@@ -1,6 +1,8 @@
 package fi.mobilemesh.projectm
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isEmpty
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.network.BroadcastManager
@@ -43,7 +46,6 @@ class Networks : Fragment() {
     // UI
     private lateinit var availableView: TextView
     private lateinit var networkList: LinearLayout
-    private lateinit var nodeList: LinearLayout
     private lateinit var createNetworkButton: Button
     private lateinit var selectNetworkButton: Button
     private lateinit var joinButton: Button
@@ -76,8 +78,6 @@ class Networks : Fragment() {
 
         createNetworkButton = view.findViewById(R.id.createNetworkButton)
         joinButton = view.findViewById(R.id.joinButton)
-
-        selectButton = view.findViewById(R.id.selectButton)
         selectList = view.findViewById(R.id.selectList)
 
         mapButtons()
@@ -103,20 +103,26 @@ class Networks : Fragment() {
                 selectList.addView(btn)
             }
         }
-        //refreshDeviceCards()
 
-        //if (deviceList.isNotEmpty()) {
-       //     refreshDeviceCards()
-        //}
-        //else {
-       //     val txt = TextView(view?.context)
-        //    txt.gravity = Gravity.CENTER_HORIZONTAL
-         //   txt.text = "No devices available currently. You can try creating a new network."
-        //    txt.setPadding(10,0,10,0)
-          //  txt.setTextColor(Color.parseColor("#aec2bd"))
-           // nodeList.addView(txt)
-      //  }
-        //refreshDeviceCards()
+        if (networkList.isEmpty()) {
+            val txt = TextView(view?.context)
+            txt.gravity = Gravity.CENTER_HORIZONTAL
+            txt.text = "No new networks available currently. You can try creating one yourself."
+            txt.setPadding(10,0,10,0)
+            txt.setTextColor(Color.parseColor("#aec2bd"))
+            txt.textSize = 16F
+            networkList.addView(txt)
+        }
+
+        if (selectList.isEmpty()) {
+            val txt = TextView(view?.context)
+            txt.gravity = Gravity.CENTER_HORIZONTAL
+            txt.text = "You are not connected to any networks."
+            txt.setPadding(10,0,10,0)
+            txt.setTextColor(Color.parseColor("#aec2bd"))
+            txt.textSize = 16F
+            networkList.addView(txt)
+        }
     }
 
     private fun mapButtons() {
