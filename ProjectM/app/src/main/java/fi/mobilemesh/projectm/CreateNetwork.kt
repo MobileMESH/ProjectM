@@ -52,6 +52,7 @@ class CreateNetwork : Fragment() {
     private lateinit var deviceList: LinearLayout
     private lateinit var createButton: Button
     private lateinit var cancelButton: Button
+    private lateinit var addButton: Button
 
     // UI for nameNetworkLayout (fragment_name_network)
     private lateinit var backButton: Button
@@ -123,6 +124,7 @@ class CreateNetwork : Fragment() {
         deviceList = chooseDeviceLayout.findViewById(R.id.deviceList)
         cancelButton = chooseDeviceLayout.findViewById(R.id.cancelButton)
         createButton = chooseDeviceLayout.findViewById(R.id.createButton)
+        addButton = chooseDeviceLayout.findViewById(R.id.addButton)
 
         // network naming
         backButton = nameNetworkLayout.findViewById(R.id.backButton)
@@ -187,6 +189,10 @@ class CreateNetwork : Fragment() {
             (parentFragment as ContainerFragmentNetworks).switchFragment(Networks::class.java)
         }
 
+        addButton.setOnClickListener {
+            if (selectedDevice == null) return@setOnClickListener
+            meshManager.addToNetwork(selectedDevice!!, MeshManager.activeNetworkId)
+        }
 
     }
 

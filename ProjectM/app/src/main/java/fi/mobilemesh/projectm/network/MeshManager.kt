@@ -114,6 +114,7 @@ class MeshManager {
      * @param id unique id of the network to add the device to
      */
     fun addToNetwork(other: Device, id: String?) {
+        println("ADD ${other.getName()}")
         if (id == null) return
         val currentNetwork = currentNetworks[id] ?: return
         // If the device is already in the network, no need to send information about it again

@@ -24,6 +24,7 @@ import java.net.ServerSocket
 import java.net.Socket
 import kotlinx.coroutines.*
 import java.io.EOFException
+import java.net.ConnectException
 import java.net.SocketException
 import java.util.LinkedList
 import java.util.concurrent.CountDownLatch
@@ -264,8 +265,16 @@ class BroadcastManager(
     private suspend fun sendHandshake() {
         withContext(Dispatchers.IO) {
             val socket = Socket()
-            socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
-            socket.close()
+            try {
+                socket.connect(InetSocketAddress(targetAddress, PORT), TIMEOUT)
+            }
+            catch (e: ConnectException) {
+                println("ECONNREFUSED: ${e.stackTrace}")
+                timeoutConnection()
+            }
+            finally {
+                socket.close()
+            }
 
             println("HS/SEND")
             receiveData()
@@ -277,9 +286,9 @@ class BroadcastManager(
      * data and shuts down after reading
      */
     private suspend fun receiveData() {
+        connectionLatch.countDown()
         if (isSender) return
 
-        connectionLatch.countDown()
         println("RECEIVE/START")
 
         withContext(Dispatchers.IO) {
@@ -390,6 +399,7 @@ class BroadcastManager(
      * Times out a connection attempt
      */
     private fun timeoutConnection() {
+        println("TIMED OUT $isSender")
         connectionLatch = CountDownLatch(0)
 
         val first = requestQueue.removeFirstOrNull()
