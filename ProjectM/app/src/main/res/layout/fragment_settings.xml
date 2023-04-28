@@ -71,7 +71,7 @@
             android:textSize="20sp" />
 
         <androidx.cardview.widget.CardView
-            android:layout_width="360dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/card_background"
             android:layout_gravity="center"
@@ -114,7 +114,7 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/deviceSettings"
-            android:layout_width="360dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:clickable="true"
