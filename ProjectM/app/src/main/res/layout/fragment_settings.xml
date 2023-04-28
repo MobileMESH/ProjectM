@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
@@ -47,6 +47,8 @@
             android:inputType="textPersonName"
             android:paddingStart="8sp"
             android:paddingEnd="8sp"
+            android:layout_marginStart="10sp"
+            android:layout_marginEnd="10sp"
             android:textSize="16sp"
             app:cardCornerRadius="10dp" />
         <Button
@@ -75,6 +77,8 @@
             android:layout_gravity="center"
             android:clickable="true"
             app:cardCornerRadius="10dp"
+            android:layout_marginStart="10sp"
+            android:layout_marginEnd="10sp"
             tools:ignore="ExtraText">
 
             <TextView
@@ -116,6 +120,8 @@
             android:clickable="true"
             app:cardBackgroundColor="@color/card_background"
             app:cardCornerRadius="10dp"
+            android:layout_marginStart="10sp"
+            android:layout_marginEnd="10sp"
             tools:ignore="ExtraText">
 
             <TextView
