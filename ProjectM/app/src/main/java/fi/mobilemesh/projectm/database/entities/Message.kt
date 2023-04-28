@@ -4,10 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import fi.mobilemesh.projectm.network.Device
 import java.util.*
 
-// TODO: Replace sender(string) with sender(device object)
-// TODO: Maybe replace chatGroupId as a string so it can be unique?
+// TODO: Replace sender(string) with sender(device object). Or maybe don't?
 /**
  * Class/table representing a single Message.
  * @param messageId unique message id within the chat group, usually in rising order (id 0
@@ -21,19 +21,18 @@ import java.util.*
  */
 @Entity
 data class Message(
-    @PrimaryKey(autoGenerate = false)
-    val messageId: Int,
-
-    val chatGroupId: Int,
+    val chatGroupId: String,
 
     val sender: String,
 
+    @PrimaryKey(autoGenerate = false)
     @TypeConverters(DateConverter::class)
     val timestamp: Date,
 
     val body: String,
 
-    var isOwnMessage: Boolean = false) : java.io.Serializable
+    var isOwnMessage: Boolean = true
+) : java.io.Serializable
 
 /**
  * Converts a Date to Long and vice versa so it can be stored and read from the Room database
