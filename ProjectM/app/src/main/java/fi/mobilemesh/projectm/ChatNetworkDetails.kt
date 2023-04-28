@@ -89,19 +89,7 @@ class ChatNetworkDetails : Fragment() {
 
         // TODO: Replace this with actual connected devices
 
-        val devices = mutableListOf<Device>()
-
-        for (i in 0..6) {
-            val device = Device(WifiP2pDevice().apply {
-                // Own device first
-                deviceName = if (i == 0) {
-                    "Own test device"
-                } else {
-                    "Test device $i"
-                }
-            })
-            devices.add(device)
-        }
+        val devices = meshManager.getCurrentNetworkDevices().toMutableList()
 
 
         connectedDevicesList.apply {

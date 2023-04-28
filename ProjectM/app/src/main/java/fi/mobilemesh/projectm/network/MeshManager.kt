@@ -43,6 +43,11 @@ class MeshManager {
     private lateinit var broadcastManager: BroadcastManager
     private lateinit var currentNetworks: MutableMap<String, ChatGroup>
 
+    fun getCurrentNetworkDevices(): Collection<Device> {
+        if (activeNetworkId == null || currentNetworks[activeNetworkId] == null) return emptyList()
+        return currentNetworks[activeNetworkId]!!.deviceSet.devices
+    }
+
     /**
      * Relays given data forward in the network, avoiding sending it to devices it has
      * (probably) already reached

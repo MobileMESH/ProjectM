@@ -8,10 +8,12 @@ import android.net.wifi.p2p.*
 import android.net.wifi.p2p.WifiP2pManager.*
 import android.os.Build
 import androidx.lifecycle.MutableLiveData
+import fi.mobilemesh.projectm.MainActivity
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.database.entities.Message
+import fi.mobilemesh.projectm.utils.MakeNotification
 import kotlinx.coroutines.*
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
@@ -329,6 +331,7 @@ class BroadcastManager(
                 is Message -> {
                     data.isOwnMessage = false
                     dao.insertMessage(data)
+                    createMessageNotification(data)
                 }
 
                 is ChatGroup -> {
@@ -356,16 +359,16 @@ class BroadcastManager(
      * Creates a notification from a message if notifications are allowed.
      * @param message a [Message] instance from which to create the notification
      */
-    /*private fun createMessageNotification(message: Message) {
+    private fun createMessageNotification(message: Message) {
             val notificationHelper = weakContext.get()?.let { MakeNotification(it) }
             val intent = Intent(weakContext.get(), MainActivity::class.java)
             // TODO: replace value 0 with actual chat group number, should work that way
-            intent.putExtra("chat_id", 0)
+            intent.putExtra("chat_id", MeshManager.activeNetworkId)
             notificationHelper?.showNotification(
                 message.sender,
                 message.body, intent
             )
-    }*/
+    }
     /**
      * Used to send any type of data to another device. Connects to given address automatically
      * before sending data
