@@ -100,7 +100,7 @@ class Networks : Fragment() {
                 btn.setOnClickListener { _ ->
                     MeshManager.activeNetworkId = it.chatGroupId
                 }
-                networkList.addView(btn)
+                selectList.addView(btn)
             }
         }
         //refreshDeviceCards()

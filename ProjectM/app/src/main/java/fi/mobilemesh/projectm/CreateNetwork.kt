@@ -152,8 +152,8 @@ class CreateNetwork : Fragment() {
         createButton.setOnClickListener {
             // TODO: enable when a device has been selected
 
-            if (selectedDevice != null) {
-                meshManager.addToNetwork(selectedDevice!!, MeshManager.activeNetworkId)
+            if (selectedDevice == null) {
+                return@setOnClickListener
             }
             // go to nameNetworkLayout
             switchLayout(chooseDeviceLayout, nameNetworkLayout)
@@ -181,6 +181,8 @@ class CreateNetwork : Fragment() {
         })
 
         finishButton.setOnClickListener {
+            // Create network
+            meshManager.createNetwork(selectedDevice!!, networkName.text.toString())
             // switch back to Networks fragment
             (parentFragment as ContainerFragmentNetworks).switchFragment(Networks::class.java)
         }

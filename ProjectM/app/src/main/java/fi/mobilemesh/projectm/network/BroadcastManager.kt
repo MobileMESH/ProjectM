@@ -8,14 +8,10 @@ import android.net.wifi.p2p.*
 import android.net.wifi.p2p.WifiP2pManager.*
 import android.os.Build
 import androidx.lifecycle.MutableLiveData
-import fi.mobilemesh.projectm.Chat
-import fi.mobilemesh.projectm.MainActivity
-import fi.mobilemesh.projectm.Networks
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.database.entities.Message
-import fi.mobilemesh.projectm.utils.MakeNotification
 import kotlinx.coroutines.*
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
@@ -35,7 +31,7 @@ import java.util.concurrent.TimeUnit
 
 
 private const val PORT = 8888
-private const val TIMEOUT = 5000
+private const val TIMEOUT = 10000
 
 class BroadcastManager(
     private val wifiManager: WifiP2pManager,
