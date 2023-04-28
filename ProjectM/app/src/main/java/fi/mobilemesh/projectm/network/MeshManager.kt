@@ -63,7 +63,8 @@ class MeshManager {
         val networkId = when (data) {
             is Message -> data.chatGroupId
             is ChatGroup -> data.chatGroupId
-            else -> null
+            is Pair<*, *> -> data.first
+            else -> activeNetworkId
         }
 
         val network = currentNetworks[networkId] ?: return
@@ -150,24 +151,26 @@ class MeshManager {
 
     fun leaveNetwork() {
         if (activeNetworkId == null) return
-        val currentNetworkId = activeNetworkId!!
-        activeNetworkId = null
 
         val deviceName = broadcastManager.getThisDevice().getName()
 
-        currentNetworks.remove(currentNetworkId)
+        println("NETWORK LEAVE $deviceName")
 
-        val payload = Pair(currentNetworkId, deviceName)
+        val payload = Pair(activeNetworkId, deviceName)
         relayForward(payload)
 
         CoroutineScope(Dispatchers.IO).launch {
-            dao.deleteChatGroupMessages(currentNetworkId)
-            dao.deleteChatGroup(currentNetworkId)
+            dao.deleteChatGroupMessages(activeNetworkId!!)
+            dao.deleteChatGroup(activeNetworkId!!)
+
+            currentNetworks.remove(activeNetworkId)
+            activeNetworkId = null
         }
     }
 
     fun removeFromNetwork(networkId: String, deviceId: String) {
         val currentNetwork = currentNetworks[networkId] ?: return
+        println("NETWORK REMOVE $deviceId")
         val removedDevice = currentNetwork.deviceSet.devices.firstOrNull { it.getName() == deviceId }
         currentNetwork.deviceSet.devices.remove(removedDevice)
     }
