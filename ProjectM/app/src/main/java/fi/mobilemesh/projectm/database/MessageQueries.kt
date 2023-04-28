@@ -2,6 +2,7 @@ package fi.mobilemesh.projectm.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import fi.mobilemesh.projectm.Chat
 import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.database.entities.Message
 
@@ -14,6 +15,7 @@ interface MessageQueries {
      * Inserts chat group into the database, replacing existing one in case of conflicts
      * @param chatGroup ChatGroup object to insert
      */
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChatGroup(chatGroup: ChatGroup)
 
@@ -31,10 +33,16 @@ interface MessageQueries {
         """)
     suspend fun getChatGroups(): List<ChatGroup>
 
+    @Query("""
+        SELECT * FROM chatgroup
+        """)
+    fun getLiveChatGroups(): LiveData<List<ChatGroup>>
+
     /**
      * Inserts a single message into the database, replacing existing one in case of conflicts
      * @param message Message object to insert
      */
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMessage(message: Message)
 

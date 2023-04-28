@@ -8,8 +8,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
+import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.network.Device
 import fi.mobilemesh.projectm.network.MeshManager
@@ -82,8 +84,6 @@ class Networks : Fragment() {
 
         mapButtons()
 
-        // lifecycleScope.launch { observeNearbyDevices() }
-
         return view
     }
 
@@ -94,15 +94,11 @@ class Networks : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         CoroutineScope(Dispatchers.Main).launch {
-            dao.getChatGroups().forEach {
-                val btn = Button(view.context)
-                btn.text = it.groupName
-                btn.setOnClickListener { _ ->
-                    MeshManager.activeNetworkId = it.chatGroupId
-                }
-                selectList.addView(btn)
-            }
+            refreshJoinedNetworks(dao.getChatGroups())
         }
+
+        lifecycleScope.launch { observeJoinedNetworks() }
+
         //refreshDeviceCards()
 
         //if (deviceList.isNotEmpty()) {
@@ -129,6 +125,27 @@ class Networks : Fragment() {
             if (selectedDevice != null) {
                 meshManager.addToNetwork(selectedDevice!!, MeshManager.activeNetworkId)
             }*/
+    }
+
+    private fun observeJoinedNetworks() {
+        dao.getLiveChatGroups().observe(viewLifecycleOwner) { list ->
+            refreshJoinedNetworks(list)
+        }
+    }
+
+    private fun refreshJoinedNetworks(networks: Collection<ChatGroup>) {
+        if (view == null) return
+
+        selectList.removeAllViews()
+
+        networks.forEach {
+            val btn = Button(view?.context)
+            btn.text = it.groupName
+            btn.setOnClickListener { _ ->
+                MeshManager.activeNetworkId = it.chatGroupId
+            }
+            selectList.addView(btn)
+        }
     }
 
     /*
