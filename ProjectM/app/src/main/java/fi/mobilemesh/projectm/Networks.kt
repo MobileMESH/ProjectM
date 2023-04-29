@@ -1,6 +1,9 @@
 package fi.mobilemesh.projectm
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isEmpty
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.network.BroadcastManager
@@ -43,11 +47,10 @@ class Networks : Fragment() {
     // UI
     private lateinit var availableView: TextView
     private lateinit var networkList: LinearLayout
-    private lateinit var nodeList: LinearLayout
     private lateinit var createNetworkButton: Button
-    private lateinit var selectNetworkButton: Button
     private lateinit var joinButton: Button
-    private lateinit var selectButton: Button
+    private lateinit var guidanceText1: TextView
+    private lateinit var guidanceText2: TextView
     private lateinit var selectList: LinearLayout
 
 
@@ -71,13 +74,13 @@ class Networks : Fragment() {
 
         availableView = view.findViewById(R.id.availableView)
         networkList = view.findViewById(R.id.networkList)
+        guidanceText1 = view.findViewById(R.id.guidanceText1)
+        guidanceText2 = view.findViewById(R.id.guidanceText2)
 
         //INSTANCE = WeakReference(this)
 
         createNetworkButton = view.findViewById(R.id.createNetworkButton)
         joinButton = view.findViewById(R.id.joinButton)
-
-        selectButton = view.findViewById(R.id.selectButton)
         selectList = view.findViewById(R.id.selectList)
 
         mapButtons()
@@ -99,24 +102,20 @@ class Networks : Fragment() {
                 btn.text = it.groupName
                 btn.setOnClickListener { _ ->
                     MeshManager.activeNetworkId = it.chatGroupId
+                    btn.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
                 }
+
+                if (!networkList.isEmpty()) {
+                    guidanceText1.text = ""
+                }
+
                 selectList.addView(btn)
+                if(!selectList.isEmpty()) {
+                    guidanceText2.text = "Press network to enter chat"
+                }
             }
         }
-        //refreshDeviceCards()
 
-        //if (deviceList.isNotEmpty()) {
-       //     refreshDeviceCards()
-        //}
-        //else {
-       //     val txt = TextView(view?.context)
-        //    txt.gravity = Gravity.CENTER_HORIZONTAL
-         //   txt.text = "No devices available currently. You can try creating a new network."
-        //    txt.setPadding(10,0,10,0)
-          //  txt.setTextColor(Color.parseColor("#aec2bd"))
-           // nodeList.addView(txt)
-      //  }
-        //refreshDeviceCards()
     }
 
     private fun mapButtons() {
