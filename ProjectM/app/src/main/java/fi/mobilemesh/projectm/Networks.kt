@@ -1,5 +1,6 @@
 package fi.mobilemesh.projectm
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -47,9 +48,9 @@ class Networks : Fragment() {
     private lateinit var availableView: TextView
     private lateinit var networkList: LinearLayout
     private lateinit var createNetworkButton: Button
-    private lateinit var selectNetworkButton: Button
     private lateinit var joinButton: Button
-    private lateinit var selectButton: Button
+    private lateinit var guidanceText1: TextView
+    private lateinit var guidanceText2: TextView
     private lateinit var selectList: LinearLayout
 
 
@@ -73,6 +74,8 @@ class Networks : Fragment() {
 
         availableView = view.findViewById(R.id.availableView)
         networkList = view.findViewById(R.id.networkList)
+        guidanceText1 = view.findViewById(R.id.guidanceText1)
+        guidanceText2 = view.findViewById(R.id.guidanceText2)
 
         //INSTANCE = WeakReference(this)
 
@@ -99,30 +102,20 @@ class Networks : Fragment() {
                 btn.text = it.groupName
                 btn.setOnClickListener { _ ->
                     MeshManager.activeNetworkId = it.chatGroupId
+                    btn.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
                 }
+
+                if (!networkList.isEmpty()) {
+                    guidanceText1.text = ""
+                }
+
                 selectList.addView(btn)
+                if(!selectList.isEmpty()) {
+                    guidanceText2.text = "Press network to enter chat"
+                }
             }
         }
 
-        if (networkList.isEmpty()) {
-            val txt = TextView(view?.context)
-            txt.gravity = Gravity.CENTER_HORIZONTAL
-            txt.text = "No new networks available currently. You can try creating one yourself."
-            txt.setPadding(10,0,10,0)
-            txt.setTextColor(Color.parseColor("#aec2bd"))
-            txt.textSize = 16F
-            networkList.addView(txt)
-        }
-
-        if (selectList.isEmpty()) {
-            val txt = TextView(view?.context)
-            txt.gravity = Gravity.CENTER_HORIZONTAL
-            txt.text = "You are not connected to any networks."
-            txt.setPadding(10,0,10,0)
-            txt.setTextColor(Color.parseColor("#aec2bd"))
-            txt.textSize = 16F
-            networkList.addView(txt)
-        }
     }
 
     private fun mapButtons() {

@@ -1,6 +1,7 @@
 package fi.mobilemesh.projectm
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -225,7 +226,7 @@ class CreateNetwork : Fragment() {
         btn.setPadding(10,10,10,10)
         btn.setOnClickListener {
             deviceList.forEach { it.setBackgroundColor(Color.WHITE) }
-            btn.setBackgroundColor(Color.GRAY)
+            btn.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
             selectedDevice = device
                 createButton.isEnabled = true
                 addButton.isEnabled = true

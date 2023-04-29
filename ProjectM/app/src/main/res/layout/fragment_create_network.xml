@@ -34,7 +34,7 @@
             android:layout_marginEnd="10sp"
             android:layout_marginStart="10sp"
             android:gravity="center"
-            android:text="Select one device to create a network with. After creating the network, others can join it or you can add the devices to the network yourself."
+            android:text="Select one device to create a network with. After creating the network, others can join it or you can add the devices to the network yourself from this screen."
             android:textColor="#aec2bd"
             android:textSize="17sp" />
 
