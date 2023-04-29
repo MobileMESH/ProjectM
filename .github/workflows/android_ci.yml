@@ -24,6 +24,9 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./ProjectM/gradlew
+        
+      - name: Check files
+        run: ls ./ProjectM
 
       - name: Build project
         run: ./ProjectM/gradlew build
