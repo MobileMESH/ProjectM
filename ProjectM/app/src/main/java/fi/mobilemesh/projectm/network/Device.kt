@@ -2,6 +2,7 @@ package fi.mobilemesh.projectm.network
 
 import android.net.wifi.p2p.WifiP2pDevice
 import android.location.Location
+import java.util.UUID
 
 class Device (device: WifiP2pDevice) : java.io.Serializable {
 
@@ -32,18 +33,24 @@ class Device (device: WifiP2pDevice) : java.io.Serializable {
         return sharesLocation
     }
 
-    fun setAvailableDevices(devices: Collection<Device>) {
+    fun setAvailableDevices(devices: Collection<Device>?) {
         availableDevices.clear()
-        availableDevices.addAll(devices)
+        availableDevices.addAll(devices ?: listOf())
     }
 
     fun getAvailableDevices(): Collection<Device> {
         return availableDevices
     }
 
-    // added to test device list, will be deleted later
-    fun setSharesLocation(sharesLocation: Boolean) {
-        this.sharesLocation = sharesLocation
+    // TODO: Replace equality check (name) with UUID
+    override fun equals(other: Any?): Boolean {
+        if (other !is Device) return super.equals(other)
+        return this.getName() == other.getName()
+    }
+
+    // TODO: Generate hash from UUID
+    override fun hashCode(): Int {
+        return (name?.hashCode() ?: 0)
     }
 }
 

@@ -22,6 +22,7 @@ import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
 import fi.mobilemesh.projectm.database.entities.Message
 import fi.mobilemesh.projectm.network.BroadcastManager
+import fi.mobilemesh.projectm.network.MeshManager
 import fi.mobilemesh.projectm.utils.MakeNotification
 import fi.mobilemesh.projectm.utils.showNeutralAlert
 import kotlinx.coroutines.*
@@ -44,6 +45,7 @@ class Chat : Fragment() {
 
     private lateinit var dao: MessageQueries
     private lateinit var broadcastManager: BroadcastManager
+    private lateinit var meshManager: MeshManager
 
     lateinit var sendButton: FloatingActionButton
     lateinit var sendingField: EditText
@@ -90,6 +92,7 @@ class Chat : Fragment() {
 
         dao = MessageDatabase.getInstance(view.context).dao
         broadcastManager = BroadcastManager.getInstance(view.context)
+        meshManager = MeshManager.getInstance(view.context)
 
         mapButtons()
 
@@ -103,7 +106,8 @@ class Chat : Fragment() {
      */
     // TODO: Don't reload all messages...
     private fun observeLiveMessages() {
-        dao.getLiveChatGroupMessages(0).observe(viewLifecycleOwner) {
+        val id = MeshManager.activeNetworkId ?: return
+        dao.getLiveChatGroupMessages(id).observe(viewLifecycleOwner) {
             receivingField.removeAllViews()
             loadAllMessages()
         }
@@ -115,19 +119,16 @@ class Chat : Fragment() {
      * @param text text as [String] to send
      */
     private suspend fun sendMessage(text: String) {
-        if (!canSendMessage(text)) return
+        if (!isMessageValid(text)) return
 
+        val networkId = MeshManager.activeNetworkId ?: return
+        // TODO: Get chat group id, this just gets a random one for testing
+        val sender = broadcastManager.getThisDevice().getName()
         val time = Date(System.currentTimeMillis())
-        // TODO: Set chat group id properly. Current is a placeholder
-        val id = dao.getNextMessageId(0)
-        // TODO: Get sender name from Device object (probably?)
-        // TODO: Get chat group id
-        // TODO: Get unique message id within chat group (should be in rising order)
-        val message = Message(id, 0, "SENDER", time, text)
 
-        broadcastManager.transferText(message)
+        val message = Message(networkId, sender, time, text)
 
-        message.isOwnMessage = true
+        meshManager.sendGroupMessage(message)
         dao.insertMessage(message)
 
         val messageType = R.drawable.outgoing_bubble
@@ -229,8 +230,9 @@ class Chat : Fragment() {
     // TODO: Implement loading messages of particular chat group (pretty much
     //  only one extra parameter needed)
     private fun loadAllMessages() {
+        val id = MeshManager.activeNetworkId ?: return
         CoroutineScope(Dispatchers.Main).launch {
-            val messages = dao.getChatGroupMessages(0)
+            val messages = dao.getChatGroupMessages(id)
             messages.forEach {
                 val messageType = if (it.isOwnMessage) R.drawable.outgoing_bubble
                 else R.drawable.incoming_bubble
@@ -246,32 +248,18 @@ class Chat : Fragment() {
      * @return true if the device is connected to the network and the message is not empty,
      * false if either condition fails
      */
-    private suspend fun canSendMessage(text: String): Boolean {
-        return CoroutineScope(Dispatchers.Main).async {
-            // Can't send message if there is no connection
-            if (!broadcastManager.isConnected()) {
-                view?.let {
-                    showNeutralAlert(
-                        "No connection!",
-                        "You are not connected to any device.",
-                        it.context
-                    )
-                }
-                return@async false
+    private fun isMessageValid(text: String): Boolean {
+        if (text.trim() == "") {
+            view?.let {
+                showNeutralAlert(
+                    "Empty message",
+                    "Can not send empty message (this is a placeholder)",
+                    it.context
+                )
             }
-            // Can't send empty message
-            if (text.trim() == "") {
-                view?.let {
-                    showNeutralAlert(
-                        "Empty message",
-                        "Can not send empty message (this is a placeholder)",
-                        it.context
-                    )
-                }
-                return@async false
-            }
-            return@async true
-        }.await()
+            return false
+        }
+        return true
     }
 
     companion object {

@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.database.entities.DateConverter
+import fi.mobilemesh.projectm.database.entities.DeviceSetConverter
 import fi.mobilemesh.projectm.database.entities.Message
 
 /**
@@ -19,7 +20,12 @@ import fi.mobilemesh.projectm.database.entities.Message
     ],
     version = 1
 )
-@TypeConverters(DateConverter::class)
+@TypeConverters(
+    value = [
+        DateConverter::class,
+        DeviceSetConverter::class
+    ]
+)
 abstract class MessageDatabase : RoomDatabase() {
     //Data Access Object for tables/entities
     abstract val dao: MessageQueries

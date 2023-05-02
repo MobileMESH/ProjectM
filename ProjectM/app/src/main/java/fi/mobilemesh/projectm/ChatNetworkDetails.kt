@@ -11,9 +11,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fi.mobilemesh.projectm.network.Device
+import fi.mobilemesh.projectm.network.MeshManager
 import fi.mobilemesh.projectm.utils.showConfirmationAlert
 
 class ChatNetworkDetails : Fragment() {
+    private lateinit var meshManager: MeshManager
 
     //TODO: implement feature to add and edit network desc
     //private val isDescriptionPresent = false
@@ -34,6 +36,8 @@ class ChatNetworkDetails : Fragment() {
             (parentFragment as ContainerFragmentChat).switchFragment(Chat::class.java)
         }
         leaveNetworkButton.setOnClickListener {
+            // TODO: This only sets the current network as "unselected", needs to disconnect
+
             showConfirmationAlert(
                 "Leave Network",
                 "Are you sure you want to leave the network?",
@@ -41,7 +45,7 @@ class ChatNetworkDetails : Fragment() {
                 "No",
                 requireContext(),
                 {
-                    // TODO: Disconnect device from network
+                    meshManager.leaveNetwork()
                     (parentFragment as ContainerFragmentChat).switchFragment(ChatDisconnected::class.java)
                 },
                 {
@@ -57,6 +61,8 @@ class ChatNetworkDetails : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_network_details, container, false)
+
+        meshManager = MeshManager.getInstance(view.context)
 
         findUiElements(view)
         mapButtons()
@@ -81,24 +87,7 @@ class ChatNetworkDetails : Fragment() {
 
         // TODO: Replace this with actual connected devices
 
-        val devices = mutableListOf<Device>()
-
-        for (i in 0..6) {
-            val device = Device(WifiP2pDevice().apply {
-                // Own device first
-                deviceName = if (i == 0) {
-                    "Own test device"
-                } else {
-                    "Test device $i"
-                }
-            })
-            // set sharing location to true for some devices to test UI
-            // TODO: delete setSharesLocation from Device class when this is updated
-            if (i < 4) {
-                device.setSharesLocation(true)
-            }
-            devices.add(device)
-        }
+        val devices = meshManager.getCurrentNetworkDevices().toMutableList()
 
 
         connectedDevicesList.apply {

@@ -15,6 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.entities.ChatGroup
+import fi.mobilemesh.projectm.network.MeshManager
 import fi.mobilemesh.projectm.utils.SharedPreferencesManager
 import fi.mobilemesh.projectm.utils.MakeNotification
 import kotlinx.coroutines.CoroutineScope
@@ -79,6 +80,7 @@ class MainActivity : AppCompatActivity() {
     )
 
     private lateinit var broadcastManager: BroadcastManager
+    private lateinit var meshManager: MeshManager
     private val intentFilter = IntentFilter()
 
     // UI
@@ -92,19 +94,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Initializing handlers and such
-        MessageDatabase.getInstance(applicationContext)
-        broadcastManager = BroadcastManager.getInstance(applicationContext)
-        SharedPreferencesManager.getInstance(applicationContext)
-        addIntentFilters()
-
         // Show the onboarding activity if it hasn't been completed
         if (!isOnboardingCompleted()) {
             showOnboardingActivity()
         }
 
+
+        // Set the default layout to ContainerFragmentNetworks
         setContentView(R.layout.activity_main)
+        switchFragment(ContainerFragmentNetworks::class.java)
 
         // moved this to Onboarding
         //requestPermissions()
@@ -114,15 +112,13 @@ class MainActivity : AppCompatActivity() {
         //mapButtons()
         listenNavigation()
 
+        // Initializing handlers and such
+        MessageDatabase.getInstance(applicationContext)
+        broadcastManager = BroadcastManager.getInstance(applicationContext)
+        meshManager = MeshManager.getInstance(applicationContext)
+        SharedPreferencesManager.getInstance(applicationContext)
+        addIntentFilters()
         handleNotificationClick()
-
-        // Message database (Data Access Object)
-        val dao = MessageDatabase.getInstance(this).dao
-        CoroutineScope(Dispatchers.Main).launch {
-            // TODO: Placeholder chat group for tests. Should be replaced when chat groups are
-            //  implemented
-            dao.insertChatGroup(ChatGroup(0))
-        }
     }
 
     override fun onResume() {
@@ -174,7 +170,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.networks-> {
-                    switchFragment(Networks::class.java)
+                    switchFragment(ContainerFragmentNetworks::class.java)
                     true
                 }
                 else -> false

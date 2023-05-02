@@ -6,9 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import fi.mobilemesh.projectm.network.BroadcastManager
-import fi.mobilemesh.projectm.network.MeshManager
 
-class ContainerFragmentChat : Fragment() {
+class ContainerFragmentNetworks : Fragment() {
 
     private lateinit var broadcastManager: BroadcastManager
 
@@ -22,29 +21,16 @@ class ContainerFragmentChat : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat_container, container, false)
-    }
-
-    /**
-     * Checks the connection and sets the appropriate layout.
-     * Chat is visible by default, but if the connection is not found, changes it to disconnectedLayout
-     */
-    override fun onResume() {
-        super.onResume()
-
-        switchFragment(Chat::class.java)
-        if (MeshManager.activeNetworkId == null) {
-            switchFragment(ChatDisconnected::class.java)
-        } else {
-            switchFragment(Chat::class.java)
-        }
+        val view = inflater.inflate(R.layout.fragment_networks_container, container, false)
+        switchFragment(Networks::class.java)
+        return view
     }
 
     fun switchFragment(target: Class<*>) {
         val f: Fragment = target.newInstance() as Fragment
         val fm = childFragmentManager
         val transaction = fm.beginTransaction()
-        transaction.replace(R.id.ChatContainerFragment, f)
+        transaction.replace(R.id.NetworksContainerFragment, f)
         transaction.addToBackStack(null)
         transaction.commit()
     }
