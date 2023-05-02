@@ -20,8 +20,7 @@ class ChatNetworkDetails : Fragment() {
     //TODO: implement feature to add and edit network desc
     //private val isDescriptionPresent = false
 
-    lateinit var networkDetails: TextView
-    lateinit var networkDescription: TextView
+    lateinit var backToChat: TextView
     lateinit var connectedDevicesHeader: TextView
     lateinit var connectedDevicesList: RecyclerView
     lateinit var leaveNetworkButton: Button
@@ -73,10 +72,9 @@ class ChatNetworkDetails : Fragment() {
     }
 
     private fun findUiElements(view: View) {
-        networkDetails = view.findViewById(R.id.networkDetails)
+        backToChat = view.findViewById(R.id.backToChat)
         connectedDevicesList = view.findViewById(R.id.connectedDevicesList)
         connectedDevicesHeader = view.findViewById(R.id.connectedDevicesHeader)
-        networkDescription = view.findViewById(R.id.networkDescription)
         openChatButton = view.findViewById(R.id.openChatButton)
         leaveNetworkButton = view.findViewById(R.id.leaveNetworkButton)
     }

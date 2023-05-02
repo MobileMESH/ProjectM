@@ -9,9 +9,13 @@
     <color name="network_active">#214c47</color>
     <color name="buttons">#018768</color>
     <color name="buttons_disabled">#687371</color>
+    <color name="highlights">#78DC77</color>
+    <color name="switches">#22892F</color>
     <color name="switchneutral">#F4EFF4</color>
     <color name="messages_own">#666666</color>
-    <color name="messages_others"> #333333</color>
+    <color name="messages_others"> #424242</color>
+    <color name="messages_own_new">#1C3530</color>
+    <color name="messages_others_new">#2D3130</color>
     <color name="pop_ups">#018768</color>
     <color name="text"></color>
     <color name="textHint">#AEC2BD</color>

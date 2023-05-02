@@ -21,8 +21,9 @@
 
             <TextView
                 android:id="@+id/networkDetails"
-                android:layout_width="0dp"
-                android:layout_height="70dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="23dp"
                 android:background="@color/secondary_bars_green"
                 android:clickable="true"
                 android:enabled="false"
@@ -82,12 +83,13 @@
 
             <EditText
                 android:id="@+id/sendingField"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
                 android:layout_gravity="center"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="5dp"
+                android:padding="12sp"
                 android:layout_weight="1"
                 android:autofillHints="message"
                 android:background="@drawable/rounded_corners"
