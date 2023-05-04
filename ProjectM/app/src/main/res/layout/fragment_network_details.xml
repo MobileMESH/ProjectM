@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/topBar"
+            android:id="@+id/detailsTopBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -23,9 +23,10 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/networkDetails"
-                android:layout_width="0dp"
-                android:layout_height="70dp"
+                android:id="@+id/backToChat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="23dp"
                 android:background="@color/secondary_bars_green"
                 android:clickable="true"
                 android:enabled="false"
@@ -41,40 +42,19 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/openChatButton"
-                android:layout_width="68dp"
-                android:layout_height="68dp"
-                android:backgroundTint="@color/secondary_bars_green"
-                android:contentDescription="Back to chat"
-                app:icon="@drawable/arrow_back_icon"
-                app:iconTint="@color/white"
-                app:layout_constraintBottom_toBottomOf="@+id/networkDetails"
-                app:layout_constraintStart_toStartOf="@+id/networkDetails"
-                app:layout_constraintTop_toTopOf="@+id/networkDetails" />
+        <Button
+            android:id="@+id/openChatButton"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:backgroundTint="@color/secondary_bars_green"
+            android:contentDescription="Back to chat"
+            app:icon="@drawable/arrow_back_icon"
+            app:iconTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- The description is hidden if it's empty -->
-        <TextView
-            android:id="@+id/networkDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/network_desc_bg"
-            android:gravity="center_vertical"
-            android:padding="18dp"
-            android:text="@string/network_description"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/deviceListLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/topBar"
-            android:visibility="gone" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/deviceListLayout"
@@ -85,7 +65,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/networkDescription"
+            app:layout_constraintTop_toBottomOf="@+id/detailsTopBar"
             app:layout_constraintVertical_bias="1.0">
 
             <TextView
@@ -107,7 +87,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/connectedDevicesList"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="22dp"
                 android:layout_marginEnd="22dp"
@@ -125,7 +105,7 @@
         <LinearLayout
             android:id="@+id/bottomLayout"
             android:layout_width="match_parent"
-            android:layout_height="91dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -135,9 +115,13 @@
                 android:id="@+id/leaveNetworkButton"
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
-                android:layout_height="66dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+
                 android:clickable="true"
                 android:focusable="true"
                 android:text="Leave network"

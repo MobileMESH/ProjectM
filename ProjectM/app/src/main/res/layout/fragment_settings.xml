@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
@@ -25,7 +25,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="16sp"
             android:text="   Device name"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
@@ -45,6 +45,8 @@
             android:inputType="textPersonName"
             android:paddingStart="8sp"
             android:paddingEnd="8sp"
+            android:layout_marginStart="10sp"
+            android:layout_marginEnd="10sp"
             android:textSize="16sp"
             app:cardCornerRadius="10dp" />
         <Button
@@ -104,12 +106,14 @@
             android:textSize="20sp" />
 
         <androidx.cardview.widget.CardView
-            android:layout_width="360dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/card_background"
             android:layout_gravity="center"
             android:clickable="true"
             app:cardCornerRadius="10dp"
+            android:layout_marginStart="10sp"
+            android:layout_marginEnd="10sp"
             tools:ignore="ExtraText">
 
             <TextView
@@ -144,12 +148,14 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/deviceSettings"
-            android:layout_width="360dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:clickable="true"
             app:cardBackgroundColor="@color/card_background"
             app:cardCornerRadius="10dp"
+            android:layout_marginStart="10sp"
+            android:layout_marginEnd="10sp"
             tools:ignore="ExtraText">
 
             <TextView
