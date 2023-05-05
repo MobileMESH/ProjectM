@@ -20,14 +20,9 @@ import java.io.BufferedOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.lang.ref.WeakReference
-import java.net.InetAddress
-import java.net.InetSocketAddress
-import java.net.ServerSocket
-import java.net.Socket
 import kotlinx.coroutines.*
 import java.io.EOFException
-import java.net.ConnectException
-import java.net.SocketException
+import java.net.*
 import java.util.LinkedList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -314,10 +309,10 @@ class BroadcastManager(
                 resetConnection()
                 return@withContext
             }
-            catch(e: SocketException) {
-                println("SocketException: $e")
+            catch(e: SocketTimeoutException) {
+                println("SocketTimeoutException: $e")
                 println(e.stackTrace)
-                resetConnection()
+                timeoutConnection()
                 return@withContext
             }
 

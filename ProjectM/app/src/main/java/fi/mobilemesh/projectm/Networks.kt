@@ -3,7 +3,6 @@ package fi.mobilemesh.projectm
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +10,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import androidx.core.view.isEmpty
 import fi.mobilemesh.projectm.database.MessageDatabase
 import fi.mobilemesh.projectm.database.MessageQueries
+import fi.mobilemesh.projectm.database.entities.ChatGroup
 import fi.mobilemesh.projectm.network.BroadcastManager
 import fi.mobilemesh.projectm.network.Device
 import fi.mobilemesh.projectm.network.MeshManager
@@ -85,8 +86,6 @@ class Networks : Fragment() {
 
         mapButtons()
 
-        // lifecycleScope.launch { observeNearbyDevices() }
-
         return view
     }
 
@@ -97,25 +96,10 @@ class Networks : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         CoroutineScope(Dispatchers.Main).launch {
-            dao.getChatGroups().forEach {
-                val btn = Button(view.context)
-                btn.text = it.groupName
-                btn.setOnClickListener { _ ->
-                    MeshManager.activeNetworkId = it.chatGroupId
-                    btn.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
-                }
-
-                if (!networkList.isEmpty()) {
-                    guidanceText1.text = ""
-                }
-
-                selectList.addView(btn)
-                if(!selectList.isEmpty()) {
-                    guidanceText2.text = "Press network to enter chat"
-                }
-            }
+            refreshJoinedNetworks(dao.getChatGroups())
         }
 
+        lifecycleScope.launch { observeJoinedNetworks() }
     }
 
     private fun mapButtons() {
@@ -130,66 +114,33 @@ class Networks : Fragment() {
             }*/
     }
 
-    /*
-    private fun observeNearbyDevices() {
-        broadcastManager.getLiveNearbyDevices().observe(viewLifecycleOwner) { list ->
-            if (!list.any { it == selectedDevice }) selectedDevice = null
-            refreshDeviceCards()
+    private fun observeJoinedNetworks() {
+        dao.getLiveChatGroups().observe(viewLifecycleOwner) { list ->
+            refreshJoinedNetworks(list)
         }
     }
 
-    /**
-     * Reloads the device list onto view
-     */
-    private fun refreshDeviceCards() {
-        if (view?.context != null) {
-            nodeList.removeAllViews()
-            broadcastManager.getNearbyDevices().forEach { createCardViewLayout(it) }
-        }
-    }
+    private fun refreshJoinedNetworks(networks: Collection<ChatGroup>) {
+        if (view == null) return
 
-    /**
-     * Creates a card for given device so it can be connected to Usually called from
-     * BroadcastManager when a new nearby device is detected
-     * @param device device for which to create the interactable card
-     */
-    private fun createCardViewLayout(device: Device) {
-        val btn = Button(view?.context)
+        selectList.removeAllViews()
 
-        // Styles for buttons
-        btn.text = device.getName()
-        btn.setTextColor(Color.WHITE)
-        btn.setBackgroundColor(Color.DKGRAY)
-
-        // This drawable doesn't work either, but there could be a way
-        // btn.setBackgroundResource(R.drawable.network_card)
-
-        btn.setOnClickListener {
-            nodeList.forEach { it.setBackgroundColor(Color.WHITE) }
-            btn.setBackgroundColor(Color.GRAY)
-            selectedDevice = device
-        }
-        nodeList.addView(btn)
-    }*/
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment networks.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Networks().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        networks.forEach {
+            val btn = Button(view?.context)
+            btn.text = it.groupName
+            btn.setOnClickListener { _ ->
+                MeshManager.activeNetworkId = it.chatGroupId
+                btn.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
             }
-    }
 
+            if (!networkList.isEmpty()) {
+                guidanceText1.text = ""
+            }
+
+            selectList.addView(btn)
+            if(!selectList.isEmpty()) {
+                guidanceText2.text = "Press network to enter chat"
+            }
+        }
+    }
 }
